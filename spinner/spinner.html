@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survey Spinner</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800,900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .dm-serif-text-regular {
+        font-family: "DM Serif Text", serif;
+        font-weight: 400;
+        font-size: 5rem;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .form-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 850px;
+            width: 100%;
+            margin-bottom: 30px;
+            min-height: 300px;
+            position: relative;
+        }
+
+        .form-container h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #d73f09;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .question-step {
+            display: none;
+            animation: slideIn 0.4s ease;
+        }
+
+        .question-step.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 12px;
+            color: #333;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #d73f09;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #d73f09;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #fff;
+            color: #000;
+            transform: translateY(-2px);
+            border: 1px solid #000;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .message.success {
+            color: #155724;
+        }
+
+        .message.error {
+            color: #721c24;
+        }
+
+        .wheel-wrapper {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+        }
+
+        .spin-button {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            background: #fff;
+            border-radius: 50%;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-transform: uppercase;
+            font-weight: 700;
+            font-size: 14px;
+            color: #333;
+            border: 5px solid #333;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .spin-button:hover:not(.spinning) {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .spin-button:active:not(.spinning) {
+            transform: scale(0.95);
+        }
+
+        .spin-button.spinning {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .spin-button::before {
+            content: '';
+            position: absolute;
+            top: -35px;
+            width: 25px;
+            height: 35px;
+            background: #333;
+            clip-path: polygon(50% 0%, 15% 100%, 85% 100%);
+        }
+
+        .wheel {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #333;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 0 0 8px #333, 0 0 0 18px #fff, 0 0 0 22px #333;
+            transition: transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+        }
+
+        .wheel-segment {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: bottom right;
+            transform: rotate(calc(45deg * var(--i)));
+            clip-path: polygon(0 0, 60% 0, 100% 100%, 0 60%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .wheel-segment span {
+            position: relative;
+            transform: rotate(45deg);
+            color: #fff;
+            font-size: 2.5em;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-backdrop.active {
+            display: flex;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 450px;
+            animation: popIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-content h2 {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .prize-display {
+            font-size: 90px;
+            font-weight: 700;
+            color: #d73f09;
+            margin: 30px 0;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.1);
+            animation: bounce 0.6s;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .modal-content p {
+            font-size: 20px;
+            color: #666;
+            margin-bottom: 35px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 14px 35px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-btn.primary {
+            background: #d73f09;
+            color: white;
+        }
+
+        .modal-btn.primary:hover {
+            background: white;
+            color:#000;
+            border: 1px solid #000;
+            transform: translateY(-2px);
+        }
+
+        .modal-btn.secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .modal-btn.secondary:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .hide {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Form 1: Multi-step -->
+    <div class="form-container" id="formContainer">
+        <h2 class="dm-serif-text-regular">Welcome</h2>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress1"></div>
+        </div>
+
+        <!-- Step 1: Name -->
+        <div class="question-step active" id="step1">
+            <div class="form-group">
+                <label for="userName">What's your name?</label>
+                <input type="text" id="userName" placeholder="Enter your name">
+            </div>
+            <div class="button-group">
+                <button class="btn btn-primary" id="nextBtn1">Next</button>
+            </div>
+        </div>
+
+        <!-- Step 2: Organization -->
+        <div class="question-step" id="step2">
+            <div class="form-group">
+                <label for="userOrg">What organization are you with?</label>
+                <input type="text" id="userOrg" placeholder="Enter your organization">
+            </div>
+            <div class="button-group">
+                <button class="btn btn-secondary" id="backBtn1">Back</button>
+                <button class="btn btn-primary" id="submitBtn1">Submit</button>
+            </div>
+        </div>
+
+        <div id="messageBox"></div>
+    </div>
+
+    <!-- Form 2: Multi-step Bonus Survey -->
+    <div class="form-container hide" id="formContainer2">
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress2"></div>
+        </div>
+
+        <!-- Step 1: Email -->
+        <div class="question-step active" id="step2_1">
+            <div class="form-group">
+                <label for="userEmail">What's your email?</label>
+                <input type="email" id="userEmail" placeholder="Enter your email">
+            </div>
+            <div class="button-group">
+                <button class="btn btn-primary" id="nextBtn2_1">Next</button>
+            </div>
+        </div>
+
+        <!-- Step 2: Feedback -->
+        <div class="question-step" id="step2_2">
+            <div class="form-group">
+                <label for="userFeedback">What did you enjoy most?</label>
+                <input type="text" id="userFeedback" placeholder="Your feedback">
+            </div>
+            <div class="button-group">
+                <button class="btn btn-secondary" id="backBtn2_1">Back</button>
+                <button class="btn btn-primary" id="nextBtn2_2">Next</button>
+            </div>
+        </div>
+
+        <!-- Step 3: Rating -->
+        <div class="question-step" id="step2_3">
+            <div class="form-group">
+                <label for="userRating">Rate your experience (1-10)</label>
+                <input type="number" id="userRating" min="1" max="10" placeholder="Enter rating">
+            </div>
+            <div class="button-group">
+                <button class="btn btn-secondary" id="backBtn2_2">Back</button>
+                <button class="btn btn-primary" id="submitBtn2">Submit</button>
+            </div>
+        </div>
+
+        <div id="messageBox2"></div>
+    </div>
+
+    <!-- Spinner -->
+    <div class="spinner-container hide" id="spinnerContainer">
+        <div class="wheel-wrapper">
+            <div class="spin-button" id="spinBtn">SPIN</div>
+            <div class="wheel" id="wheelElement">
+                <div class="wheel-segment" style="--i:1; background: #d73f09;"><span>100</span></div>
+                <div class="wheel-segment" style="--i:2; background: #4A773C;"><span>50</span></div>
+                <div class="wheel-segment" style="--i:3; background: #d73f09;"><span>25</span></div>
+                <div class="wheel-segment" style="--i:4; background: #003B5C;"><span>6</span></div>
+                <div class="wheel-segment" style="--i:5; background: #f7a162"><span>75</span></div>
+                <div class="wheel-segment" style="--i:6; background: #d73f09;"><span>100</span></div>
+                <div class="wheel-segment" style="--i:7; background: #0D5257;"><span>50</span></div>
+                <div class="wheel-segment" style="--i:8; background: #D3832B;"><span>25</span></div>
+            </div>
+        </div>
+        <button class="modal-btn secondary" id="resetButton" style="margin-top: 100px; display: block; margin-left: auto; margin-right: auto;">
+            Reset
+        </button>
+    </div>
+
+    <!-- Prize Modal -->
+    <div class="modal-backdrop" id="prizeModal">
+        <div class="modal-content">
+            <h2>Congratulations!</h2>
+            <div class="prize-display" id="prizeValue">100</div>
+            <p>You won <strong id="prizeLabel">100 points</strong>!</p>
+            <div class="modal-buttons">
+                <button class="modal-btn primary" id="spinAgain">Spin Again</button>
+                <button class="modal-btn secondary" id="closeModal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Elements
+        const formContainer = document.getElementById('formContainer');
+        const formContainer2 = document.getElementById('formContainer2');
+        const spinnerContainer = document.getElementById('spinnerContainer');
+        const messageBox = document.getElementById('messageBox');
+        const messageBox2 = document.getElementById('messageBox2');
+        
+        // Form 1 elements
+        const userName = document.getElementById('userName');
+        const userOrg = document.getElementById('userOrg');
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const nextBtn1 = document.getElementById('nextBtn1');
+        const backBtn1 = document.getElementById('backBtn1');
+        const submitBtn1 = document.getElementById('submitBtn1');
+        const progress1 = document.getElementById('progress1');
+
+        // Form 2 elements
+        const userEmail = document.getElementById('userEmail');
+        const userFeedback = document.getElementById('userFeedback');
+        const userRating = document.getElementById('userRating');
+        const step2_1 = document.getElementById('step2_1');
+        const step2_2 = document.getElementById('step2_2');
+        const step2_3 = document.getElementById('step2_3');
+        const nextBtn2_1 = document.getElementById('nextBtn2_1');
+        const backBtn2_1 = document.getElementById('backBtn2_1');
+        const nextBtn2_2 = document.getElementById('nextBtn2_2');
+        const backBtn2_2 = document.getElementById('backBtn2_2');
+        const submitBtn2 = document.getElementById('submitBtn2');
+        const progress2 = document.getElementById('progress2');
+
+        // Spinner elements
+        const wheelElement = document.getElementById('wheelElement');
+        const spinBtn = document.getElementById('spinBtn');
+        const prizeModal = document.getElementById('prizeModal');
+        const prizeValue = document.getElementById('prizeValue');
+        const prizeLabel = document.getElementById('prizeLabel');
+        const spinAgain = document.getElementById('spinAgain');
+        const closeModal = document.getElementById('closeModal');
+        const resetButton = document.getElementById('resetButton');
+
+        // State
+        let rotation = 0;
+        let isSpinning = false;
+        let spinCount = 0;
+        let userIdentifier = '';
+        const prizes = [100, 50, 25, 6, 75, 100, 50, 25];
+
+        // Form 1 Navigation
+        nextBtn1.addEventListener('click', function() {
+            if (!userName.value.trim()) {
+                showMessage('Please enter your name', 'error');
+                return;
+            }
+            step1.classList.remove('active');
+            step2.classList.add('active');
+            progress1.style.width = '100%';
+        });
+
+        backBtn1.addEventListener('click', function() {
+            step2.classList.remove('active');
+            step1.classList.add('active');
+            progress1.style.width = '50%';
+        });
+
+        submitBtn1.addEventListener('click', async function() {
+            const name = userName.value.trim();
+            const org = userOrg.value.trim();
+
+            if (!org) {
+                showMessage('Please enter your organization', 'error');
+                return;
+            }
+
+            submitBtn1.disabled = true;
+            submitBtn1.textContent = 'Submitting...';
+
+            userIdentifier = Date.now() + '_' + name.replace(/\s+/g, '_');
+
+            try {
+                await fetch('https://defaultce6d05e13c5e4d6287a84c4a2713c1.13.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/609cbf96b9814ab99d42bc04712cee39/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=eU_reMhC-hP9KaSDPsdFq3uHWYJIblQfHvyVBSpbva0', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        Name: name, 
+                        Organization: org,
+                        UserID: userIdentifier,
+                        FormType: 'Initial'
+                    })
+                });
+
+                /*showMessage('✅ Form submitted successfully!', 'success');*/
+                
+                setTimeout(() => {
+                    formContainer.classList.add('hide');
+                    spinnerContainer.classList.remove('hide');
+                    spinCount++;
+                }, 1000);
+
+            } catch (error) {
+              /*  showMessage('❌ Error submitting form. Please try again.', 'error');*/
+                submitBtn1.disabled = false;
+                submitBtn1.textContent = 'Submit';
+            }
+        });
+
+        // Form 2 Navigation
+        nextBtn2_1.addEventListener('click', function() {
+            if (!userEmail.value.trim()) {
+                showMessage2('Please enter your email', 'error');
+                return;
+            }
+            step2_1.classList.remove('active');
+            step2_2.classList.add('active');
+            progress2.style.width = '66%';
+        });
+
+        backBtn2_1.addEventListener('click', function() {
+            step2_2.classList.remove('active');
+            step2_1.classList.add('active');
+            progress2.style.width = '33%';
+        });
+
+        nextBtn2_2.addEventListener('click', function() {
+            if (!userFeedback.value.trim()) {
+                showMessage2('Please enter your feedback', 'error');
+                return;
+            }
+            step2_2.classList.remove('active');
+            step2_3.classList.add('active');
+            progress2.style.width = '100%';
+        });
+
+        backBtn2_2.addEventListener('click', function() {
+            step2_3.classList.remove('active');
+            step2_2.classList.add('active');
+            progress2.style.width = '66%';
+        });
+
+        submitBtn2.addEventListener('click', async function() {
+            const email = userEmail.value.trim();
+            const feedback = userFeedback.value.trim();
+            const rating = userRating.value.trim();
+
+            if (!rating) {
+                showMessage2('Please enter a rating', 'error');
+                return;
+            }
+
+            if (rating < 1 || rating > 10) {
+                showMessage2('Rating must be between 1 and 10', 'error');
+                return;
+            }
+
+            submitBtn2.disabled = true;
+            submitBtn2.textContent = 'Submitting...';
+
+            try {
+                await fetch('https://defaultce6d05e13c5e4d6287a84c4a2713c1.13.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/609cbf96b9814ab99d42bc04712cee39/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=eU_reMhC-hP9KaSDPsdFq3uHWYJIblQfHvyVBSpbva0', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        UserID: userIdentifier,
+                        Email: email, 
+                        Feedback: feedback, 
+                        Rating: rating,
+                        FormType: 'Update'
+                    })
+                });
+
+              /* showMessage2('✅ Form submitted successfully!', 'success');*/
+                
+                setTimeout(() => {
+                    formContainer2.classList.add('hide');
+                    spinnerContainer.classList.remove('hide');
+                    spinCount++;
+                }, 1000);
+
+            } catch (error) {
+              /*  showMessage2('❌ Error submitting form. Please try again.', 'error');*/
+                submitBtn2.disabled = false;
+                submitBtn2.textContent = 'Submit';
+            }
+        });
+
+        function showMessage(text, type) {
+            messageBox.textContent = text;
+            messageBox.className = 'message ' + type;
+        }
+
+        function showMessage2(text, type) {
+            messageBox2.textContent = text;
+            messageBox2.className = 'message ' + type;
+        }
+
+        // Spin wheel
+        spinBtn.addEventListener('click', function() {
+            if (isSpinning) return;
+
+            isSpinning = true;
+            spinBtn.classList.add('spinning');
+
+            const spins = 5 + Math.floor(Math.random() * 3);
+            const extraDegrees = Math.floor(Math.random() * 360);
+            const totalRotation = (spins * 360) + extraDegrees;
+            
+            rotation += totalRotation;
+            wheelElement.style.transform = `rotate(${rotation}deg)`;
+
+            setTimeout(() => {
+                const normalizedRotation = rotation % 360;
+                const segmentAngle = 360 / 8;
+                const pointerAngle = (360 - normalizedRotation) % 360;
+                const adjustedAngle = (pointerAngle + 22.5) % 360;
+                const segmentIndex = Math.floor(adjustedAngle / segmentAngle) % 8;
+                const wonPrize = prizes[segmentIndex];
+
+                showPrizeModal(wonPrize);
+                isSpinning = false;
+                spinBtn.classList.remove('spinning');
+            }, 5000);
+        });
+
+        function showPrizeModal(prize) {
+            prizeValue.textContent = prize;
+            prizeLabel.textContent = `${prize} points`;
+            
+            if (spinCount >= 2) {
+                spinAgain.style.display = 'none';
+            } else {
+                spinAgain.style.display = 'block';
+            }
+            
+            prizeModal.classList.add('active');
+        }
+
+        function hidePrizeModal() {
+            prizeModal.classList.remove('active');
+        }
+
+        spinAgain.addEventListener('click', function() {
+            hidePrizeModal();
+            setTimeout(() => {
+                spinnerContainer.classList.add('hide');
+                formContainer2.classList.remove('hide');
+                resetForm2();
+            }, 300);
+        });
+
+        closeModal.addEventListener('click', hidePrizeModal);
+
+        prizeModal.addEventListener('click', function(e) {
+            if (e.target === prizeModal) {
+                hidePrizeModal();
+            }
+        });
+
+        function resetForm1() {
+            userName.value = '';
+            userOrg.value = '';
+            messageBox.textContent = '';
+            submitBtn1.disabled = false;
+            submitBtn1.textContent = 'Submit';
+            step2.classList.remove('active');
+            step1.classList.add('active');
+            progress1.style.width = '50%';
+        }
+
+        function resetForm2() {
+            userEmail.value = '';
+            userFeedback.value = '';
+            userRating.value = '';
+            messageBox2.textContent = '';
+            submitBtn2.disabled = false;
+            submitBtn2.textContent = 'Submit';
+            step2_2.classList.remove('active');
+            step2_3.classList.remove('active');
+            step2_1.classList.add('active');
+            progress2.style.width = '33%';
+        }
+
+        resetButton.addEventListener('click', function() {
+            spinnerContainer.classList.add('hide');
+            formContainer.classList.remove('hide');
+            formContainer2.classList.add('hide');
+            
+            resetForm1();
+            resetForm2();
+            
+            rotation = 0;
+            spinCount = 0;
+            userIdentifier = '';
+            wheelElement.style.transition = 'none';
+            wheelElement.style.transform = 'rotate(0deg)';
+            setTimeout(() => {
+                wheelElement.style.transition = 'transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
+            }, 50);
+        });
+
+        // Initialize progress bars
+        progress1.style.width = '50%';
+        progress2.style.width = '33%';
+    </script>
+</body>
+</html>

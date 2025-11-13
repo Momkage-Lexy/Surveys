@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Particle Prize Reveal – One Question at a Time</title>
+<style>
+    body, html {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        height: 100%;
+        font-family: "Poppins", sans-serif;
+        background: #fff;
+    }
+
+    #particleCanvas {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+    }
+
+    .question-box {
+        position: absolute;
+        z-index: 4;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px 24px;
+        border-radius: 16px;
+        width: 280px;
+        transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+
+    .question-box.hidden {
+        opacity: 0;
+        transform: translate(-50%, -60%);
+        pointer-events: none;
+    }
+
+    .question-box h2 {
+        margin: 0 0 12px;
+        font-size: 2rem;
+        color: #d7400900;
+        font-weight: 800;
+    }
+
+    .question-box input {
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        margin-bottom: 10px;
+        font-size: 15px;
+    }
+
+    .question-box button {
+        padding: 10px;
+        background: #d73f09;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .hidden-block {
+        display: none;
+    }
+
+    #revealPrize {
+        position: absolute;
+        z-index: 5;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) translateY(40px);
+        font-size: 64px;
+        font-weight: 900;
+        opacity: 0;
+        color: #333;
+        transition: opacity 1.2s ease, transform 1.2s ease;
+        pointer-events: none;
+        text-align: center;
+    }
+
+    #revealPrize.show {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+
+    #tryAgainBtn {
+        position: absolute;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 12px 24px;
+        font-size: 18px;
+        font-weight: 700;
+        border: none;
+        border-radius: 10px;
+        background: #d73f09;
+        color: #fff;
+        cursor: pointer;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        z-index: 5;
+        pointer-events: none;
+    }
+
+    #tryAgainBtn.show {
+        opacity: 1;
+        pointer-events: auto;
+    }
+</style>
+</head>
+<body>
+
+<canvas id="particleCanvas"></canvas>
+
+<!-- ONE-QUESTION BOX -->
+<div class="question-box" id="questionBox">
+    <h2 id="questionTitle">Welcome</h2>
+    <input type="text" id="questionInput" placeholder="Name" required>
+    <button id="questionSubmit">Next</button>
+</div>
+
+<!-- Prize reveal -->
+<div id="revealPrize"></div>
+
+<!-- Try Again button -->
+<button id="tryAgainBtn">Try Again?</button>
+
+<script>
+/* ------------------------------
+   PARTICLE SYSTEM
+------------------------------- */
+const canvas = document.getElementById("particleCanvas");
+const ctx = canvas.getContext("2d");
+
+let particles = [];
+const BASE_PARTICLES = 150;
+let centerX, centerY;
+
+let clicked = false;
+let round = 1; // Round 1 or Round 2
+
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    centerX = canvas.width / 2;
+    centerY = canvas.height / 2;
+}
+resize();
+window.addEventListener("resize", resize);
+
+function addBaseParticles() {
+    particles = [];
+    for (let i = 0; i < BASE_PARTICLES; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            vx: (Math.random() - .5) * .5,
+            vy: (Math.random() - .5) * .5,
+            size: Math.random()*2 + 1,
+            color: "rgba(0,0,0,0.6)"
+        });
+    }
+}
+addBaseParticles();
+
+/* form → particles */
+function explodeToParticles(x, y) {
+    for (let i = 0; i < 25; i++) {
+        particles.push({
+            x,
+            y,
+            vx: (Math.random() - .5) * 6,
+            vy: (Math.random() - .5) * 6,
+            size: Math.random()*4 + 2,
+            color: "#d73f09"
+        });
+    }
+}
+
+/* ------------------------------
+   ANIMATION LOOP
+------------------------------- */
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach(p => {
+        if (!clicked) {
+            p.x += p.vx;
+            p.y += p.vy;
+            if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+            if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+        } else {
+            let dx = centerX - p.x;
+            let dy = centerY - p.y;
+            p.x += dx * 0.07;
+            p.y += dy * 0.07;
+
+            if (Math.abs(dx) < 12 && Math.abs(dy) < 12) {
+                p.vx = (Math.random() - .5) * 6;
+                p.vy = (Math.random() - .5) * 6;
+            }
+        }
+
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    requestAnimationFrame(animate);
+}
+animate();
+
+/* ------------------------------
+   QUESTION LOGIC (One at a time)
+------------------------------- */
+
+const questionBox = document.getElementById("questionBox");
+const questionTitle = document.getElementById("questionTitle");
+const questionInput = document.getElementById("questionInput");
+const questionSubmit = document.getElementById("questionSubmit");
+const revealPrize = document.getElementById("revealPrize");
+const tryAgainBtn = document.getElementById("tryAgainBtn");
+
+let qIndex = 0;
+
+const round1Questions = [
+    { title: "Welcome", placeholder: "Name" },
+    { title: "Organization", placeholder: "Organization" }
+];
+
+const round2Questions = [
+    { title: "Almost There!", placeholder: "Favorite Color" },
+    { title: "One More!", placeholder: "Favorite Animal" }
+];
+
+let currentQuestions = round1Questions;
+
+function loadQuestion() {
+    const q = currentQuestions[qIndex];
+    questionTitle.textContent = q.title;
+    questionInput.placeholder = q.placeholder;
+    questionInput.value = "";
+    questionBox.classList.remove("hidden");
+    questionInput.focus();
+}
+
+loadQuestion();
+
+/* ------------------------------
+   QUESTION SUBMIT
+------------------------------- */
+questionSubmit.addEventListener("click", () => {
+    const value = questionInput.value.trim();
+    if (!value) return;
+
+    // explode the question box into particles
+    const rect = questionBox.getBoundingClientRect();
+    explodeToParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
+
+    // hide question
+    questionBox.classList.add("hidden");
+
+    qIndex++;
+
+    // More questions? Load next.
+    if (qIndex < currentQuestions.length) {
+        setTimeout(loadQuestion, 350);
+        return;
+    }
+
+    // Otherwise: reveal particles → reveal prize
+    setTimeout(() => {
+        clicked = true;
+
+        setTimeout(() => {
+            // Reveal random prize
+            const prizes = ["$5", "$10", "$25", "$50", "$75", "$100", "$150", "$200"];
+            revealPrize.textContent = prizes[Math.floor(Math.random()*prizes.length)];
+            revealPrize.classList.add("show");
+
+            if (round === 1) {
+                tryAgainBtn.classList.add("show");
+            } else {
+                // second round → reset for next person
+                setTimeout(() => location.reload(), 2000);
+            }
+
+        }, 600);
+
+    }, 300);
+});
+
+/* ------------------------------
+   TRY AGAIN → Round 2
+------------------------------- */
+tryAgainBtn.addEventListener("click", () => {
+    tryAgainBtn.classList.remove("show");
+    revealPrize.classList.remove("show");
+    clicked = false;
+
+    // next round
+    round = 2;
+    currentQuestions = round2Questions;
+    qIndex = 0;
+
+    loadQuestion();
+});
+</script>
+</body>
+</html>
