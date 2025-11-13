@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survey Gift Reveal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800,900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .dm-serif-text-regular {
+            font-family: "DM Serif Text", serif;
+            font-weight: 400;
+            font-size: 5rem;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .form-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 850px;
+            width: 100%;
+            margin-bottom: 30px;
+            min-height: 300px;
+            position: relative;
+        }
+
+        .form-container h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #d73f09;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .question-step {
+            display: none;
+            animation: slideIn 0.4s ease;
+        }
+
+        .question-step.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 12px;
+            color: #333;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #d73f09;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #d73f09;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #fff;
+            color: #000;
+            transform: translateY(-2px);
+            border: 1px solid #000;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .message.success {
+            color: #155724;
+        }
+
+        .message.error {
+            color: #721c24;
+        }
+
+        /* GIFT / PRESENT AREA (replaces spinner) */
+        .spinner-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .present-wrapper {
+            position: relative;
+            width: 340px;
+            height: 340px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .box-card {
+            width: 260px;
+            height: 260px;
+            border-radius: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: visible;
+            cursor: pointer;
+        }
+
+        .gift-svg-container {
+            width: 170px;
+            height: 170px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .gift-svg-container svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        #lid-group {
+            transform-origin: 100px 80px;
+            transition: transform 0.9s cubic-bezier(0.68,-0.55,0.265,1.55),
+                        opacity 0.9s ease;
+        }
+
+        #lid-group.open {
+            transform: translateY(-40px) rotateX(45deg);
+            opacity: 0.3;
+        }
+
+        .glow {
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,215,0,0.8), rgba(255,255,255,0.1), transparent);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.2);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.8s ease;
+            z-index: 1;
+        }
+
+        .glow.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.5);
+        }
+
+        .tap-msg {
+            position: absolute;
+            bottom: 14px;
+            font-size: 14px;
+            color: #777;
+            text-align: center;
+        }
+
+        .pop-prize {
+            position: absolute;
+            top: 15%;
+            left: 50%;
+            transform: translate(-50%, 40px) scale(0.2);
+            font-size: 64px;
+            font-weight: 900;
+            color: #d73f09;
+            text-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            opacity: 0;
+            transition: all 0.9s cubic-bezier(0.68,-0.55,0.265,1.55);
+            z-index: 3;
+        }
+
+        .pop-prize.show {
+            opacity: 1;
+            transform: translate(-50%, -10px) scale(1);
+        }
+
+        /* Reset button below present */
+        #resetButton {
+            padding: 12px 35px;
+            border-radius: 10px;
+            border: none;
+            background: #f0f0f0;
+            color: #333;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        #resetButton:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        /* Modal */
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-backdrop.active {
+            display: flex;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 450px;
+            animation: popIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-content h2 {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .prize-display {
+            font-size: 90px;
+            font-weight: 700;
+            color: #d73f09;
+            margin: 30px 0;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.1);
+            animation: bounce 0.6s;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .modal-content p {
+            font-size: 20px;
+            color: #666;
+            margin-bottom: 35px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 14px 35px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-btn.primary {
+            background: #d73f09;
+            color: white;
+        }
+
+        .modal-btn.primary:hover {
+            background: white;
+            color:#000;
+            border: 1px solid #000;
+            transform: translateY(-2px);
+        }
+
+        .modal-btn.secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .modal-btn.secondary:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .hide {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Form 1: Multi-step -->
+    <div class="form-container" id="formContainer">
+        <h2 class="dm-serif-text-regular">Welcome</h2>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress1"></div>
+        </div>
+
+        <!-- Step 1: Name -->
+        <div class="question-step active" id="step1">
+            <div class="form-group">
+                <label for="userName">What's your name?</label>
+                <input type="text" id="userName" placeholder="Enter your name">
+            </div>
+            <div class="button-group">
+                <button class="btn btn-primary" id="nextBtn1">Next</button>
+            </div>
+        </div>
+
+        <!-- Step 2: Organization -->
+        <div class="question-step" id="step2">
+            <div class="form-group">
+                <label for="userOrg">What organization are you with?</label>
+                <input type="text" id="userOrg" placeholder="Enter your organization">
+            </div>
+            <div class="button-group">
+                <button class="btn btn-secondary" id="backBtn1">Back</button>
+                <button class="btn btn-primary" id="submitBtn1">Submit</button>
+            </div>
+        </div>
+
+        <div id="messageBox"></div>
+    </div>
+
+    <!-- Form 2: Multi-step Bonus Survey -->
+    <div class="form-container hide" id="formContainer2">
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress2"></div>
+        </div>
+
+        <!-- Step 1: Email -->
+        <div class="question-step active" id="step2_1">
+            <div class="form-group">
+                <label for="userEmail">What's your email?</label>
+                <input type="email" id="userEmail" placeholder="Enter your email">
+            </div>
+            <div class="button-group">
+                <button class="btn btn-primary" id="nextBtn2_1">Next</button>
+            </div>
+        </div>
+
+        <!-- Step 2: Feedback -->
+        <div class="question-step" id="step2_2">
+            <div class="form-group">
+                <label for="userFeedback">What did you enjoy most?</label>
+                <input type="text" id="userFeedback" placeholder="Your feedback">
+            </div>
+            <div class="button-group">
+                <button class="btn btn-secondary" id="backBtn2_1">Back</button>
+                <button class="btn btn-primary" id="nextBtn2_2">Next</button>
+            </div>
+        </div>
+
+        <!-- Step 3: Rating -->
+        <div class="question-step" id="step2_3">
+            <div class="form-group">
+                <label for="userRating">Rate your experience (1-10)</label>
+                <input type="number" id="userRating" min="1" max="10" placeholder="Enter rating">
+            </div>
+            <div class="button-group">
+                <button class="btn btn-secondary" id="backBtn2_2">Back</button>
+                <button class="btn btn-primary" id="submitBtn2">Submit</button>
+            </div>
+        </div>
+
+        <div id="messageBox2"></div>
+    </div>
+
+    <!-- Gift instead of Spinner -->
+    <div class="spinner-container hide" id="spinnerContainer">
+        <div class="present-wrapper">
+            <div class="box-card" id="boxCard">
+                <div class="glow" id="glow"></div>
+                <div class="gift-svg-container">
+                    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Box Body -->
+                        <g id="box-body">
+                            <rect x="40" y="80" width="120" height="90" fill="#d73f09" rx="5"/>
+                            <rect x="40" y="80" width="120" height="90" fill="#d73f09" rx="5"/>
+                            <rect x="45" y="85" width="50" height="80" fill="#d73f09" rx="3"/>
+                        </g>
+
+                        <!-- Vertical Ribbon -->
+                        <rect x="90" y="50" width="20" height="120" fill="#f7a162" rx="2"/>
+                        <rect x="93" y="50" width="14" height="120" fill="#f7a162" rx="2"/>
+
+                        <!-- Horizontal Ribbon -->
+                        <rect x="40" y="115" width="120" height="20" fill="#f7a162" rx="2"/>
+                        <rect x="40" y="118" width="120" height="14" fill="#f7a162" rx="2"/>
+
+                        <!-- Lid Group -->
+                        <g id="lid-group">
+                            <!-- Lid -->
+                            <rect x="35" y="50" width="130" height="35" fill="#F4A460" rx="5"/>
+                            <rect x="35" y="50" width="130" height="35" fill="url(#lidGradient)" rx="5"/>
+                            <!-- Lid rim -->
+                            <rect x="35" y="80" width="130" height="8" fill="#D2691E" rx="2"/>
+
+                            <!-- Bow -->
+                            <g id="bow">
+                                <ellipse cx="85" cy="45" rx="18" ry="12" fill="#FFD60A" transform="rotate(-30 85 45)"/>
+                                <ellipse cx="87" cy="45" rx="14" ry="9" fill="#FFC300" transform="rotate(-30 87 45)"/>
+                                <ellipse cx="115" cy="45" rx="18" ry="12" fill="#FFD60A" transform="rotate(30 115 45)"/>
+                                <ellipse cx="113" cy="45" rx="14" ry="9" fill="#FFC300" transform="rotate(30 113 45)"/>
+                                <circle cx="100" cy="45" r="8" fill="#FFD60A"/>
+                                <circle cx="100" cy="45" r="6" fill="#FFC300"/>
+                                <path d="M 100 53 L 95 70 L 90 68 L 97 53 Z" fill="#FFD60A"/>
+                                <path d="M 100 53 L 105 70 L 110 68 L 103 53 Z" fill="#FFD60A"/>
+                            </g>
+                        </g>
+
+                        <defs>
+                            <linearGradient id="lidGradient" x1="0%" y1="0%" x2="100%">
+                                <stop offset="0%" stop-color="rgba(244,164,96,0.9)" />
+                                <stop offset="100%" stop-color="rgba(210,105,30,0.8)" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <div class="pop-prize" id="boxPrize">100</div>
+                <div class="tap-msg" id="tapMsg">Tap the present to reveal your prize</div>
+            </div>
+        </div>
+
+        <button class="modal-btn secondary" id="resetButton">
+            Reset for Next Person
+        </button>
+    </div>
+
+    <!-- Prize Modal -->
+    <div class="modal-backdrop" id="prizeModal">
+        <div class="modal-content">
+            <h2>Congratulations!</h2>
+            <div class="prize-display" id="prizeValue">100</div>
+            <p>You won <strong id="prizeLabel">100 points</strong>!</p>
+            <div class="modal-buttons">
+                <button class="modal-btn primary" id="spinAgain">Open Another Gift</button>
+                <button class="modal-btn secondary" id="closeModal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Elements
+        const formContainer = document.getElementById('formContainer');
+        const formContainer2 = document.getElementById('formContainer2');
+        const spinnerContainer = document.getElementById('spinnerContainer');
+        const messageBox = document.getElementById('messageBox');
+        const messageBox2 = document.getElementById('messageBox2');
+
+        // Form 1 elements
+        const userName = document.getElementById('userName');
+        const userOrg = document.getElementById('userOrg');
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const nextBtn1 = document.getElementById('nextBtn1');
+        const backBtn1 = document.getElementById('backBtn1');
+        const submitBtn1 = document.getElementById('submitBtn1');
+        const progress1 = document.getElementById('progress1');
+
+        // Form 2 elements
+        const userEmail = document.getElementById('userEmail');
+        const userFeedback = document.getElementById('userFeedback');
+        const userRating = document.getElementById('userRating');
+        const step2_1 = document.getElementById('step2_1');
+        const step2_2 = document.getElementById('step2_2');
+        const step2_3 = document.getElementById('step2_3');
+        const nextBtn2_1 = document.getElementById('nextBtn2_1');
+        const backBtn2_1 = document.getElementById('backBtn2_1');
+        const nextBtn2_2 = document.getElementById('nextBtn2_2');
+        const backBtn2_2 = document.getElementById('backBtn2_2');
+        const submitBtn2 = document.getElementById('submitBtn2');
+        const progress2 = document.getElementById('progress2');
+
+        // Present elements
+        const boxCard = document.getElementById('boxCard');
+        const lidGroup = document.getElementById('lid-group');
+        const glow = document.getElementById('glow');
+        const boxPrize = document.getElementById('boxPrize');
+        const tapMsg = document.getElementById('tapMsg');
+
+        // Modal elements
+        const prizeModal = document.getElementById('prizeModal');
+        const prizeValue = document.getElementById('prizeValue');
+        const prizeLabel = document.getElementById('prizeLabel');
+        const spinAgain = document.getElementById('spinAgain');
+        const closeModal = document.getElementById('closeModal');
+        const resetButton = document.getElementById('resetButton');
+
+        // State
+        let spinCount = 0; // how many prizes they've opened
+        let userIdentifier = '';
+        const prizes = [100, 50, 25, 6, 75, 100, 50, 25];
+        let presentOpen = false;
+
+        // -------- Form 1 Navigation --------
+        nextBtn1.addEventListener('click', function() {
+            if (!userName.value.trim()) {
+                showMessage('Please enter your name', 'error');
+                return;
+            }
+            step1.classList.remove('active');
+            step2.classList.add('active');
+            progress1.style.width = '100%';
+        });
+
+        backBtn1.addEventListener('click', function() {
+            step2.classList.remove('active');
+            step1.classList.add('active');
+            progress1.style.width = '50%';
+        });
+
+        submitBtn1.addEventListener('click', async function() {
+            const name = userName.value.trim();
+            const org = userOrg.value.trim();
+
+            if (!org) {
+                showMessage('Please enter your organization', 'error');
+                return;
+            }
+
+            submitBtn1.disabled = true;
+            submitBtn1.textContent = 'Submitting...';
+
+            userIdentifier = Date.now() + '_' + name.replace(/\s+/g, '_');
+
+            try {
+                // Your existing Power Automate call
+                await fetch('https://defaultce6d05e13c5e4d6287a84c4a2713c1.13.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/609cbf96b9814ab99d42bc04712cee39/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=eU_reMhC-hP9KaSDPsdFq3uHWYJIblQfHvyVBSpbva0', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        Name: name,
+                        Organization: org,
+                        UserID: userIdentifier,
+                        FormType: 'Initial'
+                    })
+                });
+
+                setTimeout(() => {
+                    formContainer.classList.add('hide');
+                    spinnerContainer.classList.remove('hide');
+                    resetPresentVisuals();
+                }, 800);
+
+            } catch (error) {
+                submitBtn1.disabled = false;
+                submitBtn1.textContent = 'Submit';
+            }
+        });
+
+        function showMessage(text, type) {
+            messageBox.textContent = text;
+            messageBox.className = 'message ' + type;
+        }
+
+        function showMessage2(text, type) {
+            messageBox2.textContent = text;
+            messageBox2.className = 'message ' + type;
+        }
+
+        // -------- Form 2 Navigation --------
+        nextBtn2_1.addEventListener('click', function() {
+            if (!userEmail.value.trim()) {
+                showMessage2('Please enter your email', 'error');
+                return;
+            }
+            step2_1.classList.remove('active');
+            step2_2.classList.add('active');
+            progress2.style.width = '66%';
+        });
+
+        backBtn2_1.addEventListener('click', function() {
+            step2_2.classList.remove('active');
+            step2_1.classList.add('active');
+            progress2.style.width = '33%';
+        });
+
+        nextBtn2_2.addEventListener('click', function() {
+            if (!userFeedback.value.trim()) {
+                showMessage2('Please enter your feedback', 'error');
+                return;
+            }
+            step2_2.classList.remove('active');
+            step2_3.classList.add('active');
+            progress2.style.width = '100%';
+        });
+
+        backBtn2_2.addEventListener('click', function() {
+            step2_3.classList.remove('active');
+            step2_2.classList.add('active');
+            progress2.style.width = '66%';
+        });
+
+        submitBtn2.addEventListener('click', async function() {
+            const email = userEmail.value.trim();
+            const feedback = userFeedback.value.trim();
+            const rating = userRating.value.trim();
+
+            if (!rating) {
+                showMessage2('Please enter a rating', 'error');
+                return;
+            }
+
+            if (rating < 1 || rating > 10) {
+                showMessage2('Rating must be between 1 and 10', 'error');
+                return;
+            }
+
+            submitBtn2.disabled = true;
+            submitBtn2.textContent = 'Submitting...';
+
+            try {
+                await fetch('https://defaultce6d05e13c5e4d6287a84c4a2713c1.13.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/609cbf96b9814ab99d42bc04712cee39/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=eU_reMhC-hP9KaSDPsdFq3uHWYJIblQfHvyVBSpbva0', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        UserID: userIdentifier,
+                        Email: email,
+                        Feedback: feedback,
+                        Rating: rating,
+                        FormType: 'Update'
+                    })
+                });
+
+                setTimeout(() => {
+                    formContainer2.classList.add('hide');
+                    spinnerContainer.classList.remove('hide');
+                    resetPresentVisuals();
+                }, 800);
+
+            } catch (error) {
+                submitBtn2.disabled = false;
+                submitBtn2.textContent = 'Submit';
+            }
+        });
+
+        // -------- Present Opening Logic --------
+        boxCard.addEventListener('click', () => {
+            if (presentOpen) return;
+            presentOpen = true;
+            tapMsg.style.opacity = 0;
+
+            // choose random prize
+            const wonPrize = prizes[Math.floor(Math.random() * prizes.length)];
+            boxPrize.textContent = wonPrize;
+            prizeValue.textContent = wonPrize;
+            prizeLabel.textContent = `${wonPrize} points`;
+
+            setTimeout(() => glow.classList.add('show'), 150);
+            setTimeout(() => lidGroup.classList.add('open'), 350);
+            setTimeout(() => boxPrize.classList.add('show'), 650);
+
+            setTimeout(() => {
+                spinCount++;
+                // show or hide "Open Another Gift" based on attempt
+                if (spinCount >= 2) {
+                    spinAgain.style.display = 'none';
+                } else {
+                    spinAgain.style.display = 'inline-block';
+                }
+                prizeModal.classList.add('active');
+            }, 1100);
+        });
+
+        function resetPresentVisuals() {
+            presentOpen = false;
+            glow.classList.remove('show');
+            lidGroup.classList.remove('open');
+            boxPrize.classList.remove('show');
+            tapMsg.style.opacity = 1;
+            prizeModal.classList.remove('active');
+        }
+
+        function hidePrizeModal() {
+            prizeModal.classList.remove('active');
+        }
+
+        // -------- Modal Buttons --------
+        spinAgain.addEventListener('click', () => {
+            hidePrizeModal();
+            spinnerContainer.classList.add('hide');
+            formContainer2.classList.remove('hide');
+            resetForm2();
+        });
+
+        closeModal.addEventListener('click', hidePrizeModal);
+
+        prizeModal.addEventListener('click', function(e) {
+            if (e.target === prizeModal) {
+                hidePrizeModal();
+            }
+        });
+
+        // -------- Reset Functions --------
+        function resetForm1() {
+            userName.value = '';
+            userOrg.value = '';
+            messageBox.textContent = '';
+            submitBtn1.disabled = false;
+            submitBtn1.textContent = 'Submit';
+            step2.classList.remove('active');
+            step1.classList.add('active');
+            progress1.style.width = '50%';
+        }
+
+        function resetForm2() {
+            userEmail.value = '';
+            userFeedback.value = '';
+            userRating.value = '';
+            messageBox2.textContent = '';
+            submitBtn2.disabled = false;
+            submitBtn2.textContent = 'Submit';
+            step2_2.classList.remove('active');
+            step2_3.classList.remove('active');
+            step2_1.classList.add('active');
+            progress2.style.width = '33%';
+        }
+
+        resetButton.addEventListener('click', function() {
+            spinnerContainer.classList.add('hide');
+            formContainer.classList.remove('hide');
+            formContainer2.classList.add('hide');
+
+            resetForm1();
+            resetForm2();
+            resetPresentVisuals();
+
+            spinCount = 0;
+            userIdentifier = '';
+        });
+
+        // Initialize progress bars
+        progress1.style.width = '50%';
+        progress2.style.width = '33%';
+    </script>
+</body>
+</html>
