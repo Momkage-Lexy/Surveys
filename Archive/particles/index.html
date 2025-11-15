@@ -134,14 +134,16 @@
 /* ------------------------------
    PARTICLE SYSTEM
 ------------------------------- */
+
 const canvas = document.getElementById("particleCanvas");
 const ctx = canvas.getContext("2d");
 
 let particles = [];
 const BASE_PARTICLES = 150;
-let centerX, centerY;
-
 let clicked = false;
+let centerX = window.innerWidth / 2;
+let centerY = window.innerHeight / 2;
+
 let round = 1; // Round 1 or Round 2
 
 function resize() {
@@ -149,6 +151,7 @@ function resize() {
     canvas.height = window.innerHeight;
     centerX = canvas.width / 2;
     centerY = canvas.height / 2;
+
 }
 resize();
 window.addEventListener("resize", resize);
@@ -189,20 +192,27 @@ function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     particles.forEach(p => {
+
         if (!clicked) {
+            // drifting
             p.x += p.vx;
             p.y += p.vy;
+
             if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
             if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-        } else {
+        }
+        else {
+            // collapse to center
             let dx = centerX - p.x;
             let dy = centerY - p.y;
+
             p.x += dx * 0.07;
             p.y += dy * 0.07;
 
+            // bounce outward once they reach center
             if (Math.abs(dx) < 12 && Math.abs(dy) < 12) {
-                p.vx = (Math.random() - .5) * 6;
-                p.vy = (Math.random() - .5) * 6;
+                p.vx = (Math.random() - 0.5) * 6;
+                p.vy = (Math.random() - 0.5) * 6;
             }
         }
 
@@ -214,6 +224,7 @@ function animate() {
 
     requestAnimationFrame(animate);
 }
+
 animate();
 
 /* ------------------------------
@@ -299,18 +310,21 @@ questionSubmit.addEventListener("click", () => {
 /* ------------------------------
    TRY AGAIN → Round 2
 ------------------------------- */
-tryAgainBtn.addEventListener("click", () => {
-    tryAgainBtn.classList.remove("show");
-    revealPrize.classList.remove("show");
-    clicked = false;
 
+tryAgainBtn.addEventListener("click", () => {
+    clicked = true;
+
+    setTimeout(() => {
+        clicked = false;
     // next round
     round = 2;
     currentQuestions = round2Questions;
     qIndex = 0;
 
     loadQuestion();
+    }, 900);
 });
+
 </script>
 </body>
 </html>
