@@ -132,14 +132,17 @@
         <h1>AGU 2025</h1>
         <h2>Oregon State<br>University</h2>
     </div>
-    <div class="form-label">
-        <h2>Enter & Spin</h2>
-    </div>
-    <div class="white-line"></div>
-    <form id="spinForm">
-        <input type="text" name="Name" placeholder="What is your name?" class="input-text-box">
-        <button type="submit" class="submit-btn">🡪</button>
-    </form>
+<div class="form-label">
+    <h2 id="questionLabel">Enter Your Name</h2>
+</div>
+
+<div class="white-line"></div>
+
+<form id="questionForm">
+    <input type="text" id="questionInput" placeholder="Type here..." class="input-text-box">
+    <button type="submit" class="submit-btn">🡪</button>
+</form>
+
 </div>
 
 <script>
@@ -205,17 +208,58 @@ function animate() {
 }
 animate();
 
-const form = document.getElementById("spinForm");
+/* ------------------------------
+    QUESTION FLOW LOGIC
+------------------------------- */
 
-form.addEventListener("submit", (e) => {
-    e.preventDefault(); 
-    const rect = form.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
+const questions = [
+    { label: "Enter Your Name", placeholder: "Your name" },
+    { label: "Your Organization", placeholder: "Organization" },
+    { label: "Favorite Color", placeholder: "Favorite color" },
+    { label: "Favorite Animal", placeholder: "Favorite animal" }
+];
 
-    // burst from form area
-    explodeToParticles(centerX, centerY);
+let qIndex = 0;
+
+const questionLabel = document.getElementById("questionLabel");
+const questionInput = document.getElementById("questionInput");
+const questionForm = document.getElementById("questionForm");
+
+function loadQuestion() {
+    const q = questions[qIndex];
+    questionLabel.textContent = q.label;
+    questionInput.placeholder = q.placeholder;
+    questionInput.value = "";
+    questionInput.focus();
+}
+
+questionForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const value = questionInput.value.trim();
+    if (!value) return;
+
+    // Particle burst
+    const rect = questionForm.getBoundingClientRect();
+    explodeToParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
+
+    qIndex++;
+
+    if (qIndex < questions.length) {
+        loadQuestion();
+        return;
+    }
+
+    finishedQuestions();
 });
+
+function finishedQuestions() {
+    alert("Ready to spin!");
+}
+
+loadQuestion();
+
+
 </script>
 </body>
 </html>
