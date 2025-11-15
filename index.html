@@ -116,6 +116,115 @@
             cursor: pointer;
         }
 
+        .hide {
+            display: none !important;
+        }
+
+        .wheel-wrapper {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+        }
+
+        .spin-button {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            background: #fff;
+            border-radius: 50%;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-transform: uppercase;
+            font-weight: 700;
+            font-size: 14px;
+            color: #333;
+            border: 5px solid #333;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .spin-button:hover:not(.spinning) {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .spin-button:active:not(.spinning) {
+            transform: scale(0.95);
+        }
+
+        .spin-button.spinning {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .spin-button::before {
+            content: '';
+            position: absolute;
+            top: -35px;
+            width: 25px;
+            height: 35px;
+            background: #333;
+            clip-path: polygon(50% 0%, 15% 100%, 85% 100%);
+        }
+
+        .wheel {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #333;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 0 0 8px #333, 0 0 0 18px #fff, 0 0 0 22px #333;
+            transition: transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+        }
+
+        .wheel-segment {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: bottom right;
+            transform: rotate(calc(45deg * var(--i)));
+            clip-path: polygon(0 0, 60% 0, 100% 100%, 0 60%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .wheel-segment span {
+            position: relative;
+            transform: rotate(45deg);
+            color: #fff;
+            font-size: 2.5em;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        #spinnerWheel {
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            position: absolute;
+            top: 205px;
+            left: 325px;
+        }
+
+        #spinnerWheel.show {
+            opacity: 1;
+        }
+
+        .fade-out {
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+
         .flex{
             display:flex;
         }
@@ -144,6 +253,22 @@
 </form>
 
 </div>
+<div id="spinnerWheel" class="hide">
+    <div class="wheel-wrapper">
+        <div class="spin-button" id="spinBtn">SPIN</div>
+        <div class="wheel" id="wheelElement">
+            <div class="wheel-segment" style="--i:1; background:#d73f09;"><span>100</span></div>
+            <div class="wheel-segment" style="--i:2; background:#4A773C;"><span>50</span></div>
+            <div class="wheel-segment" style="--i:3; background:#003B5C;"><span>25</span></div>
+            <div class="wheel-segment" style="--i:4; background:#f7a162;"><span>75</span></div>
+            <div class="wheel-segment" style="--i:5; background:#d73f09;"><span>100</span></div>
+            <div class="wheel-segment" style="--i:6; background:#0D5257;"><span>50</span></div>
+            <div class="wheel-segment" style="--i:7; background:#D3832B;"><span>25</span></div>
+            <div class="wheel-segment" style="--i:8; background:#4A773C;"><span>6</span></div>
+        </div>
+    </div>
+</div>
+
 
 <script>
 const canvas = document.getElementById("particleCanvas");
@@ -151,6 +276,8 @@ const ctx = canvas.getContext("2d");
 
 let particles = [];
 const BASE_PARTICLES = 5000;
+let collapsing = false;
+let collapseCenter = null;
 
 function resize() {
     canvas.width = window.innerWidth;
@@ -190,19 +317,36 @@ function explodeToParticles(x, y) {
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    particles.forEach(p => {
+particles.forEach(p => {
+
+    if (!collapsing) {
+        // normal movement
         p.x += p.vx;
         p.y += p.vy;
 
-        // bounce off edges
         if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
         if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
 
-        ctx.fillStyle = p.color;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fill();
-    });
+    } else {
+        // collapse inward
+        let dx = collapseCenter.x - p.x;
+        let dy = collapseCenter.y - p.y;
+
+        p.x += dx * 0.15;
+        p.y += dy * 0.15;
+
+        // shrink particle size
+        p.size *= 0.9;
+
+        // remove particles once small
+        if (p.size < 0.2) p.size = 0;
+    }
+
+    ctx.fillStyle = p.color;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    ctx.fill();
+});
 
     requestAnimationFrame(animate);
 }
@@ -254,10 +398,69 @@ questionForm.addEventListener("submit", (e) => {
 });
 
 function finishedQuestions() {
-    alert("Ready to spin!");
+    const glass = document.querySelector(".frosted-glass");
+
+    // Implode frosted glass
+    glass.style.transition = "transform 0.6s ease, opacity 0.6s ease";
+    glass.style.transform = "scale(0.2)";
+    glass.style.opacity = "0";
+
+    // Fade out particle background
+    canvas.classList.add("fade-out");
+
+    // After fade finishes, hide everything + show spinner
+    setTimeout(() => {
+        // remove frosted glass
+        glass.classList.add("hide");
+
+        // hide particle canvas completely
+        canvas.style.display = "none";
+
+        // switch to black background
+        document.body.style.background = "black";
+
+        // show spinner wheel
+        document.getElementById("spinnerWheel").classList.remove("hide");
+        
+        setTimeout(() => {
+            document.getElementById("spinnerWheel").classList.add("show");
+        }, 50);
+
+    }, 700);
 }
 
 loadQuestion();
+/* ------------------------------
+    SPINNER LOGIC
+------------------------------- */
+
+const wheel = document.getElementById("wheelElement");
+const spinBtn = document.getElementById("spinBtn");
+let rotation = 0;
+let isSpinning = false;
+let prizes = [100,50,25,75,100,50,25,6];
+
+spinBtn.addEventListener("click", () => {
+    if (isSpinning) return;
+    isSpinning = true;
+
+    const spins = 5 + Math.floor(Math.random() * 3);
+    const extra = Math.floor(Math.random() * 360);
+    const total = (spins * 360) + extra;
+
+    rotation += total;
+    wheel.style.transform = `rotate(${rotation}deg)`;
+
+    setTimeout(() => {
+        const normalized = rotation % 360;
+        const angle = (360 - normalized + 22.5) % 360;
+        const segment = Math.floor(angle / 45);
+        const prize = prizes[segment];
+
+        alert("You won: " + prize);
+        isSpinning = false;
+    }, 5000);
+});
 
 
 </script>
