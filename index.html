@@ -6,10 +6,126 @@
     <title>Survey Options</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Electrolize&family=Funnel+Display:wght@300..800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            background-color: #111;
+        }
+
+        .frosted-glass{
+            height:600px;
+            width: 800px;
+            background: radial-gradient(farthest-corner at 37% 0%, #d73f09ff 0%, #d7400952 40%, #ffffff00 58%), radial-gradient(farthest-corner at 53% 0%, #f7a162ff 0%, #f8a16399 10%, #ffffff00 48%), linear-gradient(to top, #ffffff10 100%, #ffffff10 100%);
+            box-shadow: 0 4px 30px rgb(0, 0, 0);
+            backdrop-filter: blur(10.9px);
+            -webkit-backdrop-filter: blur(10.9px);
+            margin:auto;
+            margin-top:100px;
+            }
+
+        .frosted-glass h1{
+            color: #ffffff30;
+            font-family: "Funnel Display", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 900;
+            font-style: normal;
+            font-size: 1.25rem;
+            margin-bottom: 0;
+            rotate: -90deg;
+            position: absolute;
+            top: 40px;
+        }
+        
+        .frosted-glass .welcome-text h2{
+            color: white;
+            font-family: "Funnel Display", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 300;
+            font-style: normal;
+            font-size: 3rem;
+            margin-top: 0;
+            border-left: 1px solid #fff;
+            padding-left: 1rem;
+            position: absolute;
+            left: 70px;
+        }
+
+        .frosted-glass .form-label{
+            color: white;
+            position: absolute;
+            top: 250px;
+            left: 229px;
+            font-family: "Funnel Display", sans-serif;
+            font-size: 1rem;
+        }
+
+        .frosted-glass .form-label h2{
+            font-weight: 100;
+        }
+
+        .white-line{
+            position: absolute;
+            top: 287px;
+            left: 375px;
+            width: 199px;
+            border-bottom: 1px solid white;
+        }
+
+        .frosted-glass form{
+            position: relative;
+        }
+
+        .input-text-box{
+            border-radius: 50px;
+            background-color: #ffffff09;
+            border: 1px solid rgba(255, 255, 255, 0.384);
+            color: white;
+            position: absolute;
+            top: 325px;
+            left: 229px;
+            padding: 10px;
+            width: 325px;
+        }
+
+        .input-text-box::placeholder{
+            color:white;
+        }
+
+        .frosted-glass form .submit-btn{
+            color: white;
+            background-color: #d73f09;
+            position: absolute;
+            top: 325px;
+            left: 525px;
+            padding: 0.12rem;
+            border-radius: 0 50px 50px 0;
+            border: 1px solid rgba(255, 255, 255, 0.384);
+            width: 50px;
+            font-size: 1.5rem;
+        }
+
+        .flex{
+            display:flex;
+        }
+    </style>
+
 </head>
 <body>
-<a href="/Surveys/gift/index.html">Gift Box</a><br>
-<a href="/Surveys/particles/index.html">Particles</a><br>
-<a href="/Surveys/spinner/index.html">Spinner</a>
+<div class="frosted-glass">
+    <div class="welcome-text flex">
+        <h1>AGU 2025</h1>
+        <h2>Oregon State<br>University</h2>
+    </div>
+    <div class="form-label">
+        <h2>Enter & Spin</h2>
+    </div>
+    <div class="white-line"></div>
+    <form>
+        <input type="text" name="Name" placeholder="What is your name?" class="input-text-box">
+        <button type="submit" class="submit-btn">🡪</button>
+    </form>
+</div>
 </body>
 </html>
