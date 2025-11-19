@@ -390,6 +390,9 @@ function resize() {
     canvas.height = window.innerHeight;
     centerX = canvas.width / 2;
     centerY = canvas.height / 2;
+
+    // regenerate particles to fill new space
+    addBaseParticles();
 }
 resize();
 window.addEventListener("resize", resize);
@@ -505,7 +508,7 @@ questionForm.addEventListener("submit", (e) => {
 
     const value = questionInput.value.trim();
     if (!value) return;
-    // ✅ save the answer based on round + question index
+    // save the answer based on round + question index
     if (round === 1) {
         if (qIndex === 0) answers.name = value;
         else if (qIndex === 1) answers.org = value;
