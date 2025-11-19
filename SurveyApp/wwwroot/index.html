@@ -388,8 +388,8 @@ const canvas = document.getElementById("particleCanvas");
 const ctx = canvas.getContext("2d");
 
 let particles = [];
-const BASE_PARTICLES = 1000;
-let particleMode = "drift"; // "drift", "shrinking", "bursting"
+const BASE_PARTICLES = 900;
+let particleMode = "drift"; // drift | fadeout | fadein
 let centerX = window.innerWidth / 2;
 let centerY = window.innerHeight / 2;
 
@@ -405,181 +405,130 @@ function resize() {
 resize();
 window.addEventListener("resize", resize);
 
+/* -------------------------------------------------
+   CREATE BASE PARTICLES (white + OSU orange glow)
+--------------------------------------------------*/
 function addBaseParticles() {
     particles = [];
+
     for (let i = 0; i < BASE_PARTICLES; i++) {
+        const isOrange = Math.random() < 0.15; // 15% OSU orange glows
+
         particles.push({
             x: Math.random() * canvas.width,
             y: Math.random() * canvas.height,
-            vx: (Math.random() - .5) * .3,
-            vy: (Math.random() - .5) * .3,
-            size: Math.random()*2 + 1,
-            color: "rgba(255,255,255,0.6)",
-            isWhite: true
+            vx: (Math.random() - 0.5) * 2,
+            vy: (Math.random() - 0.5) * 2,
+            size: isOrange ? (Math.random() * 3 + 1.5) : (Math.random() * 2 + 1),
+            color: isOrange
+                ? "rgba(215,63,9,0.45)"    // OSU Orange glow
+                : "rgba(255,255,255,0.55)",
+            isOrange: isOrange
         });
     }
 }
+
+/* Add initial base particles */
 addBaseParticles();
 
+/* -------------------------------------------------
+   EXPLOSION FROM TEXT FIELD WHEN ANSWER SUBMITTED
+--------------------------------------------------*/
 function explodeToParticles(x, y) {
-    for (let i = 0; i < 25; i++) {
+    for (let i = 0; i < 35; i++) {
         particles.push({
             x,
             y,
-            vx: (Math.random() - .5) * 6,
-            vy: (Math.random() - .5) * 6,
-            size: Math.random()*4 + 2,
-            color: "#d73f09",
-            isWhite: false
+            vx: (Math.random() - 0.5) * 4,
+            vy: (Math.random() - 0.5) * 4,
+            size: Math.random() * 3 + 2,
+            color: "rgba(215,63,9,1)", // bright OSU orange
+            isOrange: true,
+            fadeStart: Date.now(),
+            fadeDuration: 700
         });
     }
 }
 
-function shrinkParticlesToCenter() {
-    particleMode = "shrinking";
-    
-    // Give each particle a random delay and trajectory (reverse of burst)
-    particles.forEach((p, index) => {
-        // Random delay for each particle (0-800ms)
-        const delay = Math.random() * 800;
-        
-        // Store when this particle should start shrinking
-        p.shrinkDelay = Date.now() + delay;
-        p.shrinking = false;
-        
-        // Calculate target point near center
-        const targetRadius = Math.random() * 50;
-        const targetAngle = Math.random() * Math.PI * 2;
-        p.targetX = centerX + Math.cos(targetAngle) * targetRadius;
-        p.targetY = centerY + Math.sin(targetAngle) * targetRadius;
+/* -------------------------------------------------
+   FADE OUT TRANSITION
+--------------------------------------------------*/
+function fadeOutParticles() {
+    particleMode = "fadeout";
+
+    particles.forEach(p => {
+        p.fadeStart = Date.now();
+        p.fadeDuration = 800 + Math.random() * 500;
     });
 }
 
-function burstParticlesFromCenter(whiteOnly = false) {
-    particleMode = "bursting";
-    
-    // Filter and reset particles
-    if (whiteOnly) {
-        particles = particles.filter(p => p.isWhite);
-    }
-    
-    // Stagger the burst - particles spray out at different times like water droplets
-    particles.forEach((p, index) => {
-        // Random delay for each particle (0-800ms)
-        const delay = Math.random() * 800;
-        
-        setTimeout(() => {
-            // Random starting position near center (not all exactly at center)
-            const startRadius = Math.random() * 50;
-            const startAngle = Math.random() * Math.PI * 2;
-            p.x = centerX + Math.cos(startAngle) * startRadius;
-            p.y = centerY + Math.sin(startAngle) * startRadius;
-            
-            // Very random velocities - some fast, some slow, all directions
-            const angle = Math.random() * Math.PI * 2;
-            const speed = 2 + Math.random() * 8; // Wide speed range
-            
-            // Add some chaos to the angle
-            const chaosX = (Math.random() - 0.5) * 3;
-            const chaosY = (Math.random() - 0.5) * 3;
-            
-            p.vx = Math.cos(angle) * speed + chaosX;
-            p.vy = Math.sin(angle) * speed + chaosY;
-            
-            // Random initial opacity
-            p.burstOpacity = 0;
-            p.burstFadeIn = true;
-        }, delay);
+/* -------------------------------------------------
+   FADE IN NEW BASE PARTICLES
+--------------------------------------------------*/
+function fadeInParticles() {
+    addBaseParticles();
+    particleMode = "fadein";
+
+    particles.forEach(p => {
+        p.fadeStart = Date.now();
+        p.fadeDuration = 900 + Math.random() * 400;
+
+        // start invisible
+        p.originalBase = p.isOrange ? "215,63,9" : "255,255,255";
+        p.color = `rgba(${p.originalBase},0)`;
     });
-    
-    // Return to drift mode after all bursts complete
-    setTimeout(() => {
-        particleMode = "drift";
-        particles.forEach(p => {
-            p.burstOpacity = undefined;
-            p.burstFadeIn = undefined;
-        });
-    }, 2000);
 }
 
+/* -------------------------------------------------
+   PARTICLE ANIMATION LOOP
+--------------------------------------------------*/
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    particles.forEach((p, index) => {
+    particles.forEach(p => {
+
+        /* DRIFT MODE — base particles gently floating */
         if (particleMode === "drift") {
-            // Normal drifting
-            p.x += p.vx;
-            p.y += p.vy;
+            p.x += p.vx * 0.6;
+            p.y += p.vy * 0.6;
 
             if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
             if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-        } 
-        else if (particleMode === "shrinking") {
-            // Check if this particle should start shrinking yet
-            if (Date.now() >= p.shrinkDelay && !p.shrinking) {
-                p.shrinking = true;
-            }
-            
-            if (p.shrinking) {
-                // Move toward target point near center
-                let dx = p.targetX - p.x;
-                let dy = p.targetY - p.y;
-                let dist = Math.sqrt(dx * dx + dy * dy);
-                
-                // Accelerate toward center (reverse of slowing down)
-                const speed = 0.12;
-                p.x += dx * speed;
-                p.y += dy * speed;
-                
-                // Fade out as approaching center
-                if (dist < 150) {
-                    const alpha = dist / 150;
-                    if (p.isWhite) {
-                        p.color = `rgba(255,255,255,${0.6 * alpha})`;
-                    } else {
-                        p.color = `rgba(215,63,9,${alpha})`;
-                    }
-                }
-            } else {
-                // Keep drifting until shrink delay triggers
-                p.x += p.vx * 0.3;
-                p.y += p.vy * 0.3;
-                
-                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-            }
         }
-        else if (particleMode === "bursting") {
-            // Burst outward with varied timing
-            if (p.burstFadeIn !== undefined) {
-                // Fade in as particle bursts
-                if (p.burstOpacity < 1) {
-                    p.burstOpacity += 0.05;
-                }
-                
-                p.x += p.vx;
-                p.y += p.vy;
-                
-                // Apply some gravity and air resistance
-                p.vx *= 0.985;
-                p.vy *= 0.985;
-                p.vy += 0.02; // slight downward pull
-                
-                // Dynamic opacity based on burst progress
-                const alpha = Math.min(p.burstOpacity, 0.6);
-                if (p.isWhite) {
-                    p.color = `rgba(255,255,255,${alpha})`;
-                } else {
-                    p.color = `rgba(215,63,9,${alpha})`;
-                }
-            } else {
-                // Particle hasn't started bursting yet, keep it invisible at center
-                p.x = centerX;
-                p.y = centerY;
-                p.color = "rgba(255,255,255,0)";
+
+        /* FADE OUT TRANSITION */
+        else if (particleMode === "fadeout") {
+            const elapsed = Date.now() - p.fadeStart;
+            const ratio = Math.min(elapsed / p.fadeDuration, 1);
+
+            p.x += p.vx * 0.2;
+            p.y += p.vy * 0.2;
+
+            let base = p.isOrange ? "215,63,9" : "255,255,255";
+
+            const alpha = (1 - ratio) * 0.55;
+            p.color = `rgba(${base},${alpha})`;
+        }
+
+        /* FADE IN TRANSITION */
+        else if (particleMode === "fadein") {
+            const elapsed = Date.now() - p.fadeStart;
+            const ratio = Math.min(elapsed / p.fadeDuration, 1);
+
+            p.x += p.vx * 0.1;
+            p.y += p.vy * 0.1;
+
+            const alpha = ratio * 0.55;
+            let base = p.originalBase;
+
+            p.color = `rgba(${base},${alpha})`;
+
+            if (ratio === 1) {
+                particleMode = "drift";
             }
         }
 
+        // Draw particle
         ctx.fillStyle = p.color;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
@@ -590,7 +539,9 @@ function animate() {
 }
 animate();
 
-/* QUESTION FLOW */
+/* -------------------------------------------------
+   QUESTION FLOW + TRANSITIONS
+--------------------------------------------------*/
 let round = 1;
 
 const round1Questions = [
@@ -606,13 +557,7 @@ const round2Questions = [
 let questions = round1Questions;
 let qIndex = 0;
 
-const answers = {
-    name: "",
-    org: "",
-    color: "",
-    animal: ""
-};
-
+const answers = { name: "", org: "", color: "", animal: "" };
 let lastPrize = 0;
 
 const questionLabel = document.getElementById("questionLabel");
@@ -632,15 +577,15 @@ questionForm.addEventListener("submit", (e) => {
 
     const value = questionInput.value.trim();
     if (!value) return;
-    
+
     if (round === 1) {
         if (qIndex === 0) answers.name = value;
-        else if (qIndex === 1) answers.org = value;
-    } else if (round === 2) {
+        else answers.org = value;
+    } else {
         if (qIndex === 0) answers.color = value;
-        else if (qIndex === 1) answers.animal = value;
+        else answers.animal = value;
     }
-    
+
     const rect = questionForm.getBoundingClientRect();
     explodeToParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
 
@@ -657,8 +602,7 @@ questionForm.addEventListener("submit", (e) => {
 function finishedQuestions() {
     const glass = document.querySelector(".frosted-glass");
 
-    // Start shrinking particles
-    shrinkParticlesToCenter();
+    fadeOutParticles();
 
     setTimeout(() => {
         glass.classList.add("hide");
@@ -677,13 +621,14 @@ function finishedQuestions() {
 
 loadQuestion();
 
-/* SPINNER LOGIC */
+/* -------------------------------------------------
+   SPINNER & MODAL CODE
+--------------------------------------------------*/
 const wheel = document.getElementById("wheelElement");
 const spinBtn = document.getElementById("spinBtn");
 let rotation = 0;
 let isSpinning = false;
 let prizes = [100, 50, 25, 75, 100, 50, 25, 6];
-let prizes2 = [1, 2, 3, 4, 5, 6, 7, 8];
 
 spinBtn.addEventListener("click", () => {
     if (isSpinning) return;
@@ -692,7 +637,7 @@ spinBtn.addEventListener("click", () => {
 
     const spins = 5 + Math.floor(Math.random() * 3);
     const extra = Math.floor(Math.random() * 360);
-    const total = (spins * 360) + extra;
+    const total = spins * 360 + extra;
 
     rotation += total;
     wheel.style.transform = `rotate(${rotation}deg)`;
@@ -701,21 +646,22 @@ spinBtn.addEventListener("click", () => {
         const normalized = rotation % 360;
         const angle = (360 - normalized + 22.5) % 360;
         const segment = Math.floor(angle / 45);
-        const prize = prizes[segment];
 
-        showPrizeModal(prize);
+        showPrizeModal(prizes[segment]);
         isSpinning = false;
         spinBtn.classList.remove("spinning");
     }, 5000);
 });
 
+/* SECOND WHEEL */
 const wheel2 = document.getElementById("wheelElement2");
 const spinBtn2 = document.getElementById("spinBtn2");
+
 let rotation2 = 0;
 let isSpinning2 = false;
 
 spinBtn2.addEventListener("click", () => {
-    if (isSpinning2) return;
+    if (isSpinning2) return;   // lock
     isSpinning2 = true;
     spinBtn2.classList.add("spinning");
 
@@ -730,61 +676,48 @@ spinBtn2.addEventListener("click", () => {
         const normalized = rotation2 % 360;
         const angle = (360 - normalized + 22.5) % 360;
         const segment = Math.floor(angle / 45);
-        const prize = prizes2[segment];
 
+        const prize = segment + 1; // 1–8
         showPrizeModal(prize);
-        isSpinning2 = false;
+
+        isSpinning2 = false;             // unlock
         spinBtn2.classList.remove("spinning");
+
     }, 5000);
 });
 
-/* MODAL + ROUND TRANSITIONS */
+
+/* -------------------------------------------------
+   MODAL + ROUND TRANSITIONS
+--------------------------------------------------*/
 function showPrizeModal(prize) {
     lastPrize = prize;
     document.getElementById("prizeValue").textContent = prize;
     document.getElementById("prizeLabel").textContent = `${prize} points`;
 
-    if (round === 1) {
-        document.getElementById("spinAgain").style.display = "inline-block";
-    }
+    const spinAgainBtn = document.getElementById("spinAgain");
 
-    if (round === 2) {
-        document.getElementById("spinAgain").style.display = "none";
+    if (round === 1) {
+        spinAgainBtn.style.display = "inline-block";
+    } else {
+        spinAgainBtn.style.display = "none";  // HIDE on round 2 completely
     }
 
     document.getElementById("prizeModal").classList.add("active");
 }
 
-const prizeModal = document.getElementById("prizeModal");
-const spinnerWheel = document.getElementById("spinnerWheel");
-
-document.getElementById("closeModal").addEventListener("click", () => {
-    if (round === 2 && window.chrome && window.chrome.webview) {
-        window.chrome.webview.postMessage({
-            name: answers.name,
-            org: answers.org,
-            color: answers.color,
-            animal: answers.animal,
-            prize: lastPrize
-        });
-    }
-
-    resetAll();
-});
 
 document.getElementById("spinAgain").addEventListener("click", () => {
-    prizeModal.classList.remove("active");
+    document.getElementById("prizeModal").classList.remove("active");
 
     spinnerWheel.classList.add("hide");
     spinnerWheel2.classList.add("hide");
 
     document.body.style.background = "#111";
     canvas.style.display = "block";
-    const glass = document.querySelector(".frosted-glass");
-    glass.classList.remove("hide");
+    document.querySelector(".frosted-glass").classList.remove("hide");
 
-    // Burst particles from center (all particles for round transition)
-    burstParticlesFromCenter(false);
+    fadeInParticles();
 
     setTimeout(() => {
         round = 2;
@@ -794,17 +727,21 @@ document.getElementById("spinAgain").addEventListener("click", () => {
     }, 900);
 });
 
+/* RESET ALL */
 function resetAll() {
-    prizeModal.classList.remove("active");
+    document.getElementById("prizeModal").classList.remove("active");
 
     round = 1;
     questions = round1Questions;
     qIndex = 0;
 
+    // hide both wheels properly
     spinnerWheel.classList.add("hide");
     spinnerWheel2.classList.add("hide");
+
     rotation = 0;
     rotation2 = 0;
+
     wheel.style.transition = "none";
     wheel2.style.transition = "none";
     wheel.style.transform = "rotate(0deg)";
@@ -817,14 +754,18 @@ function resetAll() {
 
     document.body.style.background = "#111";
     canvas.style.display = "block";
-    const glass = document.querySelector(".frosted-glass");
-    glass.classList.remove("hide");
+    document.querySelector(".frosted-glass").classList.remove("hide");
 
-    // Burst only white particles when starting fresh
-    burstParticlesFromCenter(true);
-
+    fadeInParticles();
     loadQuestion();
 }
+
+
+document.getElementById("closeModal").addEventListener("click", () => {
+    resetAll();
+});
+
 </script>
+
 </body>
 </html>
