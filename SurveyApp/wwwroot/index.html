@@ -16,7 +16,6 @@
             font-family: "Funnel Display", sans-serif;
         }
 
-        /* Particle canvas behind everything */
         #particleCanvas {
             position: fixed;
             inset: 0;
@@ -25,7 +24,7 @@
 
         .frosted-glass{
             position: relative;
-            z-index: 1; /* ABOVE particles */
+            z-index: 1;
             height: 600px;
             width: 800px;
             background: radial-gradient(farthest-corner at 37% 0%, #d73f09ff 0%, #d7400952 40%, #ffffff00 58%), 
@@ -321,10 +320,8 @@
 </head>
 <body>
 
-<!-- Particle background -->
 <canvas id="particleCanvas"></canvas>
 
-<!-- Foreground content -->
 <div class="frosted-glass">
     <div class="welcome-text flex">
         <h1>AGU 2025</h1>
@@ -342,7 +339,6 @@
     </form>
 </div>
 
-<!-- Spinner for Round 1 -->
 <div id="spinnerWheel" class="hide">
     <div class="wheel-wrapper">
         <div class="spin-button" id="spinBtn">SPIN</div>
@@ -359,7 +355,6 @@
     </div>
 </div>
 
-<!-- Spinner for Round 2 -->
 <div id="spinnerWheel2" class="hide">
     <div class="wheel-wrapper">
         <div class="spin-button" id="spinBtn2">SPIN</div>
@@ -376,7 +371,6 @@
     </div>
 </div>
 
-<!-- Prize Modal -->
 <div class="modal-backdrop" id="prizeModal">
     <div class="modal-content">
         <h2>Congratulations!</h2>
@@ -390,15 +384,12 @@
 </div>
 
 <script>
-/* ------------------------------
-   PARTICLE SYSTEM (exact behavior from demo)
-------------------------------- */
 const canvas = document.getElementById("particleCanvas");
 const ctx = canvas.getContext("2d");
 
 let particles = [];
 const BASE_PARTICLES = 1000;
-let clicked = false;         // same flag behavior as demo
+let particleMode = "drift"; // "drift", "shrinking", "bursting"
 let centerX = window.innerWidth / 2;
 let centerY = window.innerHeight / 2;
 
@@ -407,9 +398,9 @@ function resize() {
     canvas.height = window.innerHeight;
     centerX = canvas.width / 2;
     centerY = canvas.height / 2;
-
-    // regenerate particles to fill new space
-    addBaseParticles();
+    if (particleMode === "drift") {
+        addBaseParticles();
+    }
 }
 resize();
 window.addEventListener("resize", resize);
@@ -420,16 +411,16 @@ function addBaseParticles() {
         particles.push({
             x: Math.random() * canvas.width,
             y: Math.random() * canvas.height,
-            vx: (Math.random() - .5) * .5,
-            vy: (Math.random() - .5) * .5,
+            vx: (Math.random() - .5) * .3,
+            vy: (Math.random() - .5) * .3,
             size: Math.random()*2 + 1,
-            color: "rgba(255,255,255,0.6)" // white-ish on dark bg
+            color: "rgba(255,255,255,0.6)",
+            isWhite: true
         });
     }
 }
 addBaseParticles();
 
-/* form → extra burst */
 function explodeToParticles(x, y) {
     for (let i = 0; i < 25; i++) {
         particles.push({
@@ -438,35 +429,154 @@ function explodeToParticles(x, y) {
             vx: (Math.random() - .5) * 6,
             vy: (Math.random() - .5) * 6,
             size: Math.random()*4 + 2,
-            color: "#d73f09"
+            color: "#d73f09",
+            isWhite: false
         });
     }
 }
 
-/* animation loop (same logic as demo file) */
+function shrinkParticlesToCenter() {
+    particleMode = "shrinking";
+    
+    // Give each particle a random delay and trajectory (reverse of burst)
+    particles.forEach((p, index) => {
+        // Random delay for each particle (0-800ms)
+        const delay = Math.random() * 800;
+        
+        // Store when this particle should start shrinking
+        p.shrinkDelay = Date.now() + delay;
+        p.shrinking = false;
+        
+        // Calculate target point near center
+        const targetRadius = Math.random() * 50;
+        const targetAngle = Math.random() * Math.PI * 2;
+        p.targetX = centerX + Math.cos(targetAngle) * targetRadius;
+        p.targetY = centerY + Math.sin(targetAngle) * targetRadius;
+    });
+}
+
+function burstParticlesFromCenter(whiteOnly = false) {
+    particleMode = "bursting";
+    
+    // Filter and reset particles
+    if (whiteOnly) {
+        particles = particles.filter(p => p.isWhite);
+    }
+    
+    // Stagger the burst - particles spray out at different times like water droplets
+    particles.forEach((p, index) => {
+        // Random delay for each particle (0-800ms)
+        const delay = Math.random() * 800;
+        
+        setTimeout(() => {
+            // Random starting position near center (not all exactly at center)
+            const startRadius = Math.random() * 50;
+            const startAngle = Math.random() * Math.PI * 2;
+            p.x = centerX + Math.cos(startAngle) * startRadius;
+            p.y = centerY + Math.sin(startAngle) * startRadius;
+            
+            // Very random velocities - some fast, some slow, all directions
+            const angle = Math.random() * Math.PI * 2;
+            const speed = 2 + Math.random() * 8; // Wide speed range
+            
+            // Add some chaos to the angle
+            const chaosX = (Math.random() - 0.5) * 3;
+            const chaosY = (Math.random() - 0.5) * 3;
+            
+            p.vx = Math.cos(angle) * speed + chaosX;
+            p.vy = Math.sin(angle) * speed + chaosY;
+            
+            // Random initial opacity
+            p.burstOpacity = 0;
+            p.burstFadeIn = true;
+        }, delay);
+    });
+    
+    // Return to drift mode after all bursts complete
+    setTimeout(() => {
+        particleMode = "drift";
+        particles.forEach(p => {
+            p.burstOpacity = undefined;
+            p.burstFadeIn = undefined;
+        });
+    }, 2000);
+}
+
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    particles.forEach(p => {
-        if (!clicked) {
-            // drifting
+    particles.forEach((p, index) => {
+        if (particleMode === "drift") {
+            // Normal drifting
             p.x += p.vx;
             p.y += p.vy;
 
             if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
             if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-        } else {
-            // collapse to center then bounce
-            let dx = centerX - p.x;
-            let dy = centerY - p.y;
-
-            p.x += dx * 0.07;
-            p.y += dy * 0.07;
-
-            // once near center, push outward
-            if (Math.abs(dx) < 12 && Math.abs(dy) < 12) {
-                p.vx = (Math.random() - 0.5) * 6;
-                p.vy = (Math.random() - 0.5) * 6;
+        } 
+        else if (particleMode === "shrinking") {
+            // Check if this particle should start shrinking yet
+            if (Date.now() >= p.shrinkDelay && !p.shrinking) {
+                p.shrinking = true;
+            }
+            
+            if (p.shrinking) {
+                // Move toward target point near center
+                let dx = p.targetX - p.x;
+                let dy = p.targetY - p.y;
+                let dist = Math.sqrt(dx * dx + dy * dy);
+                
+                // Accelerate toward center (reverse of slowing down)
+                const speed = 0.12;
+                p.x += dx * speed;
+                p.y += dy * speed;
+                
+                // Fade out as approaching center
+                if (dist < 150) {
+                    const alpha = dist / 150;
+                    if (p.isWhite) {
+                        p.color = `rgba(255,255,255,${0.6 * alpha})`;
+                    } else {
+                        p.color = `rgba(215,63,9,${alpha})`;
+                    }
+                }
+            } else {
+                // Keep drifting until shrink delay triggers
+                p.x += p.vx * 0.3;
+                p.y += p.vy * 0.3;
+                
+                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+            }
+        }
+        else if (particleMode === "bursting") {
+            // Burst outward with varied timing
+            if (p.burstFadeIn !== undefined) {
+                // Fade in as particle bursts
+                if (p.burstOpacity < 1) {
+                    p.burstOpacity += 0.05;
+                }
+                
+                p.x += p.vx;
+                p.y += p.vy;
+                
+                // Apply some gravity and air resistance
+                p.vx *= 0.985;
+                p.vy *= 0.985;
+                p.vy += 0.02; // slight downward pull
+                
+                // Dynamic opacity based on burst progress
+                const alpha = Math.min(p.burstOpacity, 0.6);
+                if (p.isWhite) {
+                    p.color = `rgba(255,255,255,${alpha})`;
+                } else {
+                    p.color = `rgba(215,63,9,${alpha})`;
+                }
+            } else {
+                // Particle hasn't started bursting yet, keep it invisible at center
+                p.x = centerX;
+                p.y = centerY;
+                p.color = "rgba(255,255,255,0)";
             }
         }
 
@@ -480,10 +590,7 @@ function animate() {
 }
 animate();
 
-/* ------------------------------
-    QUESTION FLOW (2 rounds, 2 questions each)
-------------------------------- */
-
+/* QUESTION FLOW */
 let round = 1;
 
 const round1Questions = [
@@ -525,7 +632,7 @@ questionForm.addEventListener("submit", (e) => {
 
     const value = questionInput.value.trim();
     if (!value) return;
-    // save the answer based on round + question index
+    
     if (round === 1) {
         if (qIndex === 0) answers.name = value;
         else if (qIndex === 1) answers.org = value;
@@ -533,7 +640,7 @@ questionForm.addEventListener("submit", (e) => {
         if (qIndex === 0) answers.color = value;
         else if (qIndex === 1) answers.animal = value;
     }
-    // burst from form
+    
     const rect = questionForm.getBoundingClientRect();
     explodeToParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
 
@@ -544,14 +651,14 @@ questionForm.addEventListener("submit", (e) => {
         return;
     }
 
-    // finished this round → go to spinner
     finishedQuestions();
 });
 
 function finishedQuestions() {
     const glass = document.querySelector(".frosted-glass");
 
-    clicked = true;
+    // Start shrinking particles
+    shrinkParticlesToCenter();
 
     setTimeout(() => {
         glass.classList.add("hide");
@@ -565,15 +672,12 @@ function finishedQuestions() {
             spinnerWheel2.classList.remove("hide");
             setTimeout(() => spinnerWheel2.classList.add("show"), 50);
         }
-    }, 300);
+    }, 800);
 }
 
 loadQuestion();
 
-/* ------------------------------
-    SPINNER LOGIC
-------------------------------- */
-
+/* SPINNER LOGIC */
 const wheel = document.getElementById("wheelElement");
 const spinBtn = document.getElementById("spinBtn");
 let rotation = 0;
@@ -634,22 +738,16 @@ spinBtn2.addEventListener("click", () => {
     }, 5000);
 });
 
-
-/* ------------------------------
-    MODAL + ROUND TRANSITIONS
-------------------------------- */
-
+/* MODAL + ROUND TRANSITIONS */
 function showPrizeModal(prize) {
     lastPrize = prize;
     document.getElementById("prizeValue").textContent = prize;
     document.getElementById("prizeLabel").textContent = `${prize} points`;
 
-    // ROUND 1 → show Spin Again + Close
     if (round === 1) {
         document.getElementById("spinAgain").style.display = "inline-block";
     }
 
-    // ROUND 2 → only Close
     if (round === 2) {
         document.getElementById("spinAgain").style.display = "none";
     }
@@ -661,7 +759,6 @@ const prizeModal = document.getElementById("prizeModal");
 const spinnerWheel = document.getElementById("spinnerWheel");
 
 document.getElementById("closeModal").addEventListener("click", () => {
-    // ✅ only send to .NET after ROUND 2 is finished
     if (round === 2 && window.chrome && window.chrome.webview) {
         window.chrome.webview.postMessage({
             name: answers.name,
@@ -672,18 +769,12 @@ document.getElementById("closeModal").addEventListener("click", () => {
         });
     }
 
-    // reset for the next person
     resetAll();
 });
 
-
 document.getElementById("spinAgain").addEventListener("click", () => {
-    // exactly like "tryAgain" in demo:
-    // - particles do the collapse/explode move
-    // - then we return to the form with round 2 questions
     prizeModal.classList.remove("active");
 
-    // show form again
     spinnerWheel.classList.add("hide");
     spinnerWheel2.classList.add("hide");
 
@@ -692,12 +783,10 @@ document.getElementById("spinAgain").addEventListener("click", () => {
     const glass = document.querySelector(".frosted-glass");
     glass.classList.remove("hide");
 
-    // copy demo pattern: clicked = true, then back to false after a bit
-    clicked = true;
+    // Burst particles from center (all particles for round transition)
+    burstParticlesFromCenter(false);
 
     setTimeout(() => {
-        // prepare ROUND 2 questions
-        clicked = false;
         round = 2;
         questions = round2Questions;
         qIndex = 0;
@@ -706,15 +795,12 @@ document.getElementById("spinAgain").addEventListener("click", () => {
 });
 
 function resetAll() {
-    // hide modal
     prizeModal.classList.remove("active");
 
-    // reset rounds
     round = 1;
     questions = round1Questions;
     qIndex = 0;
 
-    // reset spinner
     spinnerWheel.classList.add("hide");
     spinnerWheel2.classList.add("hide");
     rotation = 0;
@@ -726,17 +812,16 @@ function resetAll() {
 
     setTimeout(() => {
         wheel.style.transition = "transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)";
+        wheel2.style.transition = "transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)";
     }, 50);
 
-    // restore background + particles + frosted glass
     document.body.style.background = "#111";
     canvas.style.display = "block";
     const glass = document.querySelector(".frosted-glass");
     glass.classList.remove("hide");
 
-    // re-seed particles and reset clicked like fresh page
-    clicked = false;
-    addBaseParticles();
+    // Burst only white particles when starting fresh
+    burstParticlesFromCenter(true);
 
     loadQuestion();
 }
