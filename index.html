@@ -16,7 +16,6 @@
             font-family: "Funnel Display", sans-serif;
         }
 
-        /* Particle canvas behind everything */
         #particleCanvas {
             position: fixed;
             inset: 0;
@@ -25,7 +24,7 @@
 
         .frosted-glass{
             position: relative;
-            z-index: 1; /* ABOVE particles */
+            z-index: 1;
             height: 600px;
             width: 800px;
             background: radial-gradient(farthest-corner at 37% 0%, #d73f09ff 0%, #d7400952 40%, #ffffff00 58%), 
@@ -35,7 +34,7 @@
             backdrop-filter: blur(10.9px);
             -webkit-backdrop-filter: blur(10.9px);
             margin:auto;
-            margin-top:100px;
+            margin-top:175px;
         }
 
         .frosted-glass h1{
@@ -122,8 +121,8 @@
 
         .wheel-wrapper {
             position: relative;
-            width: 400px;
-            height: 400px;
+            width: 600px;
+            height: 600px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -133,8 +132,8 @@
 
         .spin-button {
             position: absolute;
-            width: 70px;
-            height: 70px;
+            width: 100px;
+            height: 100px;
             background: #fff;
             border-radius: 50%;
             z-index: 10;
@@ -142,8 +141,8 @@
             justify-content: center;
             align-items: center;
             text-transform: uppercase;
-            font-weight: 700;
-            font-size: 14px;
+            font-weight: 800;
+            font-size: 2rem;
             color: #333;
             border: 5px solid #333;
             cursor: pointer;
@@ -208,16 +207,15 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
-        #spinnerWheel {
+        #spinnerWheel, #spinnerWheel2 {
             opacity: 0;
             transition: opacity 0.8s ease;
-            position: absolute;
-            top: 205px;
-            left: 325px;
-            z-index: 3;
+            display: grid;
+            place-items: center;
+            height: 100%;
         }
 
-        #spinnerWheel.show {
+        #spinnerWheel.show, #spinnerWheel2.show {
             opacity: 1;
         }
 
@@ -322,10 +320,8 @@
 </head>
 <body>
 
-<!-- Particle background -->
 <canvas id="particleCanvas"></canvas>
 
-<!-- Foreground content -->
 <div class="frosted-glass">
     <div class="welcome-text flex">
         <h1>AGU 2025</h1>
@@ -343,7 +339,6 @@
     </form>
 </div>
 
-<!-- Spinner -->
 <div id="spinnerWheel" class="hide">
     <div class="wheel-wrapper">
         <div class="spin-button" id="spinBtn">SPIN</div>
@@ -360,7 +355,22 @@
     </div>
 </div>
 
-<!-- Prize Modal -->
+<div id="spinnerWheel2" class="hide">
+    <div class="wheel-wrapper">
+        <div class="spin-button" id="spinBtn2">SPIN</div>
+        <div class="wheel" id="wheelElement2">
+            <div class="wheel-segment" style="--i:1; background:#d73f09;"><span>1</span></div>
+            <div class="wheel-segment" style="--i:2; background:#4A773C;"><span>2</span></div>
+            <div class="wheel-segment" style="--i:3; background:#003B5C;"><span>3</span></div>
+            <div class="wheel-segment" style="--i:4; background:#f7a162;"><span>4</span></div>
+            <div class="wheel-segment" style="--i:5; background:#d73f09;"><span>5</span></div>
+            <div class="wheel-segment" style="--i:6; background:#0D5257;"><span>6</span></div>
+            <div class="wheel-segment" style="--i:7; background:#D3832B;"><span>7</span></div>
+            <div class="wheel-segment" style="--i:8; background:#4A773C;"><span>8</span></div>
+        </div>
+    </div>
+</div>
+
 <div class="modal-backdrop" id="prizeModal">
     <div class="modal-content">
         <h2>Congratulations!</h2>
@@ -374,15 +384,12 @@
 </div>
 
 <script>
-/* ------------------------------
-   PARTICLE SYSTEM (exact behavior from demo)
-------------------------------- */
 const canvas = document.getElementById("particleCanvas");
 const ctx = canvas.getContext("2d");
 
 let particles = [];
-const BASE_PARTICLES = 1000;
-let clicked = false;         // same flag behavior as demo
+const BASE_PARTICLES = 900;
+let particleMode = "drift"; // drift | fadeout | fadein
 let centerX = window.innerWidth / 2;
 let centerY = window.innerHeight / 2;
 
@@ -391,66 +398,137 @@ function resize() {
     canvas.height = window.innerHeight;
     centerX = canvas.width / 2;
     centerY = canvas.height / 2;
+    if (particleMode === "drift") {
+        addBaseParticles();
+    }
 }
 resize();
 window.addEventListener("resize", resize);
 
+/* -------------------------------------------------
+   CREATE BASE PARTICLES (white + OSU orange glow)
+--------------------------------------------------*/
 function addBaseParticles() {
     particles = [];
+
     for (let i = 0; i < BASE_PARTICLES; i++) {
+        const isOrange = Math.random() < 0.15; // 15% OSU orange glows
+
         particles.push({
             x: Math.random() * canvas.width,
             y: Math.random() * canvas.height,
-            vx: (Math.random() - .5) * .5,
-            vy: (Math.random() - .5) * .5,
-            size: Math.random()*2 + 1,
-            color: "rgba(255,255,255,0.6)" // white-ish on dark bg
+            vx: (Math.random() - 0.5) * 2,
+            vy: (Math.random() - 0.5) * 2,
+            size: isOrange ? (Math.random() * 3 + 1.5) : (Math.random() * 2 + 1),
+            color: isOrange
+                ? "rgba(215,63,9,0.45)"    // OSU Orange glow
+                : "rgba(255,255,255,0.55)",
+            isOrange: isOrange
         });
     }
 }
+
+/* Add initial base particles */
 addBaseParticles();
 
-/* form → extra burst */
+/* -------------------------------------------------
+   EXPLOSION FROM TEXT FIELD WHEN ANSWER SUBMITTED
+--------------------------------------------------*/
 function explodeToParticles(x, y) {
-    for (let i = 0; i < 25; i++) {
+    for (let i = 0; i < 35; i++) {
         particles.push({
             x,
             y,
-            vx: (Math.random() - .5) * 6,
-            vy: (Math.random() - .5) * 6,
-            size: Math.random()*4 + 2,
-            color: "#d73f09"
+            vx: (Math.random() - 0.5) * 4,
+            vy: (Math.random() - 0.5) * 4,
+            size: Math.random() * 3 + 2,
+            color: "rgba(215,63,9,1)", // bright OSU orange
+            isOrange: true,
+            fadeStart: Date.now(),
+            fadeDuration: 700
         });
     }
 }
 
-/* animation loop (same logic as demo file) */
+/* -------------------------------------------------
+   FADE OUT TRANSITION
+--------------------------------------------------*/
+function fadeOutParticles() {
+    particleMode = "fadeout";
+
+    particles.forEach(p => {
+        p.fadeStart = Date.now();
+        p.fadeDuration = 800 + Math.random() * 500;
+    });
+}
+
+/* -------------------------------------------------
+   FADE IN NEW BASE PARTICLES
+--------------------------------------------------*/
+function fadeInParticles() {
+    addBaseParticles();
+    particleMode = "fadein";
+
+    particles.forEach(p => {
+        p.fadeStart = Date.now();
+        p.fadeDuration = 900 + Math.random() * 400;
+
+        // start invisible
+        p.originalBase = p.isOrange ? "215,63,9" : "255,255,255";
+        p.color = `rgba(${p.originalBase},0)`;
+    });
+}
+
+/* -------------------------------------------------
+   PARTICLE ANIMATION LOOP
+--------------------------------------------------*/
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     particles.forEach(p => {
-        if (!clicked) {
-            // drifting
-            p.x += p.vx;
-            p.y += p.vy;
+
+        /* DRIFT MODE — base particles gently floating */
+        if (particleMode === "drift") {
+            p.x += p.vx * 0.6;
+            p.y += p.vy * 0.6;
 
             if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
             if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-        } else {
-            // collapse to center then bounce
-            let dx = centerX - p.x;
-            let dy = centerY - p.y;
+        }
 
-            p.x += dx * 0.07;
-            p.y += dy * 0.07;
+        /* FADE OUT TRANSITION */
+        else if (particleMode === "fadeout") {
+            const elapsed = Date.now() - p.fadeStart;
+            const ratio = Math.min(elapsed / p.fadeDuration, 1);
 
-            // once near center, push outward
-            if (Math.abs(dx) < 12 && Math.abs(dy) < 12) {
-                p.vx = (Math.random() - 0.5) * 6;
-                p.vy = (Math.random() - 0.5) * 6;
+            p.x += p.vx * 0.2;
+            p.y += p.vy * 0.2;
+
+            let base = p.isOrange ? "215,63,9" : "255,255,255";
+
+            const alpha = (1 - ratio) * 0.55;
+            p.color = `rgba(${base},${alpha})`;
+        }
+
+        /* FADE IN TRANSITION */
+        else if (particleMode === "fadein") {
+            const elapsed = Date.now() - p.fadeStart;
+            const ratio = Math.min(elapsed / p.fadeDuration, 1);
+
+            p.x += p.vx * 0.1;
+            p.y += p.vy * 0.1;
+
+            const alpha = ratio * 0.55;
+            let base = p.originalBase;
+
+            p.color = `rgba(${base},${alpha})`;
+
+            if (ratio === 1) {
+                particleMode = "drift";
             }
         }
 
+        // Draw particle
         ctx.fillStyle = p.color;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
@@ -461,10 +539,9 @@ function animate() {
 }
 animate();
 
-/* ------------------------------
-    QUESTION FLOW (2 rounds, 2 questions each)
-------------------------------- */
-
+/* -------------------------------------------------
+   QUESTION FLOW + TRANSITIONS
+--------------------------------------------------*/
 let round = 1;
 
 const round1Questions = [
@@ -480,13 +557,7 @@ const round2Questions = [
 let questions = round1Questions;
 let qIndex = 0;
 
-const answers = {
-    name: "",
-    org: "",
-    color: "",
-    animal: ""
-};
-
+const answers = { name: "", org: "", color: "", animal: "" };
 let lastPrize = 0;
 
 const questionLabel = document.getElementById("questionLabel");
@@ -506,15 +577,15 @@ questionForm.addEventListener("submit", (e) => {
 
     const value = questionInput.value.trim();
     if (!value) return;
-    // ✅ save the answer based on round + question index
+
     if (round === 1) {
         if (qIndex === 0) answers.name = value;
-        else if (qIndex === 1) answers.org = value;
-    } else if (round === 2) {
+        else answers.org = value;
+    } else {
         if (qIndex === 0) answers.color = value;
-        else if (qIndex === 1) answers.animal = value;
+        else answers.animal = value;
     }
-    // burst from form
+
     const rect = questionForm.getBoundingClientRect();
     explodeToParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
 
@@ -525,34 +596,34 @@ questionForm.addEventListener("submit", (e) => {
         return;
     }
 
-    // finished this round → go to spinner
     finishedQuestions();
 });
 
 function finishedQuestions() {
     const glass = document.querySelector(".frosted-glass");
 
-    // mimic demo: kick particle effect ON as we transition away
-    clicked = true;
+    fadeOutParticles();
 
     setTimeout(() => {
-        // hide frosted UI, hide canvas, go to black bg + spinner
         glass.classList.add("hide");
         canvas.style.display = "none";
         document.body.style.background = "black";
 
-        const spinner = document.getElementById("spinnerWheel");
-        spinner.classList.remove("hide");
-        setTimeout(() => spinner.classList.add("show"), 50);
-    }, 300);
+        if (round === 1) {
+            spinnerWheel.classList.remove("hide");
+            setTimeout(() => spinnerWheel.classList.add("show"), 50);
+        } else {
+            spinnerWheel2.classList.remove("hide");
+            setTimeout(() => spinnerWheel2.classList.add("show"), 50);
+        }
+    }, 800);
 }
 
 loadQuestion();
 
-/* ------------------------------
-    SPINNER LOGIC
-------------------------------- */
-
+/* -------------------------------------------------
+   SPINNER & MODAL CODE
+--------------------------------------------------*/
 const wheel = document.getElementById("wheelElement");
 const spinBtn = document.getElementById("spinBtn");
 let rotation = 0;
@@ -566,7 +637,7 @@ spinBtn.addEventListener("click", () => {
 
     const spins = 5 + Math.floor(Math.random() * 3);
     const extra = Math.floor(Math.random() * 360);
-    const total = (spins * 360) + extra;
+    const total = spins * 360 + extra;
 
     rotation += total;
     wheel.style.transform = `rotate(${rotation}deg)`;
@@ -575,75 +646,80 @@ spinBtn.addEventListener("click", () => {
         const normalized = rotation % 360;
         const angle = (360 - normalized + 22.5) % 360;
         const segment = Math.floor(angle / 45);
-        const prize = prizes[segment];
 
-        showPrizeModal(prize);
+        showPrizeModal(prizes[segment]);
         isSpinning = false;
         spinBtn.classList.remove("spinning");
     }, 5000);
 });
 
-/* ------------------------------
-    MODAL + ROUND TRANSITIONS
-------------------------------- */
+/* SECOND WHEEL */
+const wheel2 = document.getElementById("wheelElement2");
+const spinBtn2 = document.getElementById("spinBtn2");
 
+let rotation2 = 0;
+let isSpinning2 = false;
+
+spinBtn2.addEventListener("click", () => {
+    if (isSpinning2) return;   // lock
+    isSpinning2 = true;
+    spinBtn2.classList.add("spinning");
+
+    const spins = 5 + Math.floor(Math.random() * 3);
+    const extra = Math.floor(Math.random() * 360);
+    const total = (spins * 360) + extra;
+
+    rotation2 += total;
+    wheel2.style.transform = `rotate(${rotation2}deg)`;
+
+    setTimeout(() => {
+        const normalized = rotation2 % 360;
+        const angle = (360 - normalized + 22.5) % 360;
+        const segment = Math.floor(angle / 45);
+
+        const prize = segment + 1; // 1–8
+        showPrizeModal(prize);
+
+        isSpinning2 = false;             // unlock
+        spinBtn2.classList.remove("spinning");
+
+    }, 5000);
+});
+
+
+/* -------------------------------------------------
+   MODAL + ROUND TRANSITIONS
+--------------------------------------------------*/
 function showPrizeModal(prize) {
     lastPrize = prize;
     document.getElementById("prizeValue").textContent = prize;
     document.getElementById("prizeLabel").textContent = `${prize} points`;
 
-    // ROUND 1 → show Spin Again + Close
-    if (round === 1) {
-        document.getElementById("spinAgain").style.display = "inline-block";
-    }
+    const spinAgainBtn = document.getElementById("spinAgain");
 
-    // ROUND 2 → only Close
-    if (round === 2) {
-        document.getElementById("spinAgain").style.display = "none";
+    if (round === 1) {
+        spinAgainBtn.style.display = "inline-block";
+    } else {
+        spinAgainBtn.style.display = "none";  // HIDE on round 2 completely
     }
 
     document.getElementById("prizeModal").classList.add("active");
 }
 
-const prizeModal = document.getElementById("prizeModal");
-const spinnerWheel = document.getElementById("spinnerWheel");
-
-document.getElementById("closeModal").addEventListener("click", () => {
-    // ✅ only send to .NET after ROUND 2 is finished
-    if (round === 2 && window.chrome && window.chrome.webview) {
-        window.chrome.webview.postMessage({
-            name: answers.name,
-            org: answers.org,
-            color: answers.color,
-            animal: answers.animal,
-            prize: lastPrize
-        });
-    }
-
-    // reset for the next person
-    resetAll();
-});
-
 
 document.getElementById("spinAgain").addEventListener("click", () => {
-    // exactly like "tryAgain" in demo:
-    // - particles do the collapse/explode move
-    // - then we return to the form with round 2 questions
-    prizeModal.classList.remove("active");
+    document.getElementById("prizeModal").classList.remove("active");
 
-    // show form again
     spinnerWheel.classList.add("hide");
+    spinnerWheel2.classList.add("hide");
+
     document.body.style.background = "#111";
     canvas.style.display = "block";
-    const glass = document.querySelector(".frosted-glass");
-    glass.classList.remove("hide");
+    document.querySelector(".frosted-glass").classList.remove("hide");
 
-    // copy demo pattern: clicked = true, then back to false after a bit
-    clicked = true;
+    fadeInParticles();
 
     setTimeout(() => {
-        // prepare ROUND 2 questions
-        clicked = false;
         round = 2;
         questions = round2Questions;
         qIndex = 0;
@@ -651,36 +727,45 @@ document.getElementById("spinAgain").addEventListener("click", () => {
     }, 900);
 });
 
+/* RESET ALL */
 function resetAll() {
-    // hide modal
-    prizeModal.classList.remove("active");
+    document.getElementById("prizeModal").classList.remove("active");
 
-    // reset rounds
     round = 1;
     questions = round1Questions;
     qIndex = 0;
 
-    // reset spinner
+    // hide both wheels properly
     spinnerWheel.classList.add("hide");
+    spinnerWheel2.classList.add("hide");
+
     rotation = 0;
+    rotation2 = 0;
+
     wheel.style.transition = "none";
+    wheel2.style.transition = "none";
     wheel.style.transform = "rotate(0deg)";
+    wheel2.style.transform = "rotate(0deg)";
+
     setTimeout(() => {
         wheel.style.transition = "transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)";
+        wheel2.style.transition = "transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)";
     }, 50);
 
-    // restore background + particles + frosted glass
     document.body.style.background = "#111";
     canvas.style.display = "block";
-    const glass = document.querySelector(".frosted-glass");
-    glass.classList.remove("hide");
+    document.querySelector(".frosted-glass").classList.remove("hide");
 
-    // re-seed particles and reset clicked like fresh page
-    clicked = false;
-    addBaseParticles();
-
+    fadeInParticles();
     loadQuestion();
 }
+
+
+document.getElementById("closeModal").addEventListener("click", () => {
+    resetAll();
+});
+
 </script>
+
 </body>
 </html>
