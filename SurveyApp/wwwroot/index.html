@@ -760,8 +760,19 @@ function resetAll() {
     loadQuestion();
 }
 
-
 document.getElementById("closeModal").addEventListener("click", () => {
+
+    // Send to db
+    if (round === 2 && window.chrome && window.chrome.webview) {
+        window.chrome.webview.postMessage({
+            name: answers.name,
+            org: answers.org,
+            color: answers.color,
+            animal: answers.animal,
+            prize: lastPrize
+        });
+    }
+
     resetAll();
 });
 
