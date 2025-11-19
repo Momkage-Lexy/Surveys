@@ -208,7 +208,7 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
-        #spinnerWheel {
+        #spinnerWheel, #spinnerWheel2 {
             opacity: 0;
             transition: opacity 0.8s ease;
             display: grid;
@@ -216,7 +216,7 @@
             height: 100%;
         }
 
-        #spinnerWheel.show {
+        #spinnerWheel.show, #spinnerWheel2.show {
             opacity: 1;
         }
 
@@ -342,7 +342,7 @@
     </form>
 </div>
 
-<!-- Spinner -->
+<!-- Spinner for Round 1 -->
 <div id="spinnerWheel" class="hide">
     <div class="wheel-wrapper">
         <div class="spin-button" id="spinBtn">SPIN</div>
@@ -355,6 +355,23 @@
             <div class="wheel-segment" style="--i:6; background:#0D5257;"><span>50</span></div>
             <div class="wheel-segment" style="--i:7; background:#D3832B;"><span>25</span></div>
             <div class="wheel-segment" style="--i:8; background:#4A773C;"><span>6</span></div>
+        </div>
+    </div>
+</div>
+
+<!-- Spinner for Round 2 -->
+<div id="spinnerWheel2" class="hide">
+    <div class="wheel-wrapper">
+        <div class="spin-button" id="spinBtn2">SPIN</div>
+        <div class="wheel" id="wheelElement2">
+            <div class="wheel-segment" style="--i:1; background:#d73f09;"><span>1</span></div>
+            <div class="wheel-segment" style="--i:2; background:#4A773C;"><span>2</span></div>
+            <div class="wheel-segment" style="--i:3; background:#003B5C;"><span>3</span></div>
+            <div class="wheel-segment" style="--i:4; background:#f7a162;"><span>4</span></div>
+            <div class="wheel-segment" style="--i:5; background:#d73f09;"><span>5</span></div>
+            <div class="wheel-segment" style="--i:6; background:#0D5257;"><span>6</span></div>
+            <div class="wheel-segment" style="--i:7; background:#D3832B;"><span>7</span></div>
+            <div class="wheel-segment" style="--i:8; background:#4A773C;"><span>8</span></div>
         </div>
     </div>
 </div>
@@ -534,18 +551,20 @@ questionForm.addEventListener("submit", (e) => {
 function finishedQuestions() {
     const glass = document.querySelector(".frosted-glass");
 
-    // mimic demo: kick particle effect ON as we transition away
     clicked = true;
 
     setTimeout(() => {
-        // hide frosted UI, hide canvas, go to black bg + spinner
         glass.classList.add("hide");
         canvas.style.display = "none";
         document.body.style.background = "black";
 
-        const spinner = document.getElementById("spinnerWheel");
-        spinner.classList.remove("hide");
-        setTimeout(() => spinner.classList.add("show"), 50);
+        if (round === 1) {
+            spinnerWheel.classList.remove("hide");
+            setTimeout(() => spinnerWheel.classList.add("show"), 50);
+        } else {
+            spinnerWheel2.classList.remove("hide");
+            setTimeout(() => spinnerWheel2.classList.add("show"), 50);
+        }
     }, 300);
 }
 
@@ -560,6 +579,7 @@ const spinBtn = document.getElementById("spinBtn");
 let rotation = 0;
 let isSpinning = false;
 let prizes = [100, 50, 25, 75, 100, 50, 25, 6];
+let prizes2 = [1, 2, 3, 4, 5, 6, 7, 8];
 
 spinBtn.addEventListener("click", () => {
     if (isSpinning) return;
@@ -584,6 +604,36 @@ spinBtn.addEventListener("click", () => {
         spinBtn.classList.remove("spinning");
     }, 5000);
 });
+
+const wheel2 = document.getElementById("wheelElement2");
+const spinBtn2 = document.getElementById("spinBtn2");
+let rotation2 = 0;
+let isSpinning2 = false;
+
+spinBtn2.addEventListener("click", () => {
+    if (isSpinning2) return;
+    isSpinning2 = true;
+    spinBtn2.classList.add("spinning");
+
+    const spins = 5 + Math.floor(Math.random() * 3);
+    const extra = Math.floor(Math.random() * 360);
+    const total = (spins * 360) + extra;
+
+    rotation2 += total;
+    wheel2.style.transform = `rotate(${rotation2}deg)`;
+
+    setTimeout(() => {
+        const normalized = rotation2 % 360;
+        const angle = (360 - normalized + 22.5) % 360;
+        const segment = Math.floor(angle / 45);
+        const prize = prizes2[segment];
+
+        showPrizeModal(prize);
+        isSpinning2 = false;
+        spinBtn2.classList.remove("spinning");
+    }, 5000);
+});
+
 
 /* ------------------------------
     MODAL + ROUND TRANSITIONS
@@ -635,6 +685,8 @@ document.getElementById("spinAgain").addEventListener("click", () => {
 
     // show form again
     spinnerWheel.classList.add("hide");
+    spinnerWheel2.classList.add("hide");
+
     document.body.style.background = "#111";
     canvas.style.display = "block";
     const glass = document.querySelector(".frosted-glass");
@@ -664,9 +716,14 @@ function resetAll() {
 
     // reset spinner
     spinnerWheel.classList.add("hide");
+    spinnerWheel2.classList.add("hide");
     rotation = 0;
+    rotation2 = 0;
     wheel.style.transition = "none";
+    wheel2.style.transition = "none";
     wheel.style.transform = "rotate(0deg)";
+    wheel2.style.transform = "rotate(0deg)";
+
     setTimeout(() => {
         wheel.style.transition = "transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)";
     }, 50);
