@@ -34,7 +34,7 @@
             backdrop-filter: blur(10.9px);
             -webkit-backdrop-filter: blur(10.9px);
             margin:auto;
-            margin-top:175px;
+            margin-top:130px;
         }
 
         .frosted-glass h1{
@@ -316,6 +316,10 @@
         .flex{
             display:flex;
         }
+        .frosted-glass.round2 .form-label{
+            top: 220px !important;
+            width: 50%;
+        }
 
         .frosted-glass.round2 .submit-btn {
             border-radius: 50px;
@@ -586,21 +590,20 @@ function loadQuestion() {
 
     questionLabel.textContent = q.label;
 
-    const radioContainer = document.getElementById("radioContainer");        
-    document.querySelector(".frosted-glass").classList.add("round2");
-    document.querySelector(".submit-btn").textContent = "Submit";
+    const radioContainer = document.getElementById("radioContainer");
 
-
-    // Round 2 uses RADIO BUTTONS
+    // --- ROUND 2 ---
     if (round === 2 && q.options) {
+
+        document.querySelector(".frosted-glass").classList.add("round2");
+        document.querySelector(".submit-btn").textContent = "Submit";
 
         // Hide textbox
         questionInput.classList.add("hide");
 
-        // Show radio container
+        // Show radio options
         radioContainer.classList.remove("hide");
 
-        // Render options
         radioContainer.innerHTML = q.options.map((opt, i) => `
             <label style="display:block; margin-bottom:10px; font-size:1.2rem;">
                 <input type="radio" name="round2" value="${opt}" style="margin-right:8px;">
@@ -611,13 +614,13 @@ function loadQuestion() {
         return;
     }
 
-    // Round 1 (textboxes)
+    // --- ROUND 1 ---
     document.querySelector(".frosted-glass").classList.remove("round2");
     document.querySelector(".submit-btn").textContent = "🡪";
+
     radioContainer.classList.add("hide");
     questionInput.classList.remove("hide");
-    document.querySelector(".submit-btn").classList.remove("hide");
-
+    
     questionInput.placeholder = q.placeholder;
     questionInput.value = "";
     questionInput.focus();
@@ -774,16 +777,19 @@ document.getElementById("spinAgain").addEventListener("click", () => {
 
     document.body.style.background = "#111";
     canvas.style.display = "block";
+fadeInParticles();
+
+// PREP the next question BEFORE showing the form
+round = 2;
+questions = round2Questions;
+qIndex = 0;
+loadQuestion();  // updates UI BEFORE showing container
+
+// Now reveal the frosted glass AFTER everything is ready
+setTimeout(() => {
     document.querySelector(".frosted-glass").classList.remove("hide");
+}, 200); // small delay so particles can fade-in first
 
-    fadeInParticles();
-
-    setTimeout(() => {
-        round = 2;
-        questions = round2Questions;
-        qIndex = 0;
-        loadQuestion();
-    }, 900);
 });
 
 /* RESET ALL */
