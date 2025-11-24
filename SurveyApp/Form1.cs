@@ -39,9 +39,7 @@ namespace SurveyApp{
                     timestamp TEXT,
                     name TEXT,
                     org TEXT,
-                    color TEXT,
-                    animal TEXT,
-                    prize INTEGER
+                    experience TEXT
                 );
             ";
 
