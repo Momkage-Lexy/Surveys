@@ -34,7 +34,7 @@
             backdrop-filter: blur(10.9px);
             -webkit-backdrop-filter: blur(10.9px);
             margin:auto;
-            margin-top:175px;
+            margin-top:130px;
         }
 
         .frosted-glass h1{
@@ -316,6 +316,24 @@
         .flex{
             display:flex;
         }
+        .frosted-glass.round2 .form-label{
+            top: 220px !important;
+            width: 50%;
+        }
+
+        .frosted-glass.round2 .submit-btn {
+            border-radius: 50px;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+            top: 470px;
+            left: 225px;
+            width: 150px;
+            font-family: "Funnel Display", sans-serif;
+        }
+
+        .round2 .white-line {
+            top: 340px;
+        }
     </style>
 </head>
 <body>
@@ -335,6 +353,7 @@
 
     <form id="questionForm">
         <input type="text" id="questionInput" placeholder="Type here..." class="input-text-box">
+        <div id="radioContainer" class="hide" style="position:absolute; top:350px; left:229px; color:white;"></div>
         <button type="submit" class="submit-btn">🡪</button>
     </form>
 </div>
@@ -550,14 +569,16 @@ const round1Questions = [
 ];
 
 const round2Questions = [
-    { label: "Favorite Color", placeholder: "Favorite color" },
-    { label: "Favorite Animal", placeholder: "Favorite animal" }
+    { 
+        label: "Did your experience at this booth improve your impression of Oregon State University?",
+        options: ["Neutral, no change of impression", "Yes, somewhat improved", "Yes, much improved"]
+    }
 ];
 
 let questions = round1Questions;
 let qIndex = 0;
 
-const answers = { name: "", org: "", color: "", animal: "" };
+const answers = { name: "", org: "", experience: "" };
 let lastPrize = 0;
 
 const questionLabel = document.getElementById("questionLabel");
@@ -566,24 +587,65 @@ const questionForm = document.getElementById("questionForm");
 
 function loadQuestion() {
     const q = questions[qIndex];
+
     questionLabel.textContent = q.label;
+
+    const radioContainer = document.getElementById("radioContainer");
+
+    // --- ROUND 2 ---
+    if (round === 2 && q.options) {
+
+        document.querySelector(".frosted-glass").classList.add("round2");
+        document.querySelector(".submit-btn").textContent = "Submit";
+
+        // Hide textbox
+        questionInput.classList.add("hide");
+
+        // Show radio options
+        radioContainer.classList.remove("hide");
+
+        radioContainer.innerHTML = q.options.map((opt, i) => `
+            <label style="display:block; margin-bottom:10px; font-size:1.2rem;">
+                <input type="radio" name="round2" value="${opt}" style="margin-right:8px;">
+                ${opt}
+            </label>
+        `).join("");
+
+        return;
+    }
+
+    // --- ROUND 1 ---
+    document.querySelector(".frosted-glass").classList.remove("round2");
+    document.querySelector(".submit-btn").textContent = "🡪";
+
+    radioContainer.classList.add("hide");
+    questionInput.classList.remove("hide");
+    
     questionInput.placeholder = q.placeholder;
     questionInput.value = "";
     questionInput.focus();
 }
 
+
 questionForm.addEventListener("submit", (e) => {
     e.preventDefault();
 
-    const value = questionInput.value.trim();
-    if (!value) return;
+    let value;
+
+    if (round === 2) {
+        const checked = document.querySelector("input[name='round2']:checked");
+        if (!checked) return; // no selection → do nothing
+        value = checked.value;
+    } else {
+        value = questionInput.value.trim();
+        if (!value) return;
+    }
 
     if (round === 1) {
         if (qIndex === 0) answers.name = value;
         else answers.org = value;
     } else {
-        if (qIndex === 0) answers.color = value;
-        else answers.animal = value;
+        answers.experience = value;
     }
 
     const rect = questionForm.getBoundingClientRect();
@@ -715,16 +777,19 @@ document.getElementById("spinAgain").addEventListener("click", () => {
 
     document.body.style.background = "#111";
     canvas.style.display = "block";
+fadeInParticles();
+
+// PREP the next question BEFORE showing the form
+round = 2;
+questions = round2Questions;
+qIndex = 0;
+loadQuestion();  // updates UI BEFORE showing container
+
+// Now reveal the frosted glass AFTER everything is ready
+setTimeout(() => {
     document.querySelector(".frosted-glass").classList.remove("hide");
+}, 200); // small delay so particles can fade-in first
 
-    fadeInParticles();
-
-    setTimeout(() => {
-        round = 2;
-        questions = round2Questions;
-        qIndex = 0;
-        loadQuestion();
-    }, 900);
 });
 
 /* RESET ALL */
@@ -760,8 +825,18 @@ function resetAll() {
     loadQuestion();
 }
 
-
 document.getElementById("closeModal").addEventListener("click", () => {
+
+    // Send to db
+    if (round === 2 && window.chrome && window.chrome.webview) {
+        window.chrome.webview.postMessage({
+            name: answers.name,
+            org: answers.org,
+            experience: answers.experience,
+            prize: lastPrize
+        });
+    }
+
     resetAll();
 });
 
