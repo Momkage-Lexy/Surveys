@@ -41,10 +41,18 @@
             this.Name = "Form1";
             this.Text = "SurveyApp";
             this.ResumeLayout(false);
+
+            this.exportBtn = new System.Windows.Forms.Button();
+            this.exportBtn.Text = "Export CSV";
+            this.exportBtn.Location = new System.Drawing.Point(10, 10);
+            this.exportBtn.Click += (s, e) => ExportToCsv();
+            this.Controls.Add(this.exportBtn);
+
         }
 
         #endregion
 
         private Microsoft.Web.WebView2.WinForms.WebView2 webView21;
+        private Button exportBtn;
     }
 }

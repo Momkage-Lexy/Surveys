@@ -620,6 +620,10 @@ function loadQuestion() {
                 ${opt}
             </label>
         `).join("");
+        
+        setTimeout(() => {
+            document.querySelectorAll("input[name='round2']").forEach(r => r.checked = false);
+        }, 10);
 
         return;
     }
@@ -810,7 +814,10 @@ function resetAll() {
     questions = round1Questions;
     qIndex = 0;
 
-    // hide both wheels properly
+    answers.name = "";
+    answers.org = "";
+    answers.experience = ""; 
+
     spinnerWheel.classList.add("hide");
     spinnerWheel2.classList.add("hide");
 
@@ -837,13 +844,12 @@ function resetAll() {
 
 document.getElementById("closeModal").addEventListener("click", () => {
 
-    // Send to db
-    if (round === 2 && window.chrome && window.chrome.webview) {
+    // ALWAYS send to DB — round 1 or round 2
+    if (window.chrome && window.chrome.webview) {
         window.chrome.webview.postMessage({
             name: answers.name,
             org: answers.org,
-            experience: answers.experience,
-            prize: lastPrize
+            experience: answers.experience || ""
         });
     }
 

@@ -77,28 +77,70 @@ namespace SurveyApp{
             // Insert user data
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"
-                INSERT INTO responses (timestamp, name, org, color, animal, prize)
-                VALUES ($ts, $n, $o, $c, $a, $p)
+                INSERT INTO responses (timestamp, name, org, experience)
+                VALUES ($ts, $n, $o, $e)
             ";
 
             cmd.Parameters.AddWithValue("$ts", DateTime.Now.ToString("o"));
             cmd.Parameters.AddWithValue("$n", r.name);
             cmd.Parameters.AddWithValue("$o", r.org);
-            cmd.Parameters.AddWithValue("$c", r.color);
-            cmd.Parameters.AddWithValue("$a", r.animal);
-            cmd.Parameters.AddWithValue("$p", r.prize);
+            cmd.Parameters.AddWithValue("$e", r.experience ?? "");
 
             // Get number of entries
             cmd.ExecuteNonQuery();
+            ExportToCsv();
         }
 
         public class SurveyResult
         {
             public string name { get; set; }
             public string org { get; set; }
-            public string color { get; set; }
-            public string animal { get; set; }
-            public int prize { get; set; }
+            public string experience { get; set; } = "";
         }
+
+        private void ExportToCsv()
+        {
+            string finalPath = Path.Combine(Application.StartupPath, "survey_export.csv");
+            string tempPath = Path.Combine(Application.StartupPath, "survey_export.tmp");
+
+            using var conn = new SqliteConnection($"Data Source={dbPath}");
+            conn.Open();
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT timestamp, name, org, experience FROM responses";
+
+            // Write to a temporary file first
+            using (var sw = new StreamWriter(tempPath, false))
+            {
+                sw.WriteLine("Timestamp,Name,Organization,Experience");
+
+                using var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    sw.WriteLine(
+                        $"{Escape(reader.GetString(0))}," +
+                        $"{Escape(reader.GetString(1))}," +
+                        $"{Escape(reader.GetString(2))}," +
+                        $"{Escape(reader.GetString(3))}"
+                    );
+                }
+            }
+
+            // Replace the old CSV atomically
+            if (File.Exists(finalPath))
+            {
+                File.Delete(finalPath);  // Remove old file
+            }
+
+            File.Move(tempPath, finalPath);  // Rename temp → final
+        }
+        private string Escape(string s)
+        {
+            if (string.IsNullOrEmpty(s))
+                return "\"\"";
+
+            return "\"" + s.Replace("\"", "\"\"") + "\"";
+        }
+
     }
 }
