@@ -65,12 +65,11 @@
 
         .form-container {
             height: 80%;
-            width: 80%;
-            max-width: 900px;
+            width: 100vh;
+            max-width: 100vh;
             max-height: 600px;
             border-radius: 20px;
             position: relative;
-            padding: 40px 30px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -78,22 +77,22 @@
 
         .form-inner {
             width: 100%;
-            max-width: 700px;
+            max-width: 100vh;
             text-align: center;
         }
 
         .question-label {
-            font-size: 1.3rem;
+            font-size: 3rem;
             font-weight: 500;
-            margin-bottom: 20px;
             color: #222;
+            text-shadow: -5px 5px 7px #00000029;
+            margin-bottom: 30px;
         }
 
         form#questionForm {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 24px;
         }
 
         fieldset.text-box {
@@ -169,17 +168,17 @@
         /* Neumorphic radio group */
         .radio-group {
             width: 100%;
-            max-width: 600px;
+            max-width: 80%;
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             gap: 12px;
-            margin-top: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         .radio-option {
             display: flex;
             align-items: center;
-            gap: 12px;
             padding: 14px 18px;
             border-radius: 24px;
             background: #f6f6f6;
@@ -194,10 +193,9 @@
         }
 
         .radio-bullet {
-            width: 18px;
-            height: 18px;
+            width: 0;
+            height: 0;
             border-radius: 999px;
-            border: 2px solid #999;
             flex-shrink: 0;
             position: relative;
         }
@@ -219,7 +217,6 @@
         .radio-option.selected {
             background: #ffffff;
             box-shadow: var(--shadow-inset);
-            transform: translateY(1px);
         }
 
         .radio-option.selected .radio-bullet {
@@ -247,6 +244,7 @@
                 inset 0 -0.4rem 0.9rem rgba(255, 255, 255, 0.5),
                 0 3rem 3rem rgba(0, 0, 0, 0.3),
                 0 1rem 1rem -0.6rem rgba(0, 0, 0, 0.8);
+            margin-top: 30px;
         }
 
         .button .wrap {
@@ -580,6 +578,39 @@
                 font-size: 2.4rem;
             }
         }
+
+        /* Radio Glow */
+        .radio-glow {
+            border-radius: 50px;
+            padding: 2px;
+            transition: all 0.3s ease;
+        }
+
+        /* Apply glowing animated border when selected */
+        .radio-glow.glow-active {
+            position: relative;
+            background: linear-gradient(120deg,
+                #ff8a00,
+                var(--orange),
+                var(--orange-soft),
+                #ff8a00
+            );
+            background-size: 300% 300%;
+            animation: moveGradient 4s ease infinite;
+        }
+
+        .radio-glow.glow-active::after {
+            content: "";
+            position: absolute;
+            inset: -5px;
+            border-radius: inherit;
+            background: radial-gradient(circle, rgba(215,63,9,0.4), transparent 70%);
+            filter: blur(10px);
+            z-index: -1;
+            animation: moveGradient 6s ease infinite;
+            background-size: 300% 300%;
+        }
+
     </style>
 </head>
 <body>
@@ -624,7 +655,7 @@
                     <div class="wrap">
                         <p>Continue to Round 2</p>
                     </div>
-                </button>
+                </button> 
             </div>
 
             <!-- Spinner Wheel for Round 2 -->
@@ -666,8 +697,19 @@
         let round = 1;
 
         const round1Questions = [
-            { label: "Enter your name", placeholder: "Name" },
-            { label: "Organization", placeholder: "Organization" }
+            { label: "What is your name?", placeholder: "Enter your name" },
+            { label: "Organization", options:[
+                "Oz",
+                "Kansas",
+                "Zootopia",
+                "The Leaf Village",
+                "Narnia",
+                "Hogwarts",
+                "Neverland",
+                "Atlantis",
+                "Wakanda",
+                "Asgard"
+            ] }
         ];
 
         const round2Questions = [
@@ -699,7 +741,7 @@
             const q = questions[qIndex];
             questionLabel.textContent = q.label;
 
-            if (round === 2 && q.options) {
+            if (q.options) {
                 // Radio (neumorphic cards)
                 document.getElementById("glowWrap").classList.add("hide");
                 questionInput.value = "";
@@ -710,19 +752,31 @@
                 q.options.forEach((opt, idx) => {
                     const id = `opt-${idx}`;
                     const label = document.createElement("label");
-                    label.className = "radio-option";
-                    label.innerHTML = `
-                        <span class="radio-bullet"></span>
-                        <span class="radio-label-text">${opt}</span>
-                        <input type="radio" name="round2" value="${opt}" id="${id}">
-                    `;
-                    label.addEventListener("click", () => {
-                        // Unselect others
-                        radioContainer.querySelectorAll(".radio-option").forEach(l => l.classList.remove("selected"));
-                        label.classList.add("selected");
-                        const input = label.querySelector("input[type='radio']");
-                        input.checked = true;
+                label.innerHTML = `
+                    <div class="glow-wrap radio-glow">
+                        <div class="radio-option">
+                            <span class="radio-bullet"></span>
+                            <span class="radio-label-text">${opt}</span>
+                            <input type="radio" name="round2" value="${opt}" id="${id}">
+                        </div>
+                    </div>
+                `;
+                label.addEventListener("click", () => {
+                    radioContainer.querySelectorAll(".radio-option").forEach(l => {
+                        l.classList.remove("selected");
+                        l.parentElement.classList.remove("glow-active");
                     });
+
+                    const wrap = label.querySelector(".glow-wrap");
+                    const option = label.querySelector(".radio-option");
+                    
+                    option.classList.add("selected");
+                    wrap.classList.add("glow-active");
+
+                    const input = label.querySelector("input[type='radio']");
+                    input.checked = true;
+                });
+
                     radioContainer.appendChild(label);
                 });
             } else {
@@ -739,11 +793,13 @@
             e.preventDefault();
             let value;
 
-            if (round === 2) {
+            // If this question uses radios:
+            if (questions[qIndex].options) {
                 const checked = radioContainer.querySelector("input[type='radio']:checked");
                 if (!checked) return;
                 value = checked.value;
             } else {
+                // Text input question
                 value = questionInput.value.trim();
                 if (!value) return;
             }
@@ -820,24 +876,44 @@
                 "#4A773C",
                 "#003B5C"
             ];
-            for (let i = 0; i < 150; i++) {
-                const fromLeft = Math.random() < 0.5;
-                const x = fromLeft ? -20 : confettiCanvas.width + 20;
-                const y = Math.random() * confettiCanvas.height * 0.8;
-                const angle = fromLeft ? Math.random() * 0.8 - 0.2 : Math.PI + (Math.random() * 0.8 - 0.2);
-                const speed = 4 + Math.random() * 3;
+
+            const leftX = -20;                                      // Offscreen left cannon
+            const rightX = confettiCanvas.width + 20;               // Offscreen right cannon
+            const startY = confettiCanvas.height + 80;              // BELOW the screen
+
+            const total = 600;
+
+            for (let i = 0; i < total; i++) {
+
+                const fromLeft = i % 2 === 0;
+
+                const x = fromLeft ? leftX : rightX;
+                const y = confettiCanvas.height + 200;  // deeper cannon position
+
+
+                // Strong upward + inward angles
+                const baseAngle = fromLeft
+                    ? -Math.PI / 2.2       // shoots up-right
+                    : -Math.PI + Math.PI / 2.2; // shoots up-left
+
+                // Random spread like real cannons
+                const spread = (Math.random() * 0.6) - 0.3;
+
+                const angle = baseAngle + spread;
+
+                const speed = 10 + Math.random() * 20;  // stronger cannon blast
 
                 confettiPieces.push({
                     x,
                     y,
                     vx: Math.cos(angle) * speed,
-                    vy: Math.sin(angle) * speed * 0.4,
+                    vy: Math.sin(angle) * speed,
                     size: 6 + Math.random() * 6,
                     color: colors[Math.floor(Math.random() * colors.length)],
                     rotation: Math.random() * Math.PI * 2,
-                    rotationSpeed: (Math.random() - 0.5) * 0.2,
+                    rotationSpeed: (Math.random() - 0.5) * 0.3,
                     life: 0,
-                    maxLife: 120 + Math.random() * 60
+                    maxLife: 100 + Math.random() * 60
                 });
             }
         }
@@ -879,7 +955,7 @@
             });
 
             confettiPieces = confettiPieces.filter(p =>
-                p.y < confettiCanvas.height + 50 && p.life < p.maxLife
+                p.y < confettiCanvas.height + 200 && p.life < p.maxLife
             );
 
             confettiPieces.forEach(p => {
