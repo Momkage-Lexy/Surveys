@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Survey</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Electrolize&family=Funnel+Display:wght@300..800&display=swap" rel="stylesheet">
+    <style>
+        body{
+            background-color: #f8f8f8;;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .form-container{
+            height: 80%;
+            width: 80%;
+            background-color: #f5f4f4;
+            box-shadow: -5px -5px 9px rgba(255, 255, 255, 0.45),
+                5px 5px 9px rgba(94, 104, 121, 0.3);
+            border-radius: 5px;
+        }
+
+        .form-container form{
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .form-container form fieldset{
+            width: 100%;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 0;
+            position:relative;
+        }
+
+        .form-container form fieldset::before{
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 50%;
+            height: 50px;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, #d73f09, rgba(255, 180, 80, 0));
+            filter: blur(5px);
+            opacity: 0.8;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        #name-field{
+            width:50%;
+            border-radius: 50px;
+            padding: 15px;
+            border: 0;
+            box-shadow: -10px -10px 15px rgba(255, 255, 255, 0.5), 10px 10px 15px rgba(70, 70, 70, 0.12);
+             z-index: 1;
+        }
+
+        #name-field:focus, #name-field:focus-visible{
+            box-shadow: inset -5px -5px 9px rgba(255, 255, 255, 0.45),
+                inset 5px 5px 9px rgba(94, 104, 121, 0.3);
+            border: 0;
+            outline: 0;
+        } 
+
+        #name-field::placeholder{
+            font-family: "Funnel Display", sans-serif;
+            font-size: 1rem;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <form>
+            <fieldset>
+                <input type="text" name="Name" placeholder="Enter your name" id="name-field">
+            </fieldset>
+        </form> 
+
+
+    </div>
+</body>
+</html>
