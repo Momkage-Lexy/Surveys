@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Electrolize&family=Funnel+Display:wght@300..800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap" rel="stylesheet">
     <style>
         body{
             background-color: #f8f8f8;;
@@ -14,15 +14,15 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            position:relative;
+            margin:0;
         }
 
         .form-container{
             height: 80%;
             width: 80%;
-            background-color: #f5f4f4;
-            box-shadow: -5px -5px 9px rgba(255, 255, 255, 0.45),
-                5px 5px 9px rgba(94, 104, 121, 0.3);
             border-radius: 5px;
+            position:relative;
         }
 
         .form-container form{
@@ -31,6 +31,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-wrap: wrap;
+            align-content: center;
         }
 
         .form-container form fieldset{
@@ -43,7 +45,7 @@
             position:relative;
         }
 
-        .form-container form fieldset::before{
+        /*.form-container form fieldset::before{
             content: "";
             position: absolute;
             left: 50%;
@@ -56,10 +58,9 @@
             opacity: 0.8;
             z-index: 0;
             pointer-events: none;
-        }
+        }*/
 
         #name-field{
-            width:50%;
             border-radius: 50px;
             padding: 15px;
             border: 0;
@@ -75,21 +76,122 @@
         } 
 
         #name-field::placeholder{
-            font-family: "Funnel Display", sans-serif;
+             font-family: "TikTok Sans", sans-serif;
             font-size: 1rem;
         }
 
+        fieldset{
+            flex-basis:100%;
+        }
+        h1{
+            font-family: "TikTok Sans", sans-serif;
+            color: #00000030;
+            font-weight: 900;
+            font-size: 1.25rem;
+            margin-bottom: 0;
+            rotate: -90deg;
+            position: absolute;
+            top: 40px;
+            left: -20px;
+        }
+
+        h2{
+            color: rgb(0, 0, 0);
+            font-family: "TikTok Sans", sans-serif;
+            font-weight: 300;
+            font-size: 3rem;
+            margin-top: 0;
+            border-left: 1px solid #000000;
+            padding-left: 1rem;
+            position: absolute;
+            left: 50px;
+            top: 0;
+        }
+
+        .glow-wrap:hover, .glow-wrap:focus-within, .glow-wrap:active {
+            position: relative;
+            border-radius: 50px;
+            padding: 2px; 
+            background: linear-gradient(120deg,
+                #ff8a00,
+                #d73f09,
+                #ffb36a,
+                #ff8a00
+            );
+            background-size: 300% 300%;
+        }
+        .glow-wrap:focus-within {
+            animation: moveGradient 4s ease infinite;
+        }
+
+        @keyframes moveGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .glow-wrap input {
+            width: 600px;
+            padding: 15px 20px;
+            border-radius: 50px;
+            border: none;
+            outline: none;
+            background: #fff;
+            font-size: 1rem;
+            font-family: "TikTok Sans", sans-serif;
+        }
+
+        .glow-wrap:hover::after, .glow-wrap:focus-within::after {
+            content: "";
+            position: absolute;
+            inset: -5px;
+            border-radius: inherit;
+            background: radial-gradient(circle, rgba(215,63,9,0.4), transparent 70%);
+            filter: blur(10px);
+            z-index: -1;
+            animation: moveGradient 6s ease infinite;
+            background-size: 300% 300%;
+        }
+
+        .submit-btn{
+            background-color: #eaeaea;
+            border: 1px solid #eaeaea;
+            border-radius: 15px;
+            color: #3c4043;
+            font-optical-sizing: none;
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+            font-family: "TikTok Sans", sans-serif;
+            padding: 10px;
+            width: 15%;
+        }
+
+        .submit-btn:hover {
+            border: 2px solid #242424;
+            color: #202124;
+        }
+
+        .submit-btn:active {
+            background-color: #202124;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
+    <h1>AGU 2025</h1>
+    <h2>Oregon State<br>University</h2>
     <div class="form-container">
         <form>
             <fieldset>
-                <input type="text" name="Name" placeholder="Enter your name" id="name-field">
+                <div class="glow-wrap">
+                    <input type="text" id="name-field" placeholder="Enter your name">
+                </div>
             </fieldset>
+            <button type="submit" class="submit-btn">Submit</button>
         </form> 
-
-
     </div>
 </body>
 </html>
