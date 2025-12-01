@@ -36,10 +36,10 @@ namespace SurveyApp{
             cmd.CommandText = @"
                 CREATE TABLE IF NOT EXISTS responses (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    timestamp TEXT,
-                    name TEXT,
-                    org TEXT,
-                    experience TEXT
+                    role TEXT,
+                    experience TEXT,
+                    brougt TEXT,
+                    email TEXT,
                 );
             ";
 
@@ -77,14 +77,14 @@ namespace SurveyApp{
             // Insert user data
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"
-                INSERT INTO responses (timestamp, name, org, experience)
+                INSERT INTO responses (role, experience, brought, email)
                 VALUES ($ts, $n, $o, $e)
             ";
 
-            cmd.Parameters.AddWithValue("$ts", DateTime.Now.ToString("o"));
-            cmd.Parameters.AddWithValue("$n", r.name);
-            cmd.Parameters.AddWithValue("$o", r.org);
-            cmd.Parameters.AddWithValue("$e", r.experience ?? "");
+            cmd.Parameters.AddWithValue("$ts", r.role);
+            cmd.Parameters.AddWithValue("$n", r.experience);
+            cmd.Parameters.AddWithValue("$o", r.brought);
+            cmd.Parameters.AddWithValue("$e", r.email);
 
             // Get number of entries
             cmd.ExecuteNonQuery();
@@ -93,9 +93,10 @@ namespace SurveyApp{
 
         public class SurveyResult
         {
-            public string name { get; set; }
-            public string org { get; set; }
-            public string experience { get; set; } = "";
+            public string role { get; set; }
+            public string experience { get; set; };
+            public string brought { get; set; }
+            public string email { get; set; }
         }
 
         private void ExportToCsv()
@@ -107,12 +108,12 @@ namespace SurveyApp{
             conn.Open();
 
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = "SELECT timestamp, name, org, experience FROM responses";
+            cmd.CommandText = "SELECT role, experience, brought, email FROM responses";
 
             // Write to a temporary file first
             using (var sw = new StreamWriter(tempPath, false))
             {
-                sw.WriteLine("Timestamp,Name,Organization,Experience");
+                sw.WriteLine("Role,Experience,What brought you to the booth,Email"); // Header
 
                 using var reader = cmd.ExecuteReader();
                 while (reader.Read())
