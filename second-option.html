@@ -349,6 +349,7 @@
             flex-direction: column;
             align-items: center;
             gap: 20px;
+            z-index: 10;
         }
 
         .win-title {
@@ -358,12 +359,14 @@
             text-transform: uppercase;
             color: var(--orange);
             text-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+            z-index: 10;
         }
 
         .win-subtitle {
             font-size: 1.1rem;
             color: #444;
             max-width: 480px;
+            z-index: 10;
         }
 
         .hide {
@@ -375,7 +378,7 @@
             position: fixed;
             inset: 0;
             pointer-events: none;
-            z-index: 999;
+            z-index: 1;
         }
 
         /* Spinner wheel 2 */
@@ -627,7 +630,7 @@
 
             <!-- Question form (Round 1 + Round 2) -->
             <form id="questionForm">
-                <div class="question-label" id="questionLabel">Enter your name</div>
+                <div class="question-label" id="questionLabel">What is your name?</div>
 
                 <fieldset class="text-box">
                     <div class="glow-wrap" id="glowWrap">
@@ -868,60 +871,54 @@
         window.addEventListener("resize", resizeConfetti);
         resizeConfetti();
 
-        function createConfettiBurst() {
-            const colors = [
-                "#d73f09",
-                "#ff8a00",
-                "#f7a162",
-                "#4A773C",
-                "#003B5C"
-            ];
+        function createConfettiBurst(originX, originY) {
+            if (!originX || !originY) {
+                originX = window.innerWidth / 2;
+                originY = window.innerHeight * 0.45;
+            }
 
-            const leftX = -20;                                      // Offscreen left cannon
-            const rightX = confettiCanvas.width + 20;               // Offscreen right cannon
-            const startY = confettiCanvas.height + 80;              // BELOW the screen
-
-            const total = 600;
+            const colors = ["#d73f09", "#ff8a00", "#f7a162", "#4A773C", "#003B5C"];
+            const total = 120;
 
             for (let i = 0; i < total; i++) {
+                // VERY wide cone for chaotic look
+                const angle = (-90 + (Math.random() * 140 - 70)) * Math.PI / 180;
 
-                const fromLeft = i % 2 === 0;
+                // More variation in speed
+                const speed = 2 + Math.random() * 4;
 
-                const x = fromLeft ? leftX : rightX;
-                const y = confettiCanvas.height + 200;  // deeper cannon position
-
-
-                // Strong upward + inward angles
-                const baseAngle = fromLeft
-                    ? -Math.PI / 2.2       // shoots up-right
-                    : -Math.PI + Math.PI / 2.2; // shoots up-left
-
-                // Random spread like real cannons
-                const spread = (Math.random() * 0.6) - 0.3;
-
-                const angle = baseAngle + spread;
-
-                const speed = 10 + Math.random() * 20;  // stronger cannon blast
+                // New randomness properties
+                const wobble = Math.random() * Math.PI * 2;
+                const wobbleSpeed = 0.1 + Math.random() * 0.25;  // each piece wobbles differently
+                const gravity = 0.05 + Math.random() * 0.08;      // each piece falls differently
+                const drag = 0.92 + Math.random() * 0.04;         // some slow down faster
 
                 confettiPieces.push({
-                    x,
-                    y,
+                    x: originX,
+                    y: originY,
                     vx: Math.cos(angle) * speed,
                     vy: Math.sin(angle) * speed,
-                    size: 6 + Math.random() * 6,
+                    size: 4 + Math.random() * 5,
                     color: colors[Math.floor(Math.random() * colors.length)],
                     rotation: Math.random() * Math.PI * 2,
-                    rotationSpeed: (Math.random() - 0.5) * 0.3,
+                    rotationSpeed: (Math.random() - 0.5) * 0.25,
+
+                    // new chaotic motion properties
+                    wobble,
+                    wobbleSpeed,
+                    gravity,
+                    drag,
+
                     life: 0,
                     maxLife: 100 + Math.random() * 60
                 });
             }
         }
 
-        function startConfetti() {
+        function startConfetti(x, y) {
             confettiActive = true;
             confettiPieces = [];
-            createConfettiBurst();
+            createConfettiBurst(x, y);
 
             if (confettiStopTimeout) clearTimeout(confettiStopTimeout);
             confettiStopTimeout = setTimeout(() => {
@@ -946,9 +943,21 @@
             cctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
 
             confettiPieces.forEach(p => {
-                p.x += p.vx;
+                // Apply drag randomness
+                p.vx *= p.drag;
+                p.vy *= p.drag;
+
+                // Apply gravity (each piece has different gravity)
+                p.vy += p.gravity;
+
+                // Wobble left/right so pieces flutter randomly
+                p.wobble += p.wobbleSpeed;
+                p.x += p.vx + Math.cos(p.wobble) * 0.8;
                 p.y += p.vy;
-                p.vy += 0.1; // gravity
+
+                // Rotation chaos
+                p.rotation += p.rotationSpeed;
+
                 p.rotation += p.rotationSpeed;
                 p.life++;
 
