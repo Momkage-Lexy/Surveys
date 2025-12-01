@@ -622,6 +622,14 @@
             background-size: 300% 300%;
         }
 
+        #backButton {
+            border: 0;
+            background-color: #ffffff00;
+            font-size: 1.5rem;
+            color: #33333359;
+            margin-top: 2rem;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -638,7 +646,9 @@
 
             <!-- Question form (Round 1 + Round 2) -->
             <form id="questionForm">
-                <div class="question-label" id="questionLabel">What is your name?</div>
+
+                <div class="question-label" id="questionLabel"></div>
+                <div id="radioContainer" class="radio-group hide"></div>
 
                 <fieldset class="text-box">
                     <div class="glow-wrap" id="glowWrap">
@@ -646,13 +656,12 @@
                     </div>
                 </fieldset>
 
-                <div id="radioContainer" class="radio-group hide"></div>
-
-                <button class="button" type="submit">
+                <button class="button" id="submitButton" type="submit">
                     <div class="wrap">
                         <p>Submit</p>
                     </div>
                 </button>
+                 <button type="button"id="backButton">&#8617; Back to previous question</button>
             </form>
 
             <!-- YOU WIN state (after Round 1) -->
@@ -753,6 +762,10 @@
         const youWinBlock = document.getElementById("youWin");
         const formInner = document.querySelector(".form-inner");
         const spinnerWheel2 = document.getElementById("spinnerWheel2");
+        const submitButton = document.getElementById("submitButton");
+        let history = [];
+        const backButton = document.getElementById("backButton");
+
 
         function loadQuestion() {
             const q = questions[qIndex];
@@ -764,6 +777,7 @@
                 questionInput.value = "";
                 questionInput.blur();
                 radioContainer.classList.remove("hide");
+                submitButton.classList.add("hide");
                 radioContainer.innerHTML = "";
 
                 q.options.forEach((opt, idx) => {
@@ -778,6 +792,7 @@
                         </div>
                     </div>
                 `;
+
                 label.addEventListener("click", () => {
                     radioContainer.querySelectorAll(".radio-option").forEach(l => {
                         l.classList.remove("selected");
@@ -792,18 +807,30 @@
 
                     const input = label.querySelector("input[type='radio']");
                     input.checked = true;
+
+                    // ⭐ AUTO-SUBMIT after short delay
+                    setTimeout(() => {
+                        questionForm.dispatchEvent(new Event("submit", { cancelable: true }));
+                    }, 150); // feel free to tweak delay
                 });
+
 
                     radioContainer.appendChild(label);
                 });
             } else {
                 // Text field (Round 1)
                 radioContainer.classList.add("hide");
+                submitButton.classList.remove("hide");
                 document.getElementById("glowWrap").classList.remove("hide");
                 questionInput.value = "";
                 questionInput.placeholder = q.placeholder || "";
                 questionInput.focus();
             }
+
+            // Back button only shows on question #2 of any round
+            if (qIndex === 1) backButton.classList.remove("hide");
+            else backButton.classList.add("hide");
+
         }
 
         questionForm.addEventListener("submit", (e) => {
@@ -828,6 +855,7 @@
                 answers.experience = value;
             }
 
+            history.push({ qIndex, value });
             qIndex++;
 
             if (qIndex < questions.length) {
@@ -838,6 +866,43 @@
                 } else {
                     finishedRound2();
                 }
+            }
+
+        });
+                    
+        document.getElementById("backButton").addEventListener("click", () => {
+            if (history.length === 0) return; // can't go back
+
+            // Retrieve last answer
+            const last = history.pop();
+
+            // Move qIndex back
+            qIndex = last.qIndex;
+
+            // Load the question again
+            loadQuestion();
+
+            // Restore the previous answer
+            const q = questions[qIndex];
+
+            if (q.options) {
+                // restore radio selection
+                const radios = radioContainer.querySelectorAll("input[type='radio']");
+                radios.forEach(r => {
+                    if (r.value === last.value) {
+                        r.checked = true;
+
+                        // add styling back
+                        const option = r.closest(".radio-option");
+                        const wrap = r.closest(".glow-wrap");
+                        if (option) option.classList.add("selected");
+                        if (wrap) wrap.classList.add("glow-active");
+                    }
+                });
+
+            } else {
+                // restore text input
+                questionInput.value = last.value;
             }
         });
 
@@ -857,6 +922,8 @@
             round = 2;
             questions = round2Questions;
             qIndex = 0;
+            backButton.classList.add("hide");
+            history = [];
             loadQuestion();
         });
 
