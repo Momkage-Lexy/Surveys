@@ -356,6 +356,38 @@
         <div id="radioContainer" class="hide" style="position:absolute; top:350px; left:229px; color:white;"></div>
         <button type="submit" class="submit-btn">🡪</button>
     </form>
+
+    <div id="youWinScreen" class="hide" style="
+    position:absolute;
+    top:0; left:0;
+    width:100%; height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    color:white;
+    backdrop-filter:none;
+    pointer-events:auto;
+">
+    <h2 style="font-size:4rem; margin-bottom:1rem; font-weight:700;">
+        YOU WIN!
+    </h2>
+
+    <button id="continueToRound2" style="
+        padding:14px 40px;
+        font-size:1.5rem;
+        border-radius:12px;
+        border:none;
+        background:#d73f09;
+        color:white;
+        cursor:pointer;
+        font-family:'Funnel Display', sans-serif;
+    ">
+        Continue to Round Two
+    </button>
+</div>
+
 </div>
 
 <div id="spinnerWheel" class="hide">
@@ -664,22 +696,31 @@ questionForm.addEventListener("submit", (e) => {
 function finishedQuestions() {
     const glass = document.querySelector(".frosted-glass");
 
-    fadeOutParticles();
-
     setTimeout(() => {
-        glass.classList.add("hide");
-        canvas.style.display = "none";
-        document.body.style.background = "black";
 
         if (round === 1) {
-            spinnerWheel.classList.remove("hide");
-            setTimeout(() => spinnerWheel.classList.add("show"), 50);
-        } else {
+
+            // Hide question UI
+            document.getElementById("questionForm").classList.add("hide");
+            document.querySelector(".form-label").classList.add("hide");
+            document.querySelector(".white-line").classList.add("hide");
+
+            // Show YOU WIN screen
+            document.getElementById("youWinScreen").classList.remove("hide");
+
+            return;
+        } 
+        
+        else {
+            // For Round 2 → hide frosted glass and show wheel
+            fadeOutParticles();
+            glass.classList.add("hide");
             spinnerWheel2.classList.remove("hide");
             setTimeout(() => spinnerWheel2.classList.add("show"), 50);
         }
     }, 800);
 }
+
 
 loadQuestion();
 
@@ -824,6 +865,24 @@ function resetAll() {
     fadeInParticles();
     loadQuestion();
 }
+document.getElementById("continueToRound2").addEventListener("click", () => {
+
+    // Hide YOU WIN screen
+    document.getElementById("youWinScreen").classList.add("hide");
+
+    // Restore form UI for Round 2
+    document.getElementById("questionForm").classList.remove("hide");
+    document.querySelector(".form-label").classList.remove("hide");
+    document.querySelector(".white-line").classList.remove("hide");
+
+
+    // Start Round 2 questions
+    round = 2;
+    questions = round2Questions;
+    qIndex = 0;
+    loadQuestion();
+});
+
 
 document.getElementById("closeModal").addEventListener("click", () => {
 
