@@ -2,395 +2,122 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Survey – AGU 2025</title>
+    <title>Survey Options with Particles</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=TikTok+Sans:opsz,wght@12..36,300..900&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Electrolize&family=Funnel+Display:wght@300..800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --orange: #d73f09;
-            --orange-soft: #ffb36a;
-            --bg: #f8f8f8;
-            --card: #ffffff;
-            --shadow-soft: -10px -10px 15px rgba(255, 255, 255, 0.6),
-                           10px 10px 20px rgba(70, 70, 70, 0.18);
-            --shadow-inset: inset -5px -5px 9px rgba(255, 255, 255, 0.6),
-                            inset 5px 5px 9px rgba(94, 104, 121, 0.35);
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            background-color: var(--bg);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            position: relative;
+        html, body {
             margin: 0;
-            font-family: "TikTok Sans", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            height: 100%;
             overflow: hidden;
+            background-color: #111;
+            font-family: "Funnel Display", sans-serif;
         }
 
-        /* Top left labels */
-        h1 {
-            color: #00000030;
+        #particleCanvas {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+        }
+
+        .frosted-glass{
+            position: relative;
+            z-index: 1;
+            height: 600px;
+            width: 800px;
+            background: radial-gradient(farthest-corner at 37% 0%, #d73f09ff 0%, #d7400952 40%, #ffffff00 58%), 
+                        radial-gradient(farthest-corner at 53% 0%, #f7a162ff 0%, #f8a16399 10%, #ffffff00 48%), 
+                        linear-gradient(to top, #ffffff10 100%, #ffffff10 100%);
+            box-shadow: 0 4px 30px rgb(0, 0, 0);
+            backdrop-filter: blur(10.9px);
+            -webkit-backdrop-filter: blur(10.9px);
+            margin:auto;
+            margin-top:130px;
+            overflow: hidden; 
+        }
+
+        .frosted-glass h1{
+            color: #ffffff30;
+            font-family: "Funnel Display", sans-serif;
             font-weight: 900;
             font-size: 1.25rem;
-            margin: 0;
+            margin-bottom: 0;
             rotate: -90deg;
             position: absolute;
             top: 40px;
-            left: -20px;
-            pointer-events: none;
         }
-
-        h2.main-title {
-            color: #000;
+        
+        .frosted-glass .welcome-text h2{
+            color: white;
+            font-family: "Funnel Display", sans-serif;
             font-weight: 300;
             font-size: 3rem;
-            margin: 0;
-            border-left: 1px solid #000;
+            margin-top: 0;
+            border-left: 1px solid #fff;
             padding-left: 1rem;
             position: absolute;
-            left: 50px;
-            top: 0;
-            line-height: 1.1;
-            pointer-events: none;
+            left: 70px;
         }
 
-        .form-container {
-            height: 80%;
-            width: 100vh;
-            max-width: 100vh;
-            max-height: 600px;
-            border-radius: 20px;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .form-inner {
-            width: 100%;
-            max-width: 100vh;
-            text-align: center;
-        }
-
-        .question-label {
-            font-size: 3rem;
-            font-weight: 500;
-            color: #222;
-            text-shadow: -5px 5px 7px #00000029;
-            margin-bottom: 30px;
-        }
-
-        form#questionForm {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        fieldset.text-box {
-            width: 100%;
-            border: 0;
-            margin: 0;
-            padding: 0;
-        }
-
-        .glow-wrap {
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 50px;
-            padding: 2px;
-            background: transparent;
-            transition: all 0.3s ease;
-        }
-
-        .glow-wrap:focus-within {
-            position: relative;
-            background: linear-gradient(120deg,
-                #ff8a00,
-                var(--orange),
-                var(--orange-soft),
-                #ff8a00
-            );
-            background-size: 300% 300%;
-            animation: moveGradient 4s ease infinite;
-        }
-
-        .glow-wrap input {
-            width: 100%;
-            max-width: 600px;
-            width: 600px;
-            padding: 15px 20px;
-            border-radius: 50px;
-            border: none;
-            outline: none;
-            background: #fff;
+        .frosted-glass .form-label{
+            color: white;
+            position: absolute;
+            top: 250px;
+            left: 229px;
+            font-family: "Funnel Display", sans-serif;
             font-size: 1rem;
-            font-family: "TikTok Sans", sans-serif;
-            box-shadow: var(--shadow-soft);
         }
 
-        .glow-wrap input::placeholder {
-            font-size: 1rem;
-            color: #999;
+        .frosted-glass .form-label h2{
+            font-weight: 100;
         }
 
-        .glow-wrap:focus-within input {
-            box-shadow: var(--shadow-inset);
-        }
-
-        .glow-wrap:focus-within::after {
-            content: "";
+        .white-line{
             position: absolute;
-            inset: -5px;
-            border-radius: inherit;
-            background: radial-gradient(circle, rgba(215,63,9,0.4), transparent 70%);
-            filter: blur(10px);
-            z-index: -1;
-            animation: moveGradient 6s ease infinite;
-            background-size: 300% 300%;
+            top: 310px;
+            left: 229px;
+            width: 345px;
+            border-bottom: 1px solid white;
         }
 
-        @keyframes moveGradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        .frosted-glass form{
+            position: relative;
         }
 
-        /* Neumorphic radio group */
-        .radio-group {
-            width: 100%;
-            max-width: 80%;
-            display: flex;
-            flex-direction: row;
-            gap: 12px;
-            flex-wrap: wrap;
-            justify-content: center;
+        .input-text-box{
+            border-radius: 50px;
+            background-color: #ffffff09;
+            border: 1px solid rgba(255, 255, 255, 0.384);
+            color: white;
+            position: absolute;
+            top: 325px;
+            left: 229px;
+            padding: 10px;
+            width: 325px;
         }
 
-        .radio-option {
-            display: flex;
-            align-items: center;
-            padding: 14px 18px;
-            border-radius: 24px;
-            background: #f6f6f6;
-            box-shadow: var(--shadow-soft);
+        .input-text-box::placeholder{
+            color:white;
+        }
+
+        .frosted-glass form .submit-btn{
+            color: white;
+            background-color: #d73f09;
+            position: absolute;
+            top: 325px;
+            left: 526px;
+            padding: 0.12rem;
+            border-radius: 0 50px 50px 0;
+            border: 1px solid rgba(255, 255, 255, 0.384);
+            width: 50px;
+            font-size: 1.5rem;
             cursor: pointer;
-            transition: all 0.2s ease;
-            text-align: left;
-        }
-
-        .radio-option input[type="radio"] {
-            display: none;
-        }
-
-        .radio-bullet {
-            width: 0;
-            height: 0;
-            border-radius: 999px;
-            flex-shrink: 0;
-            position: relative;
-        }
-
-        .radio-bullet::after {
-            content: "";
-            position: absolute;
-            inset: 3px;
-            border-radius: inherit;
-            background: transparent;
-            transition: background 0.2s ease;
-        }
-
-        .radio-label-text {
-            font-size: 0.98rem;
-            color: #222;
-        }
-
-        .radio-option.selected {
-            background: #ffffff;
-            box-shadow: var(--shadow-inset);
-        }
-
-        .radio-option.selected .radio-bullet {
-            border-color: var(--orange);
-        }
-
-        .radio-option.selected .radio-bullet::after {
-            background: radial-gradient(circle, var(--orange) 0%, var(--orange-soft) 70%);
-        }
-
-        /* Glossy button */
-        .button {
-            --white: #ffe7ff;
-            --radius: 100px;
-            outline: none;
-            cursor: pointer;
-            border: 0;
-            position: relative;
-            border-radius: var(--radius);
-            background-color: #080808;
-            transition: all 0.2s ease;
-            box-shadow:
-                inset 0 0.3rem 0.9rem rgba(255, 255, 255, 0.3),
-                inset 0 -0.1rem 0.3rem rgba(0, 0, 0, 0.7),
-                inset 0 -0.4rem 0.9rem rgba(255, 255, 255, 0.5),
-                0 3rem 3rem rgba(0, 0, 0, 0.3),
-                0 1rem 1rem -0.6rem rgba(0, 0, 0, 0.8);
-            margin-top: 30px;
-        }
-
-        .button .wrap {
-            font-size: 20px;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.85);
-            padding: 5px 30px;
-            border-radius: inherit;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .button .wrap p {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin: 0;
-            transition: all 0.2s ease;
-            transform: translateY(2%);
-            mask-image: linear-gradient(to bottom, white 40%, transparent);
-        }
-
-        .button .wrap::before,
-        .button .wrap::after {
-            content: "";
-            position: absolute;
-            transition: all 0.3s ease;
-        }
-
-        .button .wrap::before {
-            left: -15%;
-            right: -15%;
-            bottom: 25%;
-            top: -100%;
-            border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.12);
-        }
-
-        .button .wrap::after {
-            left: 6%;
-            right: 6%;
-            top: 12%;
-            bottom: 40%;
-            border-radius: 22px 22px 0 0;
-            box-shadow: inset 0 10px 8px -10px rgba(255, 255, 255, 0.8);
-            background: linear-gradient(
-                180deg,
-                rgba(255, 255, 255, 0.3) 0%,
-                rgba(0, 0, 0, 0) 50%,
-                rgba(0, 0, 0, 0) 100%
-            );
-        }
-
-        .button:hover {
-            box-shadow:
-                inset 0 0.3rem 0.5rem rgba(255, 255, 255, 0.4),
-                inset 0 -0.1rem 0.3rem rgba(0, 0, 0, 0.7),
-                inset 0 -0.4rem 0.9rem rgba(255, 255, 255, 0.7),
-                0 3rem 3rem rgba(0, 0, 0, 0.3),
-                0 1rem 1rem -0.6rem rgba(0, 0, 0, 0.8);
-        }
-
-        .button:hover .wrap::before {
-            transform: translateY(-5%);
-        }
-
-        .button:hover .wrap::after {
-            opacity: 0.4;
-            transform: translateY(5%);
-        }
-
-        .button:hover .wrap p {
-            transform: translateY(-4%);
-        }
-
-        .button:active {
-            transform: translateY(4px);
-            box-shadow:
-                inset 0 0.3rem 0.5rem rgba(255, 255, 255, 0.5),
-                inset 0 -0.1rem 0.3rem rgba(0, 0, 0, 0.8),
-                inset 0 -0.4rem 0.9rem rgba(255, 255, 255, 0.4),
-                0 3rem 3rem rgba(0, 0, 0, 0.3),
-                0 1rem 1rem -0.6rem rgba(0, 0, 0, 0.8);
-        }
-
-        .button-secondary {
-            background-color: #ffffff;
-            color: #222;
-        }
-
-        .button-secondary .wrap {
-            color: #222;
-        }
-
-        /* YOU WIN state */
-        #youWin {
-            display: none;
-        }
-
-        #youWin.show {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            z-index: 10;
-        }
-
-        .win-title {
-            font-size: 3.2rem;
-            font-weight: 800;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: var(--orange);
-            text-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
-            z-index: 10;
-        }
-
-        .win-subtitle {
-            font-size: 1.1rem;
-            color: #444;
-            max-width: 480px;
-            z-index: 10;
         }
 
         .hide {
             display: none !important;
-        }
-
-        /* Confetti canvas */
-        #confettiCanvas {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        /* Spinner wheel 2 */
-        #spinnerWheel2 {
-            position: absolute;
-            inset: 0;
-            display: none;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #spinnerWheel2.show {
-            display: flex;
         }
 
         .wheel-wrapper {
@@ -400,6 +127,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             border-radius: 50%;
         }
 
@@ -475,12 +203,28 @@
             position: relative;
             transform: rotate(45deg);
             color: #fff;
-            font-size: 2em;
+            font-size: 2.5em;
             font-weight: 700;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
-        /* Modal */
+        #spinnerWheel, #spinnerWheel2 {
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            display: grid;
+            place-items: center;
+            height: 100%;
+        }
+
+        #spinnerWheel.show, #spinnerWheel2.show {
+            opacity: 1;
+        }
+
+        .fade-out {
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+
         .modal-backdrop {
             display: none;
             position: fixed;
@@ -506,7 +250,7 @@
 
         .modal-content {
             background: white;
-            padding: 40px 50px;
+            padding: 50px;
             border-radius: 20px;
             text-align: center;
             max-width: 450px;
@@ -519,21 +263,27 @@
         }
 
         .prize-display {
-            font-size: 72px;
+            font-size: 90px;
             font-weight: 700;
-            color: var(--orange);
-            margin: 20px 0;
+            color: #d73f09;
+            margin: 30px 0;
             text-shadow: 3px 3px 6px rgba(0,0,0,0.1);
+            animation: bounce 0.6s;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
         }
 
         .modal-buttons {
             display: flex;
+            gap: 15px;
             justify-content: center;
-            margin-top: 20px;
         }
 
         .modal-btn {
-            padding: 12px 30px;
+            padding: 14px 35px;
             border: none;
             border-radius: 10px;
             font-size: 16px;
@@ -543,522 +293,742 @@
         }
 
         .modal-btn.primary {
-            background: var(--orange);
+            background: #d73f09;
             color: white;
         }
 
         .modal-btn.primary:hover {
             background: white;
-            color: #000;
+            color:#000;
             border: 1px solid #000;
             transform: translateY(-2px);
         }
 
-        /* Responsive tweaks */
-        @media (max-width: 768px) {
-            .form-container {
-                width: 94%;
-                height: auto;
-                padding: 30px 20px;
-            }
-
-            .form-inner {
-                max-width: 100%;
-            }
-
-            .glow-wrap input,
-            .radio-group {
-                max-width: 100%;
-            }
-
-            h2.main-title {
-                font-size: 2.2rem;
-                left: 40px;
-            }
-
-            .win-title {
-                font-size: 2.4rem;
-            }
+        .modal-btn.secondary {
+            background: #f0f0f0;
+            color: #333;
         }
 
-        /* Radio Glow */
-        .radio-glow {
+        .modal-btn.secondary:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .flex{
+            display:flex;
+        }
+        .frosted-glass.round2 .form-label{
+            top: 220px !important;
+            width: 50%;
+        }
+
+        .frosted-glass.round2 .submit-btn {
             border-radius: 50px;
-            padding: 2px;
-            transition: all 0.3s ease;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+            top: 470px;
+            left: 225px;
+            width: 150px;
+            font-family: "Funnel Display", sans-serif;
         }
 
-        /* Apply glowing animated border when selected */
-        .radio-glow.glow-active {
-            position: relative;
-            background: linear-gradient(120deg,
-                #ff8a00,
-                var(--orange),
-                var(--orange-soft),
-                #ff8a00
-            );
-            background-size: 300% 300%;
-            animation: moveGradient 4s ease infinite;
+        .round2 .white-line {
+            top: 340px;
         }
-
-        .radio-glow.glow-active::after {
-            content: "";
-            position: absolute;
-            inset: -5px;
-            border-radius: inherit;
-            background: radial-gradient(circle, rgba(215,63,9,0.4), transparent 70%);
-            filter: blur(10px);
-            z-index: -1;
-            animation: moveGradient 6s ease infinite;
-            background-size: 300% 300%;
-        }
-
+        #confettiCanvas {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2; /* ABOVE background particles, UNDER text */
+}
     </style>
 </head>
 <body>
 
-    <h1>AGU 2025</h1>
-    <h2 class="main-title">Oregon State<br>University</h2>
+<canvas id="particleCanvas"></canvas>
 
-    <!-- Confetti -->
+<div class="frosted-glass">
     <canvas id="confettiCanvas"></canvas>
-
-    <!-- Main container -->
-    <div class="form-container">
-        <div class="form-inner">
-
-            <!-- Question form (Round 1 + Round 2) -->
-            <form id="questionForm">
-                <div class="question-label" id="questionLabel">What is your name?</div>
-
-                <fieldset class="text-box">
-                    <div class="glow-wrap" id="glowWrap">
-                        <input type="text" id="questionInput" placeholder="Name">
-                    </div>
-                </fieldset>
-
-                <div id="radioContainer" class="radio-group hide"></div>
-
-                <button class="button" type="submit">
-                    <div class="wrap">
-                        <p>Submit</p>
-                    </div>
-                </button>
-            </form>
-
-            <!-- YOU WIN state (after Round 1) -->
-            <div id="youWin">
-                <div class="win-title">YOU WIN!</div>
-                <p class="win-subtitle">
-                    Thanks for visiting the Oregon State University booth.
-                    Tap below to continue to Round 2 and spin for more fun.
-                </p>
-                <button class="button button-secondary" id="goToRound2">
-                    <div class="wrap">
-                        <p>Continue to Round 2</p>
-                    </div>
-                </button> 
-            </div>
-
-            <!-- Spinner Wheel for Round 2 -->
-            <div id="spinnerWheel2">
-                <div class="wheel-wrapper">
-                    <div class="spin-button" id="spinBtn2">SPIN</div>
-                    <div class="wheel" id="wheelElement2">
-                        <div class="wheel-segment" style="--i:1; background:#d73f09;"><span>1</span></div>
-                        <div class="wheel-segment" style="--i:2; background:#4A773C;"><span>2</span></div>
-                        <div class="wheel-segment" style="--i:3; background:#003B5C;"><span>3</span></div>
-                        <div class="wheel-segment" style="--i:4; background:#f7a162;"><span>4</span></div>
-                        <div class="wheel-segment" style="--i:5; background:#d73f09;"><span>5</span></div>
-                        <div class="wheel-segment" style="--i:6; background:#0D5257;"><span>6</span></div>
-                        <div class="wheel-segment" style="--i:7; background:#D3832B;"><span>7</span></div>
-                        <div class="wheel-segment" style="--i:8; background:#4A773C;"><span>8</span></div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
+    <div class="welcome-text flex">
+        <h1>AGU 2025</h1>
+        <h2>Oregon State<br>University</h2>
+    </div>
+    <div class="form-label">
+        <h2 id="questionLabel">Enter Your Name</h2>
     </div>
 
-    <!-- Prize modal (Round 2) -->
-    <div class="modal-backdrop" id="prizeModal">
-        <div class="modal-content">
-            <h2>Congratulations!</h2>
-            <div class="prize-display" id="prizeValue">1</div>
-            <p>You won <strong id="prizeLabel">1 prize</strong>!</p>
-            <div class="modal-buttons">
-                <button class="modal-btn primary" id="closeModal">Done</button>
-            </div>
+    <div class="white-line"></div>
+
+    <form id="questionForm">
+        <input type="text" id="questionInput" placeholder="Type here..." class="input-text-box">
+        <div id="radioContainer" class="hide" style="position:absolute; top:350px; left:229px; color:white;"></div>
+        <button type="submit" class="submit-btn">🡪</button>
+    </form>
+    <div id="youWinScreen" class="hide" style="
+        position:absolute;
+        top:0; left:0;
+        width:100%; height:100%;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        align-items:center;
+        text-align:center;
+        color:white;
+        backdrop-filter:none;
+        pointer-events:auto;
+    ">
+    <h2 style="font-size:4rem; margin-bottom:1rem; font-weight:700;">
+        YOU WIN!
+    </h2>
+    <p class="win-subtitle" style="width: 75%; margin-top: 0; margin-bottom: 2rem;">Thanks for visiting the Oregon State University booth. Tap below to continue to Round 2 and spin for more fun.</p>
+    <button id="continueToRound2" style="
+        padding:14px 40px;
+        font-size:1.5rem;
+        border-radius:12px;
+        border:none;
+        background:#d73f09;
+        color:white;
+        cursor:pointer;
+        font-family:'Funnel Display', sans-serif;
+    ">
+        Continue to Round Two
+    </button>
+</div>
+
+</div>
+
+<div id="spinnerWheel" class="hide">
+    <div class="wheel-wrapper">
+        <div class="spin-button" id="spinBtn">SPIN</div>
+        <div class="wheel" id="wheelElement">
+            <div class="wheel-segment" style="--i:1; background:#d73f09;"><span>100</span></div>
+            <div class="wheel-segment" style="--i:2; background:#4A773C;"><span>50</span></div>
+            <div class="wheel-segment" style="--i:3; background:#003B5C;"><span>25</span></div>
+            <div class="wheel-segment" style="--i:4; background:#f7a162;"><span>75</span></div>
+            <div class="wheel-segment" style="--i:5; background:#d73f09;"><span>100</span></div>
+            <div class="wheel-segment" style="--i:6; background:#0D5257;"><span>50</span></div>
+            <div class="wheel-segment" style="--i:7; background:#D3832B;"><span>25</span></div>
+            <div class="wheel-segment" style="--i:8; background:#4A773C;"><span>6</span></div>
         </div>
     </div>
+</div>
 
-    <script>
-        /* -------------------------------
-           QUESTION / ROUND LOGIC
-        --------------------------------*/
-        let round = 1;
+<div id="spinnerWheel2" class="hide">
+    <div class="wheel-wrapper">
+        <div class="spin-button" id="spinBtn2">SPIN</div>
+        <div class="wheel" id="wheelElement2">
+            <div class="wheel-segment" style="--i:1; background:#d73f09;"><span>1</span></div>
+            <div class="wheel-segment" style="--i:2; background:#4A773C;"><span>2</span></div>
+            <div class="wheel-segment" style="--i:3; background:#003B5C;"><span>3</span></div>
+            <div class="wheel-segment" style="--i:4; background:#f7a162;"><span>4</span></div>
+            <div class="wheel-segment" style="--i:5; background:#d73f09;"><span>5</span></div>
+            <div class="wheel-segment" style="--i:6; background:#0D5257;"><span>6</span></div>
+            <div class="wheel-segment" style="--i:7; background:#D3832B;"><span>7</span></div>
+            <div class="wheel-segment" style="--i:8; background:#4A773C;"><span>8</span></div>
+        </div>
+    </div>
+</div>
 
-        const round1Questions = [
-            { label: "What is your name?", placeholder: "Enter your name" },
-            { label: "Organization", options:[
-                "Oz",
-                "Kansas",
-                "Zootopia",
-                "The Leaf Village",
-                "Narnia",
-                "Hogwarts",
-                "Neverland",
-                "Atlantis",
-                "Wakanda",
-                "Asgard"
-            ] }
-        ];
+<div class="modal-backdrop" id="prizeModal">
+    <div class="modal-content">
+        <h2>Congratulations!</h2>
+        <div class="prize-display" id="prizeValue">100</div>
+        <p>You won <strong id="prizeLabel">100 points</strong>!</p>
+        <div class="modal-buttons">
+            <button class="modal-btn primary" id="spinAgain">Spin Again</button>
+            <button class="modal-btn secondary" id="closeModal">Close</button>
+        </div>
+    </div>
+</div>
 
-        const round2Questions = [
-            {
-                label: "Did your experience at this booth improve your impression of Oregon State University?",
-                options: [
-                    "Neutral, no change of impression",
-                    "Yes, somewhat improved",
-                    "Yes, much improved"
-                ]
-            }
-        ];
+<script>
+const canvas = document.getElementById("particleCanvas");
+const ctx = canvas.getContext("2d");
 
-        let questions = round1Questions;
-        let qIndex = 0;
+let particles = [];
+const BASE_PARTICLES = 900;
+let particleMode = "drift"; // drift | fadeout | fadein
+let centerX = window.innerWidth / 2;
+let centerY = window.innerHeight / 2;
 
-        const answers = { name: "", org: "", experience: "" };
-        let lastPrize = 0;
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    centerX = canvas.width / 2;
+    centerY = canvas.height / 2;
+    if (particleMode === "drift") {
+        addBaseParticles();
+    }
+}
+resize();
+window.addEventListener("resize", resize);
 
-        const questionLabel = document.getElementById("questionLabel");
-        const questionInput = document.getElementById("questionInput");
-        const questionForm = document.getElementById("questionForm");
-        const radioContainer = document.getElementById("radioContainer");
-        const youWinBlock = document.getElementById("youWin");
-        const formInner = document.querySelector(".form-inner");
-        const spinnerWheel2 = document.getElementById("spinnerWheel2");
+/* -------------------------------------------------
+   CREATE BASE PARTICLES (white + OSU orange glow)
+--------------------------------------------------*/
+function addBaseParticles() {
+    particles = [];
 
-        function loadQuestion() {
-            const q = questions[qIndex];
-            questionLabel.textContent = q.label;
+    for (let i = 0; i < BASE_PARTICLES; i++) {
+        const isOrange = Math.random() < 0.15; // 15% OSU orange glows
 
-            if (q.options) {
-                // Radio (neumorphic cards)
-                document.getElementById("glowWrap").classList.add("hide");
-                questionInput.value = "";
-                questionInput.blur();
-                radioContainer.classList.remove("hide");
-                radioContainer.innerHTML = "";
-
-                q.options.forEach((opt, idx) => {
-                    const id = `opt-${idx}`;
-                    const label = document.createElement("label");
-                label.innerHTML = `
-                    <div class="glow-wrap radio-glow">
-                        <div class="radio-option">
-                            <span class="radio-bullet"></span>
-                            <span class="radio-label-text">${opt}</span>
-                            <input type="radio" name="round2" value="${opt}" id="${id}">
-                        </div>
-                    </div>
-                `;
-                label.addEventListener("click", () => {
-                    radioContainer.querySelectorAll(".radio-option").forEach(l => {
-                        l.classList.remove("selected");
-                        l.parentElement.classList.remove("glow-active");
-                    });
-
-                    const wrap = label.querySelector(".glow-wrap");
-                    const option = label.querySelector(".radio-option");
-                    
-                    option.classList.add("selected");
-                    wrap.classList.add("glow-active");
-
-                    const input = label.querySelector("input[type='radio']");
-                    input.checked = true;
-                });
-
-                    radioContainer.appendChild(label);
-                });
-            } else {
-                // Text field (Round 1)
-                radioContainer.classList.add("hide");
-                document.getElementById("glowWrap").classList.remove("hide");
-                questionInput.value = "";
-                questionInput.placeholder = q.placeholder || "";
-                questionInput.focus();
-            }
-        }
-
-        questionForm.addEventListener("submit", (e) => {
-            e.preventDefault();
-            let value;
-
-            // If this question uses radios:
-            if (questions[qIndex].options) {
-                const checked = radioContainer.querySelector("input[type='radio']:checked");
-                if (!checked) return;
-                value = checked.value;
-            } else {
-                // Text input question
-                value = questionInput.value.trim();
-                if (!value) return;
-            }
-
-            if (round === 1) {
-                if (qIndex === 0) answers.name = value;
-                else answers.org = value;
-            } else {
-                answers.experience = value;
-            }
-
-            qIndex++;
-
-            if (qIndex < questions.length) {
-                loadQuestion();
-            } else {
-                if (round === 1) {
-                    showWinScreen();
-                } else {
-                    finishedRound2();
-                }
-            }
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            vx: (Math.random() - 0.5) * 2,
+            vy: (Math.random() - 0.5) * 2,
+            size: isOrange ? (Math.random() * 3 + 1.5) : (Math.random() * 2 + 1),
+            color: isOrange
+                ? "rgba(215,63,9,0.45)"    // OSU Orange glow
+                : "rgba(255,255,255,0.55)",
+            isOrange: isOrange
         });
+    }
+}
 
-        function showWinScreen() {
-            // Hide the form, show YOU WIN
-            questionForm.classList.add("hide");
-            youWinBlock.classList.add("show");
-            startConfetti();
-        }
+/* Add initial base particles */
+addBaseParticles();
 
-        document.getElementById("goToRound2").addEventListener("click", () => {
-            // Move into Round 2
-            stopConfetti();
-            youWinBlock.classList.remove("show");
-            questionForm.classList.remove("hide");
-
-            round = 2;
-            questions = round2Questions;
-            qIndex = 0;
-            loadQuestion();
+/* -------------------------------------------------
+   EXPLOSION FROM TEXT FIELD WHEN ANSWER SUBMITTED
+--------------------------------------------------*/
+function explodeToParticles(x, y) {
+    for (let i = 0; i < 35; i++) {
+        particles.push({
+            x,
+            y,
+            vx: (Math.random() - 0.5) * 4,
+            vy: (Math.random() - 0.5) * 4,
+            size: Math.random() * 3 + 2,
+            color: "rgba(215,63,9,1)", // bright OSU orange
+            isOrange: true,
+            fadeStart: Date.now(),
+            fadeDuration: 700
         });
+    }
+}
 
-        function finishedRound2() {
-            // Hide form UI, show spinner wheel 2
-            questionForm.classList.add("hide");
-            youWinBlock.classList.remove("show");
-            spinnerWheel2.classList.add("show");
+/* -------------------------------------------------
+   FADE OUT TRANSITION
+--------------------------------------------------*/
+function fadeOutParticles() {
+    particleMode = "fadeout";
+
+    particles.forEach(p => {
+        p.fadeStart = Date.now();
+        p.fadeDuration = 800 + Math.random() * 500;
+    });
+}
+
+/* -------------------------------------------------
+   FADE IN NEW BASE PARTICLES
+--------------------------------------------------*/
+function fadeInParticles() {
+    addBaseParticles();
+    particleMode = "fadein";
+
+    particles.forEach(p => {
+        p.fadeStart = Date.now();
+        p.fadeDuration = 900 + Math.random() * 400;
+
+        // start invisible
+        p.originalBase = p.isOrange ? "215,63,9" : "255,255,255";
+        p.color = `rgba(${p.originalBase},0)`;
+    });
+}
+
+/* -------------------------------------------------
+   PARTICLE ANIMATION LOOP
+--------------------------------------------------*/
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach(p => {
+
+        /* DRIFT MODE — base particles gently floating */
+        if (particleMode === "drift") {
+            p.x += p.vx * 0.6;
+            p.y += p.vy * 0.6;
+
+            if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+            if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
         }
 
+        /* FADE OUT TRANSITION */
+        else if (particleMode === "fadeout") {
+            const elapsed = Date.now() - p.fadeStart;
+            const ratio = Math.min(elapsed / p.fadeDuration, 1);
+
+            p.x += p.vx * 0.2;
+            p.y += p.vy * 0.2;
+
+            let base = p.isOrange ? "215,63,9" : "255,255,255";
+
+            const alpha = (1 - ratio) * 0.55;
+            p.color = `rgba(${base},${alpha})`;
+        }
+
+        /* FADE IN TRANSITION */
+        else if (particleMode === "fadein") {
+            const elapsed = Date.now() - p.fadeStart;
+            const ratio = Math.min(elapsed / p.fadeDuration, 1);
+
+            p.x += p.vx * 0.1;
+            p.y += p.vy * 0.1;
+
+            const alpha = ratio * 0.55;
+            let base = p.originalBase;
+
+            p.color = `rgba(${base},${alpha})`;
+
+            if (ratio === 1) {
+                particleMode = "drift";
+            }
+        }
+
+        // Draw particle
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    requestAnimationFrame(animate);
+}
+animate();
+
+/* -------------------------------------------------
+   QUESTION FLOW + TRANSITIONS
+--------------------------------------------------*/
+let round = 1;
+
+const round1Questions = [
+    { label: "Enter your name", placeholder: "Name" },
+    { label: "Organization", placeholder: "Organization" }
+];
+
+const round2Questions = [
+    { 
+        label: "Did your experience at this booth improve your impression of Oregon State University?",
+        options: ["Neutral, no change of impression", "Yes, somewhat improved", "Yes, much improved"]
+    }
+];
+
+let questions = round1Questions;
+let qIndex = 0;
+
+const answers = { name: "", org: "", experience: "" };
+let lastPrize = 0;
+
+const questionLabel = document.getElementById("questionLabel");
+const questionInput = document.getElementById("questionInput");
+const questionForm = document.getElementById("questionForm");
+
+function loadQuestion() {
+    const q = questions[qIndex];
+
+    questionLabel.textContent = q.label;
+
+    const radioContainer = document.getElementById("radioContainer");
+
+    // --- ROUND 2 ---
+    if (round === 2 && q.options) {
+
+        document.querySelector(".frosted-glass").classList.add("round2");
+        document.querySelector(".submit-btn").textContent = "Submit";
+
+        // Hide textbox
+        questionInput.classList.add("hide");
+
+        // Show radio options
+        radioContainer.classList.remove("hide");
+
+        radioContainer.innerHTML = q.options.map((opt, i) => `
+            <label style="display:block; margin-bottom:10px; font-size:1.2rem;">
+                <input type="radio" name="round2" value="${opt}" style="margin-right:8px;">
+                ${opt}
+            </label>
+        `).join("");
+
+        return;
+    }
+
+    // --- ROUND 1 ---
+    document.querySelector(".frosted-glass").classList.remove("round2");
+    document.querySelector(".submit-btn").textContent = "🡪";
+
+    radioContainer.classList.add("hide");
+    questionInput.classList.remove("hide");
+    
+    questionInput.placeholder = q.placeholder;
+    questionInput.value = "";
+    questionInput.focus();
+}
+
+
+questionForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    let value;
+
+    if (round === 2) {
+        const checked = document.querySelector("input[name='round2']:checked");
+        if (!checked) return; // no selection → do nothing
+        value = checked.value;
+    } else {
+        value = questionInput.value.trim();
+        if (!value) return;
+    }
+
+    if (round === 1) {
+        if (qIndex === 0) answers.name = value;
+        else answers.org = value;
+    } else {
+        answers.experience = value;
+    }
+
+    const rect = questionForm.getBoundingClientRect();
+    explodeToParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
+
+    qIndex++;
+
+    if (qIndex < questions.length) {
         loadQuestion();
+        return;
+    }
 
-        /* -------------------------------
-           CONFETTI
-        --------------------------------*/
-        const confettiCanvas = document.getElementById("confettiCanvas");
-        const cctx = confettiCanvas.getContext("2d");
-        let confettiPieces = [];
-        let confettiActive = false;
-        let confettiStopTimeout = null;
+    finishedQuestions();
+});
 
-        function resizeConfetti() {
-            confettiCanvas.width = window.innerWidth;
-            confettiCanvas.height = window.innerHeight;
+function finishedQuestions() {
+    const glass = document.querySelector(".frosted-glass");
+
+    setTimeout(() => {
+
+        if (round === 1) {
+
+            // Hide question UI
+            document.getElementById("questionForm").classList.add("hide");
+            document.querySelector(".form-label").classList.add("hide");
+            document.querySelector(".white-line").classList.add("hide");
+
+            // Show YOU WIN screen
+            document.getElementById("youWinScreen").classList.remove("hide");
+            startConfetti();
+
+            return;
+        } 
+        
+        else {
+            // For Round 2 → hide frosted glass and show wheel
+            fadeOutParticles();
+            glass.classList.add("hide");
+            spinnerWheel2.classList.remove("hide");
+            setTimeout(() => spinnerWheel2.classList.add("show"), 50);
         }
-        window.addEventListener("resize", resizeConfetti);
-        resizeConfetti();
+    }, 800);
+}
 
-        function createConfettiBurst(originX, originY) {
-            if (!originX || !originY) {
-                originX = window.innerWidth / 2;
-                originY = window.innerHeight * 0.45;
-            }
 
-            const colors = ["#d73f09", "#ff8a00", "#f7a162", "#4A773C", "#003B5C"];
-            const total = 120;
+loadQuestion();
 
-            for (let i = 0; i < total; i++) {
-                // VERY wide cone for chaotic look
-                const angle = (-90 + (Math.random() * 140 - 70)) * Math.PI / 180;
+/* -------------------------------------------------
+   SPINNER & MODAL CODE
+--------------------------------------------------*/
+const wheel = document.getElementById("wheelElement");
+const spinBtn = document.getElementById("spinBtn");
+let rotation = 0;
+let isSpinning = false;
+let prizes = [100, 50, 25, 75, 100, 50, 25, 6];
 
-                // More variation in speed
-                const speed = 2 + Math.random() * 4;
+spinBtn.addEventListener("click", () => {
+    if (isSpinning) return;
+    isSpinning = true;
+    spinBtn.classList.add("spinning");
 
-                // New randomness properties
-                const wobble = Math.random() * Math.PI * 2;
-                const wobbleSpeed = 0.1 + Math.random() * 0.25;  // each piece wobbles differently
-                const gravity = 0.05 + Math.random() * 0.08;      // each piece falls differently
-                const drag = 0.92 + Math.random() * 0.04;         // some slow down faster
+    const spins = 5 + Math.floor(Math.random() * 3);
+    const extra = Math.floor(Math.random() * 360);
+    const total = spins * 360 + extra;
 
-                confettiPieces.push({
-                    x: originX,
-                    y: originY,
-                    vx: Math.cos(angle) * speed,
-                    vy: Math.sin(angle) * speed,
-                    size: 4 + Math.random() * 5,
-                    color: colors[Math.floor(Math.random() * colors.length)],
-                    rotation: Math.random() * Math.PI * 2,
-                    rotationSpeed: (Math.random() - 0.5) * 0.25,
+    rotation += total;
+    wheel.style.transform = `rotate(${rotation}deg)`;
 
-                    // new chaotic motion properties
-                    wobble,
-                    wobbleSpeed,
-                    gravity,
-                    drag,
+    setTimeout(() => {
+        const normalized = rotation % 360;
+        const angle = (360 - normalized + 22.5) % 360;
+        const segment = Math.floor(angle / 45);
 
-                    life: 0,
-                    maxLife: 100 + Math.random() * 60
-                });
-            }
-        }
+        showPrizeModal(prizes[segment]);
+        isSpinning = false;
+        spinBtn.classList.remove("spinning");
+    }, 5000);
+});
 
-        function startConfetti(x, y) {
-            confettiActive = true;
-            confettiPieces = [];
-            createConfettiBurst(x, y);
+/* SECOND WHEEL */
+const wheel2 = document.getElementById("wheelElement2");
+const spinBtn2 = document.getElementById("spinBtn2");
 
-            if (confettiStopTimeout) clearTimeout(confettiStopTimeout);
-            confettiStopTimeout = setTimeout(() => {
-                confettiActive = false;
-                confettiStopTimeout = null;
-            }, 2500);
+let rotation2 = 0;
+let isSpinning2 = false;
 
-            requestAnimationFrame(updateConfetti);
-        }
+spinBtn2.addEventListener("click", () => {
+    if (isSpinning2) return;   // lock
+    isSpinning2 = true;
+    spinBtn2.classList.add("spinning");
 
-        function stopConfetti() {
-            confettiActive = false;
-            confettiPieces = [];
-            cctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-            if (confettiStopTimeout) {
-                clearTimeout(confettiStopTimeout);
-                confettiStopTimeout = null;
-            }
-        }
+    const spins = 5 + Math.floor(Math.random() * 3);
+    const extra = Math.floor(Math.random() * 360);
+    const total = (spins * 360) + extra;
 
-        function updateConfetti() {
-            cctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+    rotation2 += total;
+    wheel2.style.transform = `rotate(${rotation2}deg)`;
 
-            confettiPieces.forEach(p => {
-                // Apply drag randomness
-                p.vx *= p.drag;
-                p.vy *= p.drag;
+    setTimeout(() => {
+        const normalized = rotation2 % 360;
+        const angle = (360 - normalized + 22.5) % 360;
+        const segment = Math.floor(angle / 45);
 
-                // Apply gravity (each piece has different gravity)
-                p.vy += p.gravity;
+        const prize = segment + 1; // 1–8
+        showPrizeModal(prize);
 
-                // Wobble left/right so pieces flutter randomly
-                p.wobble += p.wobbleSpeed;
-                p.x += p.vx + Math.cos(p.wobble) * 0.8;
-                p.y += p.vy;
+        isSpinning2 = false;             // unlock
+        spinBtn2.classList.remove("spinning");
 
-                // Rotation chaos
-                p.rotation += p.rotationSpeed;
+    }, 5000);
+});
 
-                p.rotation += p.rotationSpeed;
-                p.life++;
 
-            });
+/* -------------------------------------------------
+   MODAL + ROUND TRANSITIONS
+--------------------------------------------------*/
+function showPrizeModal(prize) {
+    lastPrize = prize;
+    document.getElementById("prizeValue").textContent = prize;
+    document.getElementById("prizeLabel").textContent = `${prize} points`;
 
-            confettiPieces = confettiPieces.filter(p =>
-                p.y < confettiCanvas.height + 200 && p.life < p.maxLife
-            );
+    const spinAgainBtn = document.getElementById("spinAgain");
 
-            confettiPieces.forEach(p => {
-                cctx.save();
-                cctx.translate(p.x, p.y);
-                cctx.rotate(p.rotation);
-                cctx.fillStyle = p.color;
-                cctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
-                cctx.restore();
-            });
+    if (round === 1) {
+        spinAgainBtn.style.display = "inline-block";
+    } else {
+        spinAgainBtn.style.display = "none";  // HIDE on round 2 completely
+    }
 
-            if (confettiActive || confettiPieces.length > 0) {
-                requestAnimationFrame(updateConfetti);
-            }
-        }
+    document.getElementById("prizeModal").classList.add("active");
+}
 
-        /* -------------------------------
-           SPINNER WHEEL 2 + MODAL
-        --------------------------------*/
-        const wheel2 = document.getElementById("wheelElement2");
-        const spinBtn2 = document.getElementById("spinBtn2");
-        let rotation2 = 0;
-        let isSpinning2 = false;
 
-        function showPrizeModal(prize) {
-            lastPrize = prize;
-            document.getElementById("prizeValue").textContent = prize;
-            document.getElementById("prizeLabel").textContent = `${prize} prize${prize === 1 ? "" : "s"}`;
-            document.getElementById("prizeModal").classList.add("active");
-        }
+document.getElementById("spinAgain").addEventListener("click", () => {
+    document.getElementById("prizeModal").classList.remove("active");
 
-        spinBtn2.addEventListener("click", () => {
-            if (isSpinning2) return;
-            isSpinning2 = true;
-            spinBtn2.classList.add("spinning");
+    spinnerWheel.classList.add("hide");
+    spinnerWheel2.classList.add("hide");
 
-            const spins = 5 + Math.floor(Math.random() * 3);
-            const extra = Math.floor(Math.random() * 360);
-            const total = (spins * 360) + extra;
+    document.body.style.background = "#111";
+    canvas.style.display = "block";
+fadeInParticles();
 
-            rotation2 += total;
-            wheel2.style.transform = `rotate(${rotation2}deg)`;
+// PREP the next question BEFORE showing the form
+round = 2;
+questions = round2Questions;
+qIndex = 0;
+loadQuestion();  // updates UI BEFORE showing container
 
-            setTimeout(() => {
-                const normalized = rotation2 % 360;
-                const angle = (360 - normalized + 22.5) % 360;
-                const segment = Math.floor(angle / 45);
+// Now reveal the frosted glass AFTER everything is ready
+setTimeout(() => {
+    document.querySelector(".frosted-glass").classList.remove("hide");
+}, 200); // small delay so particles can fade-in first
 
-                const prize = segment + 1; // 1–8
-                showPrizeModal(prize);
+});
 
-                isSpinning2 = false;
-                spinBtn2.classList.remove("spinning");
-            }, 5000);
+/* RESET ALL */
+function resetAll() {
+    document.getElementById("prizeModal").classList.remove("active");
+
+    round = 1;
+    questions = round1Questions;
+    qIndex = 0;
+
+    // hide both wheels properly
+    spinnerWheel.classList.add("hide");
+    spinnerWheel2.classList.add("hide");
+
+    rotation = 0;
+    rotation2 = 0;
+
+    wheel.style.transition = "none";
+    wheel2.style.transition = "none";
+    wheel.style.transform = "rotate(0deg)";
+    wheel2.style.transform = "rotate(0deg)";
+
+    setTimeout(() => {
+        wheel.style.transition = "transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)";
+        wheel2.style.transition = "transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)";
+    }, 50);
+
+    document.body.style.background = "#111";
+    canvas.style.display = "block";
+    document.querySelector(".frosted-glass").classList.remove("hide");
+
+    fadeInParticles();
+    loadQuestion();
+}
+document.getElementById("continueToRound2").addEventListener("click", () => {
+
+    // Hide YOU WIN screen
+    document.getElementById("youWinScreen").classList.add("hide");
+
+    // Restore form UI for Round 2
+    document.getElementById("questionForm").classList.remove("hide");
+    document.querySelector(".form-label").classList.remove("hide");
+    document.querySelector(".white-line").classList.remove("hide");
+
+
+    // Start Round 2 questions
+    round = 2;
+    questions = round2Questions;
+    qIndex = 0;
+    loadQuestion();
+});
+
+
+document.getElementById("closeModal").addEventListener("click", () => {
+
+    // Send to db
+    if (round === 2 && window.chrome && window.chrome.webview) {
+        window.chrome.webview.postMessage({
+            name: answers.name,
+            org: answers.org,
+            experience: answers.experience,
+            prize: lastPrize
         });
+    }
 
-        function resetAll() {
-            document.getElementById("prizeModal").classList.remove("active");
+    resetAll();
+});/* -------------------------------------------------
+     CONFETTI INSIDE FROSTED GLASS
+--------------------------------------------------*/
 
-            round = 1;
-            questions = round1Questions;
-            qIndex = 0;
+const confettiCanvas = document.getElementById("confettiCanvas");
+const cctx = confettiCanvas.getContext("2d");
+let confettiPieces = [];
+let confettiActive = false;
+let confettiStopTimer = null;
 
-            answers.name = "";
-            answers.org = "";
-            answers.experience = "";
+/* Resize canvas to match frosted-glass box */
+function resizeConfettiCanvas() {
+    const parent = confettiCanvas.parentElement.getBoundingClientRect();
+    confettiCanvas.width = parent.width;
+    confettiCanvas.height = parent.height;
+}
+window.addEventListener("resize", resizeConfettiCanvas);
+resizeConfettiCanvas();
 
-            // Reset wheel
-            rotation2 = 0;
-            wheel2.style.transition = "none";
-            wheel2.style.transform = "rotate(0deg)";
-            setTimeout(() => {
-                wheel2.style.transition = "transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)";
-            }, 50);
+/* Get YOU WIN center position inside the canvas */
+function getWinCenter() {
+    const win = document.getElementById("youWinScreen");
+    const box = confettiCanvas.parentElement.getBoundingClientRect();
+    const rect = win.getBoundingClientRect();
 
-            spinnerWheel2.classList.remove("show");
-            youWinBlock.classList.remove("show");
-            questionForm.classList.remove("hide");
-            stopConfetti();
-            loadQuestion();
-        }
+    return {
+        x: rect.left - box.left + rect.width / 2,
+        y: rect.top - box.top + rect.height * 0.35
+    };
+}
 
-        document.getElementById("closeModal").addEventListener("click", () => {
-            // Send to host (WebView) if available
-            if (window.chrome && window.chrome.webview) {
-                window.chrome.webview.postMessage({
-                    name: answers.name,
-                    org: answers.org,
-                    experience: answers.experience || "",
-                    prize: lastPrize
-                });
-            }
+/* Create a single burst of confetti */
+function createConfettiBurst() {
+    const origin = getWinCenter();
+    const colors = ["#d73f09", "#ff8a00", "#f7a162", "#4A773C", "#003B5C"];
+    const total = 100;
 
-            resetAll();
+    for (let i = 0; i < total; i++) {
+        const angle = (-90 + (Math.random() * 140 - 70)) * Math.PI / 180;
+        const speed = 2 + Math.random() * 3;
+
+        confettiPieces.push({
+            x: origin.x,
+            y: origin.y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            size: 4 + Math.random() * 4,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            rotation: Math.random() * Math.PI * 2,
+            rotationSpeed: (Math.random() - 0.5) * 0.2,
+            gravity: 0.05 + Math.random() * 0.05,
+            drag: 0.92 + Math.random() * 0.04,
+            life: 0,
+            maxLife: 90 + Math.random() * 40
         });
-    </script>
+    }
+}
+
+/* Start a burst */
+function startConfetti() {
+    resizeConfettiCanvas();
+    confettiActive = true;
+
+    confettiPieces = [];
+    createConfettiBurst();
+
+    if (confettiStopTimer) clearTimeout(confettiStopTimer);
+
+    // stop emitting after 2 seconds
+    confettiStopTimer = setTimeout(() => {
+        confettiActive = false;
+        confettiStopTimer = null;
+    }, 2000);
+
+    requestAnimationFrame(updateConfetti);
+}
+
+/* Stop and clear */
+function stopConfetti() {
+    confettiActive = false;
+    confettiPieces = [];
+    cctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+}
+
+/* Animation loop */
+function updateConfetti() {
+    cctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+
+    confettiPieces.forEach(p => {
+
+        // add gravity & drag
+        p.vx *= p.drag;
+        p.vy = p.vy * p.drag + p.gravity;
+
+        // update position
+        p.x += p.vx;
+        p.y += p.vy;
+
+        // spin
+        p.rotation += p.rotationSpeed;
+        p.life++;
+    });
+
+    // remove old pieces
+    confettiPieces = confettiPieces.filter(p =>
+        p.y < confettiCanvas.height + 50 && p.life < p.maxLife
+    );
+
+    // draw pieces
+    confettiPieces.forEach(p => {
+        cctx.save();
+        cctx.translate(p.x, p.y);
+        cctx.rotate(p.rotation);
+        cctx.fillStyle = p.color;
+        cctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+        cctx.restore();
+    });
+
+    if (confettiActive || confettiPieces.length > 0) {
+        requestAnimationFrame(updateConfetti);
+    }
+}
+
+</script>
+
 </body>
 </html>
