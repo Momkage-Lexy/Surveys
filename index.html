@@ -93,6 +93,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            position:relative;
         }
 
         fieldset.text-box {
@@ -610,6 +611,7 @@
                 width: 94%;
                 height: auto;
                 padding: 30px 20px;
+                margin-top: 200px;
             }
 
             .form-inner {
@@ -675,8 +677,8 @@
 
         .arrow-btn {
             position: absolute;
-            right: 84px;
-            margin-top: 7px;
+            right: 8px;
+            top: 8px;
             padding: 7px 10px;
             background: var(--orange);
             color: white;
@@ -713,6 +715,28 @@
             opacity: 0;
         }
 
+        #emailField{
+            position: absolute;
+            top: 240px;
+        }
+
+        @media (max-width: 740px) {
+            #emailField{
+                top:300px;
+            }
+        }
+
+        @media (max-width: 561px) {
+            #emailField{
+                top:360px;
+            }
+        }
+
+        @media (max-width: 402px) {
+            #emailField{
+                top:430px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -726,13 +750,13 @@
     <!-- Main container -->
     <div class="form-container">
         <div class="form-inner">
-
+            <button type="button"id="backButton">&#8617; Back to previous question</button>
             <!-- Question form (Round 1 + Round 2) -->
             <div id="transitionWrapper" class="transition-wrapper">
                 <form id="questionForm">
                     <div class="question-label" id="questionLabel"></div>
                     <div id="radioContainer" class="radio-group hide"></div>
-                    <div id="emailField" class="hide" style="margin-top: 20px;">
+                    <div id="emailField" class="hide">
                         <div class="glow-wrap">
                             <input type="email" id="emailInput" placeholder="Enter your email">
                         </div>
@@ -753,7 +777,6 @@
                             <p>Submit</p>
                         </div>
                     </button>
-                    <button type="button"id="backButton">&#8617; Back to previous question</button>
                 </form>
             </div>
             <!-- YOU WIN state (after Round 1) -->
@@ -1066,6 +1089,8 @@
             // Hide the form, show YOU WIN
             questionForm.classList.add("hide");
             youWinBlock.classList.add("show");
+            backButton.classList.add("hide");
+
             startConfetti();
         }
 
