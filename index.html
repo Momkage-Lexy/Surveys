@@ -230,117 +230,46 @@
             background: radial-gradient(circle, var(--orange) 0%, var(--orange-soft) 70%);
         }
 
-        /* Glossy button */
+        #closeModal{
+            height: 50px;
+        }
+        
         .button {
-            --white: #ffe7ff;
-            --radius: 100px;
-            outline: none;
-            cursor: pointer;
-            border: 0;
-            position: relative;
-            border-radius: var(--radius);
-            background-color: #080808;
-            transition: all 0.2s ease;
-            box-shadow:
-                inset 0 0.3rem 0.9rem rgba(255, 255, 255, 0.3),
-                inset 0 -0.1rem 0.3rem rgba(0, 0, 0, 0.7),
-                inset 0 -0.4rem 0.9rem rgba(255, 255, 255, 0.5),
-                0 3rem 3rem rgba(0, 0, 0, 0.3),
-                0 1rem 1rem -0.6rem rgba(0, 0, 0, 0.8);
-            margin-top: 30px;
-            z-index: 100;
-        }
-
-        .button .wrap {
-            font-size: 20px;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.85);
-            padding: 5px 30px;
-            border-radius: inherit;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .button .wrap p {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin: 0;
-            transition: all 0.2s ease;
-            transform: translateY(2%);
-            mask-image: linear-gradient(to bottom, white 40%, transparent);
-        }
-
-        .button .wrap::before,
-        .button .wrap::after {
-            content: "";
-            position: absolute;
-            transition: all 0.3s ease;
-        }
-
-        .button .wrap::before {
-            left: -15%;
-            right: -15%;
-            bottom: 25%;
-            top: -100%;
-            border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.12);
-        }
-
-        .button .wrap::after {
-            left: 6%;
-            right: 6%;
-            top: 12%;
-            bottom: 40%;
-            border-radius: 22px 22px 0 0;
-            box-shadow: inset 0 10px 8px -10px rgba(255, 255, 255, 0.8);
-            background: linear-gradient(
-                180deg,
-                rgba(255, 255, 255, 0.3) 0%,
-                rgba(0, 0, 0, 0) 50%,
-                rgba(0, 0, 0, 0) 100%
-            );
+        cursor: pointer;
+        font-weight: 700;
+        transition: all 0.2s;
+        border-radius: 100px;
+        background: #333;
+        color:white;
+        border: 1px solid transparent;
+        display: flex;
+        align-items: center;
+        font-size: 15px;
+        justify-content: center;
+        width: 150px;
         }
 
         .button:hover {
-            box-shadow:
-                inset 0 0.3rem 0.5rem rgba(255, 255, 255, 0.4),
-                inset 0 -0.1rem 0.3rem rgba(0, 0, 0, 0.7),
-                inset 0 -0.4rem 0.9rem rgba(255, 255, 255, 0.7),
-                0 3rem 3rem rgba(0, 0, 0, 0.3),
-                0 1rem 1rem -0.6rem rgba(0, 0, 0, 0.8);
+        background: #c4e201;
         }
 
-        .button:hover .wrap::before {
-            transform: translateY(-5%);
+        .button > svg {
+        width: 34px;
+        margin-left: 10px;
+        transition: transform 0.3s ease-in-out;
         }
 
-        .button:hover .wrap::after {
-            opacity: 0.4;
-            transform: translateY(5%);
-        }
-
-        .button:hover .wrap p {
-            transform: translateY(-4%);
+        .button:hover svg {
+        transform: translateX(5px);
         }
 
         .button:active {
-            transform: translateY(4px);
-            box-shadow:
-                inset 0 0.3rem 0.5rem rgba(255, 255, 255, 0.5),
-                inset 0 -0.1rem 0.3rem rgba(0, 0, 0, 0.8),
-                inset 0 -0.4rem 0.9rem rgba(255, 255, 255, 0.4),
-                0 3rem 3rem rgba(0, 0, 0, 0.3),
-                0 1rem 1rem -0.6rem rgba(0, 0, 0, 0.8);
+        transform: scale(0.95);
         }
 
-        .button-secondary {
-            background-color: #ffffff;
-            color: #222;
-        }
-
-        .button-secondary .wrap {
-            color: #222;
+        #noThanksBtn{
+        background-color: #d3d3d3 !important;
+        color: #333 !important;
         }
 
         /* YOU WIN state */
@@ -739,6 +668,12 @@
                 top:430px;
             }
         }
+
+        .buttons-flex{
+            display:flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
     </style>
 </head>
 <body>
@@ -788,11 +723,30 @@
                     Thanks for visiting the Oregon State University booth.
                     Tap below to continue to Round 2 and spin for more fun.
                 </p>
-                <button class="button" id="goToRound2">
-                    <div class="wrap">
-                        <p>Continue to Round 2</p>
-                    </div>
-                </button> 
+                <div class="buttons-flex">
+                    <button class="button" id="noThanksBtn">
+                        <div class="wrap">
+                            <p>Close</p>
+                        </div>
+                    </button>
+
+                    <button class="button" id="goToRound2">
+                            <p style="display: flex; align-items: center; gap: 10px; padding: 0;
+                                margin: 0;"><span>Continue</span>  <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 74 74"
+                                height="35"
+                                width="35"
+                            >
+                                <circle stroke-width="3" stroke="white" r="35.5" cy="37" cx="37"></circle>
+                                <path
+                                fill="white"
+                                d="M25 35.5C24.1716 35.5 23.5 36.1716 23.5 37C23.5 37.8284 24.1716 38.5 25 38.5V35.5ZM49.0607 38.0607C49.6464 37.4749 49.6464 36.5251 49.0607 35.9393L39.5147 26.3934C38.9289 25.8076 37.9792 25.8076 37.3934 26.3934C36.8076 26.9792 36.8076 27.9289 37.3934 28.5147L45.8787 37L37.3934 45.4853C36.8076 46.0711 36.8076 47.0208 37.3934 47.6066C37.9792 48.1924 38.9289 48.1924 39.5147 47.6066L49.0607 38.0607ZM25 38.5L48 38.5V35.5L25 35.5V38.5Z"
+                                ></path>
+                            </svg></p>
+                    </button> 
+                </div>
             </div>
 
             <!-- Spinner Wheel for Round 2 -->
@@ -821,7 +775,7 @@
             <div class="prize-display" id="prizeValue">1</div>
             <p>You've won a <strong id="prizeLabel">1 prize</strong>!</p>
             <div class="modal-buttons">
-                <button class="modal-btn primary" id="closeModal">Done</button>
+                <button class="button" id="closeModal">Close</button>
             </div>
         </div>
     </div>
@@ -1107,6 +1061,36 @@
             qIndex = 0;
             backButton.classList.add("hide");
             history = [];
+            loadQuestion();
+        });
+
+        document.getElementById("noThanksBtn").addEventListener("click", () => {
+            stopConfetti();
+            youWinBlock.classList.remove("show");
+            questionForm.classList.remove("hide");
+
+            // FULL RESET
+            round = 1;
+            questions = round1Questions;
+            qIndex = 0;
+
+            answers.role = "";
+            answers.experience = "";
+            answers.brought = "";
+            answers.email = "";
+
+            history = [];
+
+            // Reset wheel visuals
+            rotation2 = 0;
+            wheel2.style.transition = "none";
+            wheel2.style.transform = "rotate(0deg)";
+            setTimeout(() => {
+                wheel2.style.transition = "transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)";
+            }, 50);
+
+            spinnerWheel2.classList.remove("show");
+
             loadQuestion();
         });
 
