@@ -93,6 +93,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            position:relative;
         }
 
         fieldset.text-box {
@@ -186,6 +187,8 @@
             cursor: pointer;
             transition: all 0.2s ease;
             text-align: left;
+            min-width: 100px;
+            justify-content: center;
         }
 
         .radio-option input[type="radio"] {
@@ -227,116 +230,46 @@
             background: radial-gradient(circle, var(--orange) 0%, var(--orange-soft) 70%);
         }
 
-        /* Glossy button */
+        #closeModal{
+            height: 50px;
+        }
+        
         .button {
-            --white: #ffe7ff;
-            --radius: 100px;
-            outline: none;
-            cursor: pointer;
-            border: 0;
-            position: relative;
-            border-radius: var(--radius);
-            background-color: #080808;
-            transition: all 0.2s ease;
-            box-shadow:
-                inset 0 0.3rem 0.9rem rgba(255, 255, 255, 0.3),
-                inset 0 -0.1rem 0.3rem rgba(0, 0, 0, 0.7),
-                inset 0 -0.4rem 0.9rem rgba(255, 255, 255, 0.5),
-                0 3rem 3rem rgba(0, 0, 0, 0.3),
-                0 1rem 1rem -0.6rem rgba(0, 0, 0, 0.8);
-            margin-top: 30px;
-        }
-
-        .button .wrap {
-            font-size: 20px;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.85);
-            padding: 5px 30px;
-            border-radius: inherit;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .button .wrap p {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin: 0;
-            transition: all 0.2s ease;
-            transform: translateY(2%);
-            mask-image: linear-gradient(to bottom, white 40%, transparent);
-        }
-
-        .button .wrap::before,
-        .button .wrap::after {
-            content: "";
-            position: absolute;
-            transition: all 0.3s ease;
-        }
-
-        .button .wrap::before {
-            left: -15%;
-            right: -15%;
-            bottom: 25%;
-            top: -100%;
-            border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.12);
-        }
-
-        .button .wrap::after {
-            left: 6%;
-            right: 6%;
-            top: 12%;
-            bottom: 40%;
-            border-radius: 22px 22px 0 0;
-            box-shadow: inset 0 10px 8px -10px rgba(255, 255, 255, 0.8);
-            background: linear-gradient(
-                180deg,
-                rgba(255, 255, 255, 0.3) 0%,
-                rgba(0, 0, 0, 0) 50%,
-                rgba(0, 0, 0, 0) 100%
-            );
+        cursor: pointer;
+        font-weight: 700;
+        transition: all 0.2s;
+        border-radius: 100px;
+        background: #333;
+        color:white;
+        border: 1px solid transparent;
+        display: flex;
+        align-items: center;
+        font-size: 15px;
+        justify-content: center;
+        width: 150px;
         }
 
         .button:hover {
-            box-shadow:
-                inset 0 0.3rem 0.5rem rgba(255, 255, 255, 0.4),
-                inset 0 -0.1rem 0.3rem rgba(0, 0, 0, 0.7),
-                inset 0 -0.4rem 0.9rem rgba(255, 255, 255, 0.7),
-                0 3rem 3rem rgba(0, 0, 0, 0.3),
-                0 1rem 1rem -0.6rem rgba(0, 0, 0, 0.8);
+        background: #c4e201;
         }
 
-        .button:hover .wrap::before {
-            transform: translateY(-5%);
+        .button > svg {
+        width: 34px;
+        margin-left: 10px;
+        transition: transform 0.3s ease-in-out;
         }
 
-        .button:hover .wrap::after {
-            opacity: 0.4;
-            transform: translateY(5%);
-        }
-
-        .button:hover .wrap p {
-            transform: translateY(-4%);
+        .button:hover svg {
+        transform: translateX(5px);
         }
 
         .button:active {
-            transform: translateY(4px);
-            box-shadow:
-                inset 0 0.3rem 0.5rem rgba(255, 255, 255, 0.5),
-                inset 0 -0.1rem 0.3rem rgba(0, 0, 0, 0.8),
-                inset 0 -0.4rem 0.9rem rgba(255, 255, 255, 0.4),
-                0 3rem 3rem rgba(0, 0, 0, 0.3),
-                0 1rem 1rem -0.6rem rgba(0, 0, 0, 0.8);
+        transform: scale(0.95);
         }
 
-        .button-secondary {
-            background-color: #ffffff;
-            color: #222;
-        }
-
-        .button-secondary .wrap {
-            color: #222;
+        #noThanksBtn{
+        background-color: #d3d3d3 !important;
+        color: #333 !important;
         }
 
         /* YOU WIN state */
@@ -352,7 +285,7 @@
         }
 
         .win-title {
-            font-size: 3.2rem;
+            font-size: 4rem;
             font-weight: 800;
             letter-spacing: 0.12em;
             text-transform: uppercase;
@@ -365,7 +298,7 @@
             font-size: 1.1rem;
             color: #444;
             max-width: 480px;
-            z-index: 10;
+            z-index: 999;
         }
 
         .hide {
@@ -448,37 +381,86 @@
             clip-path: polygon(50% 0%, 15% 100%, 85% 100%);
         }
 
-        .wheel {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: #333;
-            border-radius: 50%;
-            overflow: hidden;
-            box-shadow: 0 0 0 8px #333, 0 0 0 18px #fff, 0 0 0 22px #333;
-            transition: transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99);
-        }
+.wheel {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    transition: transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99);
 
-        .wheel-segment {
-            position: absolute;
-            width: 50%;
-            height: 50%;
-            transform-origin: bottom right;
-            transform: rotate(calc(45deg * var(--i)));
-            clip-path: polygon(0 0, 60% 0, 100% 100%, 0 60%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
- 
-        .wheel-segment span {
-            position: relative;
-            transform: rotate(45deg);
-            color: #fff;
-            font-size: 2.5em;
-            font-weight: 700;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
+    background: conic-gradient(
+        #d73f09 0deg 72deg,
+        #4A773C 72deg 144deg,
+        #003B5C 144deg 216deg,
+        #f7a162 216deg 288deg,
+        #D3832B 288deg 360deg
+    );
+}
+
+
+.wheel-segment {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    top: 50%;
+    left: 50%;
+    transform-origin: 0% 0%;
+    transform: rotate(calc(72deg * var(--i))) skewY(-18deg);
+    overflow: hidden;
+}
+
+.wheel-segment::before {
+    content: "";
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -100%;
+    left: -100%;
+    background: inherit;
+    transform: skewY(18deg) rotate(calc(-72deg * var(--i)));
+}
+
+.wheel-segment span {
+    position: absolute;
+    top: -10px;
+    left: 30%;
+    transform: rotate(calc(-72deg * var(--i)));
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: white;
+}
+.wheel-labels {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+
+.wheel-labels span {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform-origin: center center;
+
+    /* Rotate into segment → move outward → counter-rotate → rotate vertical */
+    transform:
+        rotate(calc(72deg * var(--i) + 36deg))
+        translate(175px)
+        rotate(1800deg)   /* ← makes the text vertical */
+        translate(-50%, -50%);
+
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0);
+    white-space: nowrap;
+    pointer-events: none;
+  /*  text-shadow: 2px 2px 4px rgba(0,0,0,0.35);*/
+}
+
+
 
         /* Modal */
         .modal-backdrop {
@@ -560,6 +542,7 @@
                 width: 94%;
                 height: auto;
                 padding: 30px 20px;
+                margin-top: 200px;
             }
 
             .form-inner {
@@ -571,14 +554,14 @@
                 max-width: 100%;
             }
 
-            h2.main-title {
+         /*   h2.main-title {
                 font-size: 2.2rem;
                 left: 40px;
             }
 
             .win-title {
                 font-size: 2.4rem;
-            }
+            }*/
         }
 
         /* Radio Glow */
@@ -622,6 +605,75 @@
             cursor: pointer;
             font-family: "TikTok Sans", sans-serif;
         }
+
+        .arrow-btn {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            padding: 7px 10px;
+            background: var(--orange);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.25rem;
+            cursor: pointer;
+            box-shadow: var(--shadow-soft);
+            transition: 0.2s;
+        }
+
+        .arrow-btn:hover {
+            background: #ff8a00;
+            transform: scale(1.05);
+        }
+
+        .transition-wrapper {
+            transition: transform 0.35s ease, opacity 0.35s ease;
+            transform-origin: center center;
+        }
+
+        .shrink-out {
+            transform: scale(0.85);
+            opacity: 0;
+        }
+
+        .grow-in {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .pre-grow {
+            transform: scale(0.85);
+            opacity: 0;
+        }
+
+        #emailField{
+            position: absolute;
+            top: 240px;
+        }
+
+        @media (max-width: 740px) {
+            #emailField{
+                top:300px;
+            }
+        }
+
+        @media (max-width: 561px) {
+            #emailField{
+                top:360px;
+            }
+        }
+
+        @media (max-width: 402px) {
+            #emailField{
+                top:430px;
+            }
+        }
+
+        .buttons-flex{
+            display:flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
     </style>
 </head>
 <body>
@@ -635,27 +687,35 @@
     <!-- Main container -->
     <div class="form-container">
         <div class="form-inner">
-
+            <button type="button"id="backButton">&#8617; Back to previous question</button>
             <!-- Question form (Round 1 + Round 2) -->
-            <form id="questionForm">
+            <div id="transitionWrapper" class="transition-wrapper">
+                <form id="questionForm">
+                    <div class="question-label" id="questionLabel"></div>
+                    <div id="radioContainer" class="radio-group hide"></div>
+                    <div id="emailField" class="hide">
+                        <div class="glow-wrap">
+                            <input type="email" id="emailInput" placeholder="Enter your email">
+                        </div>
 
-                <div class="question-label" id="questionLabel"></div>
-                <div id="radioContainer" class="radio-group hide"></div>
-
-                <fieldset class="text-box">
-                    <div class="glow-wrap" id="glowWrap">
-                        <input type="text" id="questionInput" placeholder="Name">
+                        <button id="emailSubmitBtn" type="button" class="arrow-btn">
+                            ➜
+                        </button>
                     </div>
-                </fieldset>
 
-                <button class="button" id="submitButton" type="submit">
-                    <div class="wrap">
-                        <p>Submit</p>
-                    </div>
-                </button>
-                 <button type="button"id="backButton">&#8617; Back to previous question</button>
-            </form>
+                    <fieldset class="text-box">
+                        <div class="glow-wrap" id="glowWrap">
+                            <input type="text" id="questionInput" placeholder="Name">
+                        </div>
+                    </fieldset>
 
+                    <button class="button" id="submitButton" type="submit">
+                        <div class="wrap">
+                            <p>Submit</p>
+                        </div>
+                    </button>
+                </form>
+            </div>
             <!-- YOU WIN state (after Round 1) -->
             <div id="youWin">
                 <div class="win-title">YOU WIN!</div>
@@ -663,26 +723,44 @@
                     Thanks for visiting the Oregon State University booth.
                     Tap below to continue to Round 2 and spin for more fun.
                 </p>
-                <button class="button" id="goToRound2">
-                    <div class="wrap">
-                        <p>Continue to Round 2</p>
-                    </div>
-                </button> 
+                <div class="buttons-flex">
+                    <button class="button" id="noThanksBtn">
+                        <div class="wrap">
+                            <p>Close</p>
+                        </div>
+                    </button>
+
+                    <button class="button" id="goToRound2">
+                            <p style="display: flex; align-items: center; gap: 10px; padding: 0;
+                                margin: 0;"><span>Continue</span>  <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 74 74"
+                                height="35"
+                                width="35"
+                            >
+                                <circle stroke-width="3" stroke="white" r="35.5" cy="37" cx="37"></circle>
+                                <path
+                                fill="white"
+                                d="M25 35.5C24.1716 35.5 23.5 36.1716 23.5 37C23.5 37.8284 24.1716 38.5 25 38.5V35.5ZM49.0607 38.0607C49.6464 37.4749 49.6464 36.5251 49.0607 35.9393L39.5147 26.3934C38.9289 25.8076 37.9792 25.8076 37.3934 26.3934C36.8076 26.9792 36.8076 27.9289 37.3934 28.5147L45.8787 37L37.3934 45.4853C36.8076 46.0711 36.8076 47.0208 37.3934 47.6066C37.9792 48.1924 38.9289 48.1924 39.5147 47.6066L49.0607 38.0607ZM25 38.5L48 38.5V35.5L25 35.5V38.5Z"
+                                ></path>
+                            </svg></p>
+                    </button> 
+                </div>
             </div>
 
             <!-- Spinner Wheel for Round 2 -->
             <div id="spinnerWheel2">
                 <div class="wheel-wrapper">
                     <div class="spin-button" id="spinBtn2">SPIN</div>
-                    <div class="wheel" id="wheelElement2">
-                        <div class="wheel-segment" style="--i:1; background:#d73f09;"><span>1</span></div>
-                        <div class="wheel-segment" style="--i:2; background:#4A773C;"><span>2</span></div>
-                        <div class="wheel-segment" style="--i:3; background:#003B5C;"><span>3</span></div>
-                        <div class="wheel-segment" style="--i:4; background:#f7a162;"><span>4</span></div>
-                        <div class="wheel-segment" style="--i:5; background:#d73f09;"><span>5</span></div>
-                        <div class="wheel-segment" style="--i:6; background:#0D5257;"><span>6</span></div>
-                        <div class="wheel-segment" style="--i:7; background:#D3832B;"><span>7</span></div>
-                        <div class="wheel-segment" style="--i:8; background:#4A773C;"><span>8</span></div>
+                    <div class="wheel" id="wheelElement2">    
+                        <div class="wheel-labels">
+                            <span style="--i:0">Beach Ball</span>
+                            <span style="--i:1">Giant Highlighter</span>
+                            <span style="--i:2">Calendar</span>
+                            <span style="--i:3">Sticker</span>
+                            <span style="--i:4">Magnet</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -695,9 +773,9 @@
         <div class="modal-content">
             <h2>Congratulations!</h2>
             <div class="prize-display" id="prizeValue">1</div>
-            <p>You won <strong id="prizeLabel">1 prize</strong>!</p>
+            <p>You've won a <strong id="prizeLabel">1 prize</strong>!</p>
             <div class="modal-buttons">
-                <button class="modal-btn primary" id="closeModal">Done</button>
+                <button class="button" id="closeModal">Close</button>
             </div>
         </div>
     </div>
@@ -707,6 +785,7 @@
            QUESTION / ROUND LOGIC
         --------------------------------*/
         let round = 1;
+        let isTransitioning = false;
 
         const round1Questions = [
             { label: "Which of the following best describes your role?", options:[
@@ -736,18 +815,15 @@
             },
             {
                 label: "Would you be willing to share your experience in more detail?",
-                options: [
-                    "Yes",
-                    "No"
-                ]
+                options: ["Yes", "No"],
+                isEmailConditional: true
             },
-
         ];
 
         let questions = round1Questions;
         let qIndex = 0;
 
-        const answers = { name: "", org: "", experience: "" };
+        const answers = { role: "", experience: "", brought: "", email: "" };
         let lastPrize = 0;
 
         const questionLabel = document.getElementById("questionLabel");
@@ -761,8 +837,38 @@
         let history = [];
         const backButton = document.getElementById("backButton");
 
+        const transitionWrapper = document.getElementById("transitionWrapper");
+
+        function animateOut(callback) {
+            isTransitioning = true;
+
+            transitionWrapper.classList.add("shrink-out");
+
+            setTimeout(() => {
+                if (callback) callback();
+
+                transitionWrapper.classList.remove("shrink-out");
+
+                transitionWrapper.classList.add("pre-grow");
+                requestAnimationFrame(() => {
+                    transitionWrapper.classList.remove("pre-grow");
+                    isTransitioning = false;   
+                });
+            }, 300);
+        }
+
+
+        function animateIn() {
+            transitionWrapper.classList.add("pre-grow");
+
+            requestAnimationFrame(() => {
+                transitionWrapper.classList.remove("pre-grow");
+            });
+        }
 
         function loadQuestion() {
+            animateIn();
+
             const q = questions[qIndex];
             questionLabel.textContent = q.label;
 
@@ -789,6 +895,7 @@
                 `;
 
                 label.addEventListener("click", () => {
+                    if (isTransitioning) return;
                     radioContainer.querySelectorAll(".radio-option").forEach(l => {
                         l.classList.remove("selected");
                         l.parentElement.classList.remove("glow-active");
@@ -802,11 +909,32 @@
 
                     const input = label.querySelector("input[type='radio']");
                     input.checked = true;
+                    // CONDITIONAL EMAIL LOGIC
+                    if (q.isEmailConditional) {
+                        if (input.value === "Yes") {
+                            // Show email field
+                            document.getElementById("emailField").classList.remove("hide");
+                            document.getElementById("emailInput").focus();
+                            return; // ❗Stop auto-submit
+                        } else {
+                            // Hide email field & save "No"
+                            document.getElementById("emailField").classList.add("hide");
+                            answers.email = "No";
 
-                    // ⭐ AUTO-SUBMIT after short delay
+                            setTimeout(() => {
+                                questionForm.dispatchEvent(new Event("submit", { cancelable: true }));
+                            }, 150);
+                            return;
+                        }
+                    }
+
+                    // NORMAL AUTO-SUBMIT for all other radio questions
                     setTimeout(() => {
-                        questionForm.dispatchEvent(new Event("submit", { cancelable: true }));
-                    }, 150); // feel free to tweak delay
+                        if (!isTransitioning) {
+                            questionForm.dispatchEvent(new Event("submit", { cancelable: true }));
+                        }
+                    }, 150);
+
                 });
 
 
@@ -844,27 +972,39 @@
             }
 
             if (round === 1) {
-                if (qIndex === 0) answers.name = value;
-                else answers.org = value;
+                if (qIndex === 0) answers.role = value;
+                else answers.experience = value;
             } else {
-                answers.experience = value;
+                if (qIndex === 0) answers.brought = value;
+                else answers.email = value;
             }
 
             history.push({ qIndex, value });
             qIndex++;
 
             if (qIndex < questions.length) {
-                loadQuestion();
+                animateOut(() => loadQuestion());
             } else {
                 if (round === 1) {
-                    showWinScreen();
+                    animateOut(showWinScreen);
                 } else {
-                    finishedRound2();
+                    animateOut(finishedRound2);
+
                 }
             }
 
         });
-                    
+
+        document.getElementById("emailSubmitBtn").addEventListener("click", () => {
+            const email = document.getElementById("emailInput").value.trim();
+            if (email.length < 3) return;
+
+            answers.email = email;
+
+            // Continue survey
+            questionForm.dispatchEvent(new Event("submit", { cancelable: true }));
+        });
+            
         document.getElementById("backButton").addEventListener("click", () => {
             if (history.length === 0) return; // can't go back
 
@@ -905,6 +1045,8 @@
             // Hide the form, show YOU WIN
             questionForm.classList.add("hide");
             youWinBlock.classList.add("show");
+            backButton.classList.add("hide");
+
             startConfetti();
         }
 
@@ -919,6 +1061,36 @@
             qIndex = 0;
             backButton.classList.add("hide");
             history = [];
+            loadQuestion();
+        });
+
+        document.getElementById("noThanksBtn").addEventListener("click", () => {
+            stopConfetti();
+            youWinBlock.classList.remove("show");
+            questionForm.classList.remove("hide");
+
+            // FULL RESET
+            round = 1;
+            questions = round1Questions;
+            qIndex = 0;
+
+            answers.role = "";
+            answers.experience = "";
+            answers.brought = "";
+            answers.email = "";
+
+            history = [];
+
+            // Reset wheel visuals
+            rotation2 = 0;
+            wheel2.style.transition = "none";
+            wheel2.style.transform = "rotate(0deg)";
+            setTimeout(() => {
+                wheel2.style.transition = "transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)";
+            }, 50);
+
+            spinnerWheel2.classList.remove("show");
+
             loadQuestion();
         });
 
@@ -1068,7 +1240,7 @@
         function showPrizeModal(prize) {
             lastPrize = prize;
             document.getElementById("prizeValue").textContent = prize;
-            document.getElementById("prizeLabel").textContent = `${prize} prize${prize === 1 ? "" : "s"}`;
+            document.getElementById("prizeLabel").textContent = `${prize}`;
             document.getElementById("prizeModal").classList.add("active");
         }
 
@@ -1085,13 +1257,19 @@
             wheel2.style.transform = `rotate(${rotation2}deg)`;
 
             setTimeout(() => {
-const normalized = rotation2 % 360;
-const angle = (360 - normalized + 36) % 360; // 36 = half of 72°
-const segment = Math.floor(angle / 72);      // 72° per slice
-const prizeIndex = segment % 5;              // 0–4
 
-const prizes = ["Beach Ball", "Giant Highlighter", "Calendar", "Stickers", "Magnet"];
-showPrizeModal(prizes[prizeIndex]);
+            const normalized = (rotation2 + 102) % 360;
+
+
+
+            const angle = (360 - normalized + 36) % 360;
+
+            const segment = Math.floor(angle / 72);
+            const prizeIndex = segment % 5;
+             // 0–4
+
+                const prizes = ["Beach Ball", "Giant Highlighter", "Calendar", "Sticker", "Magnet"];
+                showPrizeModal(prizes[prizeIndex]);
 
 
                 isSpinning2 = false;
@@ -1106,9 +1284,10 @@ showPrizeModal(prizes[prizeIndex]);
             questions = round1Questions;
             qIndex = 0;
 
-            answers.name = "";
-            answers.org = "";
+            answers.role = "";
             answers.experience = "";
+            answers.brought = "";
+            answers.email = "";
 
             // Reset wheel
             rotation2 = 0;
@@ -1129,10 +1308,10 @@ showPrizeModal(prizes[prizeIndex]);
             // Send to host (WebView) if available
             if (window.chrome && window.chrome.webview) {
                 window.chrome.webview.postMessage({
-                    name: answers.name,
-                    org: answers.org,
-                    experience: answers.experience || "",
-                    prize: lastPrize
+                    role: answers.role,
+                    experience: answers.experience,
+                    brought: answers.brought,
+                    email: answers.email
                 });
             }
 
