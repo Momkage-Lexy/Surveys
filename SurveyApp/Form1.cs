@@ -38,7 +38,7 @@ namespace SurveyApp{
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     role TEXT,
                     experience TEXT,
-                    brougt TEXT,
+                    brought TEXT,
                     email TEXT,
                 );
             ";
@@ -94,7 +94,7 @@ namespace SurveyApp{
         public class SurveyResult
         {
             public string role { get; set; }
-            public string experience { get; set; };
+            public string experience { get; set; }
             public string brought { get; set; }
             public string email { get; set; }
         }
