@@ -516,11 +516,12 @@
     top: 50%;
     transform-origin: center center;
 
+    /* Rotate into segment → move outward → counter-rotate → rotate vertical */
     transform:
         rotate(calc(72deg * var(--i) + 36deg))
         translate(175px)
-        translate(-50%, -50%)
-        rotate(calc(-72deg * var(--i) - 36deg));
+        rotate(1800deg)   /* ← makes the text vertical */
+        translate(-50%, -50%);
 
     font-size: 1.35rem;
     font-weight: 700;
@@ -529,6 +530,7 @@
     pointer-events: none;
   /*  text-shadow: 2px 2px 4px rgba(0,0,0,0.35);*/
 }
+
 
 
         /* Modal */
