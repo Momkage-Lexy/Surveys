@@ -83,6 +83,7 @@
             width: 100%;
             max-width: 100%;
             text-align: center;
+            position: relative;
         }
 
         .question-label {
@@ -107,6 +108,15 @@
             margin: 0;
             padding: 0;
         }
+        .email-glow-wrap, .email-glow-wrap:hover{
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50px;
+            padding: 2px;
+            background: transparent;
+            transition: all 0.3s ease;
+        }
 
         .glow-wrap, .glow-wrap:hover {
             display: inline-flex;
@@ -118,7 +128,7 @@
             transition: all 0.3s ease;
         }
 
-        .glow-wrap:focus-within, .glow-wrap:hover {
+        .glow-wrap:focus-within, .glow-wrap:hover, .email-glow-wrap:focus-within, .email-glow-wrap:hover {
             position: relative;
             background: linear-gradient(120deg,
                 #ff8a00,
@@ -130,7 +140,7 @@
             animation: moveGradient 4s ease infinite;
         }
 
-        .glow-wrap input {
+        .glow-wrap input, .email-glow-wrap input {
             width: 100%;
             max-width: 600px;
             width: 600px;
@@ -144,16 +154,16 @@
             box-shadow: var(--shadow-soft);
         }
 
-        .glow-wrap input::placeholder {
+        .glow-wrap input::placeholder, .email-glow-wrap::placeholder {
             font-size: 1rem;
             color: #999;
         }
 
-        .glow-wrap:focus-within input {
+        .glow-wrap:focus-within input, .email-glow-wrap:focus-within input{
             box-shadow: var(--shadow-inset);
         }
 
-        .glow-wrap:focus-within::after, .glow-wrap:hover::after {
+        .glow-wrap:focus-within::after, .glow-wrap:hover::after, .email-glow-wrap:focus-within::after, .email-glow-wrap:hover::after{
             content: "";
             position: absolute;
             inset: -5px;
@@ -228,6 +238,9 @@
         .radio-label-text {
             font-size: 0.98rem;
             color: #222;
+            margin-top: 1rem;
+            font-weight: 600;
+            text-align: center;
         }
 
         .radio-option.selected {
@@ -262,6 +275,25 @@
         width: 150px;
         }
 
+        .email-button{
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.2s;
+            border-radius: 100px;
+            background: #333;
+            color: white;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            font-size: 15px;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            position: absolute;
+            top: 8px;
+            right: 8px;
+        }
+
         .button:hover {
         background: #d73f09;
         }
@@ -280,9 +312,15 @@
         transform: scale(0.95);
         }
 
-        #noThanksBtn{
+        #noThanksBtn, #emailBackBtn{
         background-color: #d3d3d3 !important;
         color: #333 !important;
+        }
+
+        #emailBackBtn{
+            margin: auto;
+            text-align: center;
+            margin-top: 20px;
         }
 
         /* YOU WIN state */
@@ -622,11 +660,12 @@
         #backButton {
             border: 0;
             background-color: #ffffff00;
-            font-size: 1.5rem;
+            font-size: 1rem;
             color: #33333359;
-            margin-top: 2rem;
             cursor: pointer;
             font-family: "TikTok Sans", sans-serif;
+            font-weight: 100;
+            margin-right: auto;
         }
 
         .arrow-btn {
@@ -670,8 +709,7 @@
         }
 
         #emailField{
-            position: absolute;
-            top: 240px;
+            position: relative;
         }
 
         @media (max-width: 740px) {
@@ -718,30 +756,59 @@
             max-height: 80px;
             padding-left: 20px;
         }
+
+        .sr-only {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
     </style>
 </head>
 <body>
     <div class="top-nav"><img src="surveyapp/assets/logo.png"></div>
+    <button type="button"id="backButton">&#8617; Back to previous question</button>
     <!-- Confetti -->
     <canvas id="confettiCanvas"></canvas>
 
     <!-- Main container -->
     <div class="form-container">
         <div class="form-inner">
-            <button type="button"id="backButton">&#8617; Back to previous question</button>
             <!-- Question form (Round 1 + Round 2) -->
             <div id="transitionWrapper" class="transition-wrapper">
                 <form id="questionForm">
                     <div class="question-label" id="questionLabel"></div>
                     <div id="radioContainer" class="radio-group hide"></div>
                     <div id="emailField" class="hide">
-                        <div class="glow-wrap">
-                            <input type="email" id="emailInput" placeholder="Enter your email">
+                        <div class="email-glow-wrap">
+                            <input type="email" id="emailInput" placeholder="Please enter your email">
                         </div>
 
-                        <button id="emailSubmitBtn" type="button" class="arrow-btn">
-                            ➜
+                        <button id="emailSubmitBtn" type="button" class="email-button">
+                            <p style="display: flex; align-items: center; gap: 10px; padding: 0;
+                                margin: 0;"><svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 74 74"
+                                height="35"
+                                width="35"
+                            >
+                                <circle stroke-width="3" stroke="white" r="35.5" cy="37" cx="37"></circle>
+                                <path
+                                fill="white"
+                                d="M25 35.5C24.1716 35.5 23.5 36.1716 23.5 37C23.5 37.8284 24.1716 38.5 25 38.5V35.5ZM49.0607 38.0607C49.6464 37.4749 49.6464 36.5251 49.0607 35.9393L39.5147 26.3934C38.9289 25.8076 37.9792 25.8076 37.3934 26.3934C36.8076 26.9792 36.8076 27.9289 37.3934 28.5147L45.8787 37L37.3934 45.4853C36.8076 46.0711 36.8076 47.0208 37.3934 47.6066C37.9792 48.1924 38.9289 48.1924 39.5147 47.6066L49.0607 38.0607ZM25 38.5L48 38.5V35.5L25 35.5V38.5Z"
+                                ></path>
+                            </svg></p>
                         </button>
+                        <button id="emailBackBtn" type="button" class="button">
+                            <div class="wrap"><p>Back</p></div>
+                        </button>
+
                     </div>
 
                     <fieldset class="text-box">
@@ -819,6 +886,31 @@
                 <button class="button" id="closeModal">Close</button>
             </div>
         </div>
+    </div>
+    <div class="image-attributions sr-only">
+        X by Skena Grafis from <a href="https://thenounproject.com/browse/icons/term/x/" target="_blank" title="X Icons">Noun Project</a> (CC BY 3.0)
+
+        Check Mark by saidatun from <a href="https://thenounproject.com/browse/icons/term/check-mark/" target="_blank" title="Check Mark Icons">Noun Project</a> (CC BY 3.0)
+
+        Happy by Barracuda from <a href="https://thenounproject.com/browse/icons/term/happy/" target="_blank" title="Happy Icons">Noun Project</a> (CC BY 3.0)
+
+        Smile by Barracuda from <a href="https://thenounproject.com/browse/icons/term/smile/" target="_blank" title="Smile Icons">Noun Project</a> (CC BY 3.0)
+
+        Neutral Face by Barracuda from <a href="https://thenounproject.com/browse/icons/term/neutral-face/" target="_blank" title="Neutral Face Icons">Noun Project</a> (CC BY 3.0)
+
+        book and lightbulb by Rahmad romadoni from <a href="https://thenounproject.com/browse/icons/term/book-and-lightbulb/" target="_blank" title="book and lightbulb Icons">Noun Project</a> (CC BY 3.0)
+
+        Books stack by insdesign86 from <a href="https://thenounproject.com/browse/icons/term/books-stack/" target="_blank" title="Books stack Icons">Noun Project</a> (CC BY 3.0)
+
+        Government Office by Faizal Aji Mualana from <a href="https://thenounproject.com/browse/icons/term/government-office/" target="_blank" title="Government Office Icons">Noun Project</a> (CC BY 3.0)
+
+        Puzzle Piece by ilCactusBlu from <a href="https://thenounproject.com/browse/icons/term/puzzle-piece/" target="_blank" title="Puzzle Piece Icons">Noun Project</a> (CC BY 3.0)
+
+        faculty by WEBTECHOPS LLP from <a href="https://thenounproject.com/browse/icons/term/faculty/" target="_blank" title="faculty Icons">Noun Project</a> (CC BY 3.0)
+
+        Research by Radhika Studio from <a href="https://thenounproject.com/browse/icons/term/research/" target="_blank" title="Research Icons">Noun Project</a> (CC BY 3.0)
+        Prize by agus raharjo from <a href="https://thenounproject.com/browse/icons/term/prize/" target="_blank" title="Prize Icons">Noun Project</a> (CC BY 3.0)
+        sticker by LUTFI GANI AL ACHMAD from <a href="https://thenounproject.com/browse/icons/term/sticker/" target="_blank" title="sticker Icons">Noun Project</a> (CC BY 3.0)
     </div>
 
     <script>
@@ -913,6 +1005,9 @@
             const q = questions[qIndex];
             questionLabel.textContent = q.label;
 
+            document.getElementById("emailField").classList.add("hide");
+            document.getElementById("emailInput").value = "";
+
             if (q.options) {
                 // Radio (neumorphic cards)
                 document.getElementById("glowWrap").classList.add("hide");
@@ -929,7 +1024,7 @@
                     <div class="glow-wrap radio-glow">
                         <div class="radio-option">
                             <span class="radio-bullet"></span>
-                            <img class="radio-icon" src="surveyapp/assets/${opt.toLowerCase().replace(/ /g,'-')}.png" alt="${opt} icon">
+                            <img class="radio-icon" src="surveyapp/assets/${opt.toLowerCase().replace(/,/g, "").replace(/ /g,'-')}.png" alt="${opt} icon">
                             <span class="radio-label-text">${opt}</span>
                             <input type="radio" name="round2" value="${opt}" id="${id}">
                         </div>
@@ -954,13 +1049,20 @@
                     // CONDITIONAL EMAIL LOGIC
                     if (q.isEmailConditional) {
                         if (input.value === "Yes") {
-                            // Show email field
+                            // Hide Yes/No buttons
+                            radioContainer.classList.add("hide");
+
+                            // Show the email field
                             document.getElementById("emailField").classList.remove("hide");
                             document.getElementById("emailInput").focus();
-                            return; // ❗Stop auto-submit
+                            return; // STOP auto-submit
                         } else {
-                            // Hide email field & save "No"
+                            // Bring back Yes/No buttons if coming from back navigation
+                            radioContainer.classList.remove("hide");
+
+                            // Hide email field
                             document.getElementById("emailField").classList.add("hide");
+
                             answers.email = "No";
 
                             setTimeout(() => {
@@ -997,6 +1099,22 @@
             else backButton.classList.add("hide");
 
         }
+        document.getElementById("emailBackBtn").addEventListener("click", () => {
+            // Hide email field
+            document.getElementById("emailField").classList.add("hide");
+
+            // Show Yes/No options again
+            radioContainer.classList.remove("hide");
+
+            // Clear email
+            document.getElementById("emailInput").value = "";
+
+            // Re-select NOTHING (force user to choose again)
+            radioContainer.querySelectorAll(".radio-option").forEach(opt => {
+                opt.classList.remove("selected");
+                opt.parentElement.classList.remove("glow-active");
+            });
+        });
 
         questionForm.addEventListener("submit", (e) => {
             e.preventDefault();
@@ -1063,23 +1181,33 @@
             const q = questions[qIndex];
 
             if (q.options) {
-                // restore radio selection
                 const radios = radioContainer.querySelectorAll("input[type='radio']");
+
                 radios.forEach(r => {
                     if (r.value === last.value) {
                         r.checked = true;
 
-                        // add styling back
                         const option = r.closest(".radio-option");
                         const wrap = r.closest(".glow-wrap");
                         if (option) option.classList.add("selected");
                         if (wrap) wrap.classList.add("glow-active");
+
+                        // SPECIAL CASE: Email conditional question
+                        if (q.isEmailConditional) {
+                            if (last.value === "Yes") {
+                                radioContainer.classList.remove("hide");
+                                document.getElementById("emailField").classList.add("hide");
+                            } else {
+                                radioContainer.classList.remove("hide");
+                                document.getElementById("emailField").classList.add("hide");
+                            }
+                        }
+                                    else {
+                            // restore text input
+                            questionInput.value = last.value;
+                        }
                     }
                 });
-
-            } else {
-                // restore text input
-                questionInput.value = last.value;
             }
         });
 
@@ -1339,6 +1467,9 @@
             answers.experience = "";
             answers.brought = "";
             answers.email = "";
+            document.getElementById("emailInput").value = "";
+            document.getElementById("emailField").classList.add("hide");
+            radioContainer.classList.remove("hide");
 
             // Reset wheel
             rotation2 = 0;
