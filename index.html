@@ -37,7 +37,6 @@
             position: relative;
             margin: 0;
             font-family: "TikTok Sans", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-            overflow: hidden;
             flex-direction: column;
         }
 
@@ -392,8 +391,8 @@
             width: 100px;
             height: 100px;
             background: #fff;
-            border-radius: 50%;
-            z-index: 10;
+            border-radius: 50% 0 50% 50%;
+            rotate: 315deg;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -406,6 +405,11 @@
             user-select: none;
             transition: all 0.3s;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+        }
+
+        .spin-button p{
+            rotate: 45deg;
         }
 
         .spin-button:hover:not(.spinning) {
@@ -422,7 +426,7 @@
             cursor: not-allowed;
         }
 
-        .spin-button::before {
+   /*     .spin-button::before {
             content: '';
             position: absolute;
             top: -35px;
@@ -430,7 +434,7 @@
             height: 35px;
             background: #333;
             clip-path: polygon(50% 0%, 15% 100%, 85% 100%);
-        }
+        }*/
 
 .wheel {
     position: absolute;
@@ -457,8 +461,10 @@
     top: 50%;
     left: 50%;
     transform-origin: 0% 0%;
-    transform: rotate(calc(72deg * var(--i))) skewY(-18deg);
-    overflow: hidden;
+    transform: rotate(calc(72deg * var(--i)));
+    font-size: 2rem;
+    font-weight: 600;
+    color: white;
 }
 
 .wheel-segment::before {
@@ -481,37 +487,6 @@
     font-weight: 700;
     color: white;
 }
-.wheel-labels {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-}
-
-.wheel-labels span {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform-origin: center center;
-
-    /* Rotate into segment → move outward → counter-rotate → rotate vertical */
-    transform:
-        rotate(calc(72deg * var(--i) + 36deg))
-        translate(175px)
-        rotate(1800deg)   /* ← makes the text vertical */
-        translate(-50%, -50%);
-
-    font-size: 1.35rem;
-    font-weight: 700;
-    color: rgba(255, 255, 255, 0);
-    white-space: nowrap;
-    pointer-events: none;
-  /*  text-shadow: 2px 2px 4px rgba(0,0,0,0.35);*/
-}
-
-
 
         /* Modal */
         .modal-backdrop {
@@ -593,7 +568,7 @@
                 width: 94%;
                 height: auto;
                 padding: 30px 20px;
-                margin-top: 200px;
+                margin-top:50px;
             }
 
             .form-inner {
@@ -605,14 +580,9 @@
                 max-width: 100%;
             }
 
-         /*   h2.main-title {
-                font-size: 2.2rem;
-                left: 40px;
+            .wheel-wrapper{
+                top:300px;
             }
-
-            .win-title {
-                font-size: 2.4rem;
-            }*/
         }
 
         /* Radio Glow */
@@ -632,6 +602,7 @@
             background-size: 300% 300%;
             animation: moveGradient 4s ease infinite;
         }
+
         /* Apply glowing animated border when selected */
         .radio-glow.glow-active {
             position: relative;
@@ -712,21 +683,9 @@
             position: relative;
         }
 
-        @media (max-width: 740px) {
-            #emailField{
-                top:300px;
-            }
-        }
-
-        @media (max-width: 561px) {
-            #emailField{
-                top:360px;
-            }
-        }
-
-        @media (max-width: 402px) {
-            #emailField{
-                top:430px;
+        @media (max-width: 625px) {
+            .email-glow-wrap{
+                width: 400px;
             }
         }
 
@@ -771,7 +730,7 @@
     </style>
 </head>
 <body>
-    <div class="top-nav"><img src="surveyapp/assets/logo.png"></div>
+    <div class="top-nav"><img src="surveyapp/assets/logo.png" id="homeLogo" style="cursor:pointer;"></div>
     <button type="button"id="backButton">&#8617; Back to previous question</button>
     <!-- Confetti -->
     <canvas id="confettiCanvas"></canvas>
@@ -860,15 +819,15 @@
             <!-- Spinner Wheel for Round 2 -->
             <div id="spinnerWheel2">
                 <div class="wheel-wrapper">
-                    <div class="spin-button" id="spinBtn2">SPIN</div>
+                    <div class="spin-button" id="spinBtn2"><p>SPIN</p></div>
                     <div class="wheel" id="wheelElement2">    
-                        <div class="wheel-labels">
-                            <span style="--i:0">Beach Ball</span>
-                            <span style="--i:1">Giant Highlighter</span>
-                            <span style="--i:2">Calendar</span>
-                            <span style="--i:3">Sticker</span>
-                            <span style="--i:4">Magnet</span>
-                        </div>
+
+                            <span style="--i:0;"class="wheel-segment"><p style="rotate: 110deg; top: 20px; left: 118px; position: absolute;">Beach Ball</p></span>
+                            <span style="--i:1"class="wheel-segment"><p style="rotate: 110deg; position: absolute; left: 120px; top: -10px;">Giant<br>Highlighter</p></span>
+                            <span style="--i:2"class="wheel-segment"><p style="rotate: 108deg; left: 135px; position: absolute; top: 5px;">Calendar</p></span>
+                            <span style="--i:3"class="wheel-segment"><p style="rotate: 105deg; position: absolute; left: 140px;">Sticker</p></span>
+                            <span style="--i:4"class="wheel-segment"><p style="position: absolute; rotate: 110deg; left: 130px; top: 10px;">Magnet</p></span>
+
                     </div>
                 </div>
             </div>
@@ -914,6 +873,26 @@
     </div>
 
     <script>
+
+        document.getElementById("homeLogo").addEventListener("click", () => {
+        // Close modal if open
+        document.getElementById("prizeModal").classList.remove("active");
+
+        // Stop any confetti
+        stopConfetti();
+
+        // Reset everything
+        resetAll();
+
+        // Make absolutely sure UI is showing the form
+        questionForm.classList.remove("hide");
+        youWinBlock.classList.remove("show");
+        spinnerWheel2.classList.remove("show");
+
+        // Optional: scroll to the top if needed
+        window.scrollTo(0, 0);
+    });
+
         /* -------------------------------
            QUESTION / ROUND LOGIC
         --------------------------------*/
