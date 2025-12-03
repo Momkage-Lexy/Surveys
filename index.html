@@ -768,7 +768,10 @@
                         <button id="emailBackBtn" type="button" class="button">
                             <div class="wrap"><p>Back</p></div>
                         </button>
-
+                        <div id="emailError"
+                            style="color:#d73f09; font-size:0.9rem; margin-top:8px; display:none;">
+                            Please enter a valid email address.
+                        </div>
                     </div>
 
                     <fieldset class="text-box">
@@ -1135,15 +1138,34 @@
 
         });
 
-        document.getElementById("emailSubmitBtn").addEventListener("click", () => {
-            const email = document.getElementById("emailInput").value.trim();
-            if (email.length < 3) return;
+document.getElementById("emailSubmitBtn").addEventListener("click", () => {
+    const emailField = document.getElementById("emailInput");
+    const email = emailField.value.trim();
+    const errorBox = document.getElementById("emailError");
 
-            answers.email = email;
+    // Simple but real validation
+    const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-            // Continue survey
-            questionForm.dispatchEvent(new Event("submit", { cancelable: true }));
-        });
+    if (!isValid) {
+        errorBox.style.display = "block";
+        emailField.style.boxShadow = "0 0 0 3px rgba(215,63,9,0.4)";
+        return; // ⛔ Stop — don’t submit
+    }
+
+    // Clear error
+    errorBox.style.display = "none";
+    emailField.style.boxShadow = "";
+
+    answers.email = email;
+
+    // Continue survey
+    questionForm.dispatchEvent(new Event("submit", { cancelable: true }));
+});
+document.getElementById("emailInput").addEventListener("input", () => {
+    document.getElementById("emailError").style.display = "none";
+    document.getElementById("emailInput").style.boxShadow = "";
+});
+
             
         document.getElementById("backButton").addEventListener("click", () => {
             if (history.length === 0) return; // can't go back
