@@ -938,6 +938,10 @@
         Research by Radhika Studio from <a href="https://thenounproject.com/browse/icons/term/research/" target="_blank" title="Research Icons">Noun Project</a> (CC BY 3.0)
         Prize by agus raharjo from <a href="https://thenounproject.com/browse/icons/term/prize/" target="_blank" title="Prize Icons">Noun Project</a> (CC BY 3.0)
         sticker by LUTFI GANI AL ACHMAD from <a href="https://thenounproject.com/browse/icons/term/sticker/" target="_blank" title="sticker Icons">Noun Project</a> (CC BY 3.0)
+
+        Research Institute by Mia Elysia from <a href="https://thenounproject.com/browse/icons/term/research-institute/" target="_blank" title="Research Institute Icons">Noun Project</a> (CC BY 3.0)
+        Ship Wheel by Andhika Pramanto from <a href="https://thenounproject.com/browse/icons/term/ship-wheel/" target="_blank" title="Ship Wheel Icons">Noun Project</a> (CC BY 3.0)
+        people by karina from <a href="https://thenounproject.com/browse/icons/term/people/" target="_blank" title="people Icons">Noun Project</a> (CC BY 3.0)
     </div>
 
     <script>
@@ -1160,7 +1164,7 @@
             ----------------------------------- */
             if (q.options) {
                 q.options.forEach((opt, idx) => {
-                    const clean = opt.toLowerCase().replace(/,/g, "").replace(/ /g, "-");
+                    const clean = opt.toLowerCase().replace(/\//g, "").replace(/,/g, "").replace(/ /g, "-");
                     const id = `rad-${idx}`;
                     submitButton.classList.add("hide"); // radios never show the submit button
 
