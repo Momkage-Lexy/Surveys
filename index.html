@@ -1596,18 +1596,9 @@
             isSpinning2 = true;
             spinBtn2.classList.add("spinning");
 
-            const spins = 5 + Math.floor(Math.random() * 3);
-            const extra = Math.floor(Math.random() * 360);
-            const total = (spins * 360) + extra;
-
-            rotation2 += total;
-            wheel2.style.transform = `rotate(${rotation2}deg)`;
-
             setTimeout(() => {
 
-            const normalized = (rotation2 + 102) % 360;
-
-
+            const normalized = (rotation2 + 106) % 360;
 
             const angle = (360 - normalized + 36) % 360;
 
