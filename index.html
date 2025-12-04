@@ -33,7 +33,7 @@
             display: flex;
             justify-content: stretch;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             position: relative;
             margin: 0;
             font-family: "TikTok Sans", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
@@ -83,6 +83,10 @@
             max-width: 100%;
             text-align: center;
             position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 80vh;
         }
 
         .question-label {
@@ -117,7 +121,7 @@
             transition: all 0.3s ease;
         }
 
-        .glow-wrap, .glow-wrap:hover {
+     /*   .glow-wrap, .glow-wrap:hover {
             display: inline-flex;
             justify-content: center;
             align-items: center;
@@ -125,21 +129,16 @@
             padding: 2px;
             background: transparent;
             transition: all 0.3s ease;
-        }
+        }*/
 
-        .glow-wrap:focus-within, .glow-wrap:hover, .email-glow-wrap:focus-within, .email-glow-wrap:hover {
+        .email-glow-wrap:focus-within, .email-glow-wrap:hover {
             position: relative;
-            background: linear-gradient(120deg,
-                #ff8a00,
-                var(--orange),
-                var(--orange-soft),
-                #ff8a00
-            );
+            background: #d73f09;
             background-size: 300% 300%;
             animation: moveGradient 4s ease infinite;
         }
 
-        .glow-wrap input, .email-glow-wrap input {
+        .email-glow-wrap input {
             width: 100%;
             max-width: 600px;
             width: 600px;
@@ -150,35 +149,28 @@
             background: #fff;
             font-size: 1rem;
             font-family: "TikTok Sans", sans-serif;
-            box-shadow: var(--shadow-soft);
         }
 
-        .glow-wrap input::placeholder, .email-glow-wrap::placeholder {
+        .email-glow-wrap::placeholder {
             font-size: 1rem;
             color: #999;
         }
 
-        .glow-wrap:focus-within input, .email-glow-wrap:focus-within input{
+        .email-glow-wrap:focus-within input{
             box-shadow: var(--shadow-inset);
         }
 
-        .glow-wrap:focus-within::after, .glow-wrap:hover::after, .email-glow-wrap:focus-within::after, .email-glow-wrap:hover::after{
+        .email-glow-wrap:focus-within::after, .email-glow-wrap:hover::after{
             content: "";
             position: absolute;
             inset: -5px;
             border-radius: inherit;
-            background: radial-gradient(circle, rgba(215,63,9,0.4), transparent 70%);
             filter: blur(10px);
             z-index: -1;
             animation: moveGradient 6s ease infinite;
             background-size: 300% 300%;
         }
 
-        @keyframes moveGradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
 
         /* Neumorphic radio group */
         .radio-group {
@@ -248,11 +240,11 @@
         }
 
         .radio-option.selected .radio-bullet {
-            border-color: var(--orange);
+            border-color: #d73f09;
         }
 
         .radio-option.selected .radio-bullet::after {
-            background: radial-gradient(circle, var(--orange) 0%, var(--orange-soft) 70%);
+            background: #d73f09;
         }
 
         #closeModal{
@@ -437,57 +429,56 @@
             clip-path: polygon(50% 0%, 15% 100%, 85% 100%);
         }*/
 
-.wheel {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    overflow: hidden;
-    transition: transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+        .wheel {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+            transition: transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99);
 
-    background: conic-gradient(
-        #d73f09 0deg 72deg,
-        #4A773C 72deg 144deg,
-        #003B5C 144deg 216deg,
-        #f7a162 216deg 288deg,
-        #D3832B 288deg 360deg
-    );
-}
+            background: conic-gradient(
+                #d73f09 0deg 72deg,
+                #4A773C 72deg 144deg,
+                #003B5C 144deg 216deg,
+                #f7a162 216deg 288deg,
+                #D3832B 288deg 360deg
+            );
+        }
 
+        .wheel-segment {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            top: 50%;
+            left: 50%;
+            transform-origin: 0% 0%;
+            transform: rotate(calc(72deg * var(--i)));
+            font-size: 2rem;
+            font-weight: 600;
+            color: white;
+        }
 
-.wheel-segment {
-    position: absolute;
-    width: 50%;
-    height: 50%;
-    top: 50%;
-    left: 50%;
-    transform-origin: 0% 0%;
-    transform: rotate(calc(72deg * var(--i)));
-    font-size: 2rem;
-    font-weight: 600;
-    color: white;
-}
+        .wheel-segment::before {
+            content: "";
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -100%;
+            left: -100%;
+            background: inherit;
+            transform: skewY(18deg) rotate(calc(-72deg * var(--i)));
+        }
 
-.wheel-segment::before {
-    content: "";
-    position: absolute;
-    width: 200%;
-    height: 200%;
-    top: -100%;
-    left: -100%;
-    background: inherit;
-    transform: skewY(18deg) rotate(calc(-72deg * var(--i)));
-}
-
-.wheel-segment span {
-    position: absolute;
-    top: -10px;
-    left: 30%;
-    transform: rotate(calc(-72deg * var(--i)));
-    font-size: 1.7rem;
-    font-weight: 700;
-    color: white;
-}
+        .wheel-segment span {
+            position: absolute;
+            top: -10px;
+            left: 30%;
+            transform: rotate(calc(-72deg * var(--i)));
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: white;
+        }
 
         /* Modal */
         .modal-backdrop {
@@ -576,7 +567,7 @@
                 max-width: 100%;
             }
 
-            .glow-wrap input,
+          /*  .glow-wrap input,*/
             .radio-group {
                 max-width: 100%;
             }
@@ -587,7 +578,7 @@
         }
 
         /* Radio Glow */
-        .radio-glow {
+    /*    .radio-glow {
             padding: 2px;
             transition: all 0.3s ease;
         }
@@ -602,10 +593,10 @@
             );
             background-size: 300% 300%;
             animation: moveGradient 4s ease infinite;
-        }
+        }*/
 
         /* Apply glowing animated border when selected */
-        .radio-glow.glow-active {
+       /* .radio-glow.glow-active {
             position: relative;
             background: linear-gradient(120deg,
                 #ff8a00,
@@ -627,7 +618,7 @@
             z-index: -1;
             animation: moveGradient 6s ease infinite;
             background-size: 300% 300%;
-        }
+        }*/
 
         #backButton {
             border: 0;
@@ -728,6 +719,79 @@
             white-space: nowrap !important;
             border: 0 !important;
         }
+
+        .checkbox-tile{
+            cursor: pointer;
+        }
+
+        .checkbox-tile img{
+            height: 300px;
+            width: auto;
+        }
+
+        .form-inner.tall-content {
+            justify-content: flex-start;   /* disable centering */
+            padding-top: 80px;             /* pushes grid down below back button */
+        }
+
+        #submitButton{
+            margin-top: 20px;
+            margin-bottom: 100px;
+        }
+        
+        .checkbox-tile input[type="checkbox"]{
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .checkbox-tile {
+            position: relative;
+            padding: 2px;
+        }
+        .checkbox-tile.selected .checkbox-checkmark {
+            background: #d73f09;
+            box-shadow: 0 0 12px rgba(215, 63, 9, 0.55);
+            color: white;
+        }
+
+        /* Outer gradient glow ON SELECT */
+        .checkbox-tile.selected img {
+            border: 4px solid #d73f09;
+            box-shadow: 0 0 12px rgba(215, 63, 9, 0.55);
+        }
+
+        .checkbox-tile:hover img{
+            box-shadow: 0 0 12px rgba(215, 63, 9, 0.55);
+        }
+        /* Hide the native checkbox */
+        .checkbox-tile input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .checkbox-checkmark {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: transparent;
+            font-size: 22px;
+            font-weight: 900;
+            transition: all 0.25s ease;
+            position: absolute;
+            top: -10px;
+            right: -10px;
+        }
+
+        .radio-glow.glow-active .radio-option, .radio-glow:hover .radio-option{
+            border: 2px solid #d73f09;
+            border-radius: 5px;
+            
+        }
     </style>
 </head>
 <body>
@@ -782,7 +846,7 @@
 
                     <button class="button" id="submitButton" type="submit">
                         <div class="wrap">
-                            <p>Submit</p>
+                            <p>Next</p>
                         </div>
                     </button>
                 </form>
@@ -1046,6 +1110,7 @@
             radioContainer.innerHTML = "";
             radioContainer.classList.remove("hide");
             radioContainer.classList.remove("checkbox-grid");
+            formInner.classList.remove("tall-content");
             document.getElementById("emailField").classList.add("hide");
             document.getElementById("emailInput").value = "";
             // Always hide elements by default
@@ -1062,6 +1127,7 @@
             ----------------------------------- */
             if (q.isCheckbox) {
                 radioContainer.classList.add("checkbox-grid");
+                formInner.classList.add("tall-content");
                 submitButton.classList.remove("hide"); // checkboxes NEED a submit button
                 q.options.forEach((opt, idx) => {
                     const clean = opt.toLowerCase().replace(/,/g, "").replace(/ /g, "-");
@@ -1074,6 +1140,7 @@
                     tile.innerHTML = `
                         <img src="SurveyApp/Assets/${clean}.png" alt="${opt}">
                         <input type="checkbox" id="${id}" value="${opt}">
+                        <div class="checkbox-checkmark">✓</div>
                     `;
 
                     tile.addEventListener("click", () => {
