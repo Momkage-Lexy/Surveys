@@ -69,7 +69,7 @@
 
         .form-container {
             height: 80%;
-            width: 100%;
+            width: 90%;
             max-width: 100%;
             border-radius: 20px;
             position: relative;
@@ -362,6 +362,7 @@
             display: none;
             justify-content: center;
             align-items: center;
+            margin-top: 75px;
         }
 
         #spinnerWheel2.show {
@@ -1260,8 +1261,6 @@
                 const checkedBoxes = Array.from(
                     radioContainer.querySelectorAll("input[type='checkbox']:checked")
                 ).map(cb => cb.value);
-
-                if (checkedBoxes.length === 0) return; // require at least one choice
 
                 value = checkedBoxes; // store array of answers
             }
