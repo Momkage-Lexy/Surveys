@@ -23,7 +23,7 @@
 
         @font-face {
             font-family: "TikTok Sans";
-            src: url("fonts/TikTokSans.ttf") format("truetype");
+            src: url("../Assets/TikTokSans.ttf") format("truetype");
             font-weight: 300 900;
             font-display: swap;
         }
@@ -31,13 +31,13 @@
         body {
             background-color: var(--bg);
             display: flex;
-            justify-content: center;
+            justify-content: stretch;
             align-items: center;
             height: 100vh;
             position: relative;
             margin: 0;
             font-family: "TikTok Sans", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-            overflow: hidden;
+            flex-direction: column;
         }
 
         /* Top left labels */
@@ -69,9 +69,8 @@
 
         .form-container {
             height: 80%;
-            width: 100vh;
-            max-width: 100vh;
-            max-height: 600px;
+            width: 100%;
+            max-width: 100%;
             border-radius: 20px;
             position: relative;
             display: flex;
@@ -81,16 +80,18 @@
 
         .form-inner {
             width: 100%;
-            max-width: 100vh;
+            max-width: 100%;
             text-align: center;
+            position: relative;
         }
 
         .question-label {
-            font-size: 3rem;
+            font-size: 2rem;
             font-weight: 500;
             color: #222;
-            text-shadow: -5px 5px 7px #00000029;
+            text-shadow: -5px 5px 15px #00000029;
             margin-bottom: 30px;
+            width:60%;
         }
 
         form#questionForm {
@@ -106,8 +107,7 @@
             margin: 0;
             padding: 0;
         }
-
-        .glow-wrap {
+        .email-glow-wrap, .email-glow-wrap:hover{
             display: inline-flex;
             justify-content: center;
             align-items: center;
@@ -117,7 +117,17 @@
             transition: all 0.3s ease;
         }
 
-        .glow-wrap:focus-within {
+        .glow-wrap, .glow-wrap:hover {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+            padding: 2px;
+            background: transparent;
+            transition: all 0.3s ease;
+        }
+
+        .glow-wrap:focus-within, .glow-wrap:hover, .email-glow-wrap:focus-within, .email-glow-wrap:hover {
             position: relative;
             background: linear-gradient(120deg,
                 #ff8a00,
@@ -129,7 +139,7 @@
             animation: moveGradient 4s ease infinite;
         }
 
-        .glow-wrap input {
+        .glow-wrap input, .email-glow-wrap input {
             width: 100%;
             max-width: 600px;
             width: 600px;
@@ -143,16 +153,16 @@
             box-shadow: var(--shadow-soft);
         }
 
-        .glow-wrap input::placeholder {
+        .glow-wrap input::placeholder, .email-glow-wrap::placeholder {
             font-size: 1rem;
             color: #999;
         }
 
-        .glow-wrap:focus-within input {
+        .glow-wrap:focus-within input, .email-glow-wrap:focus-within input{
             box-shadow: var(--shadow-inset);
         }
 
-        .glow-wrap:focus-within::after {
+        .glow-wrap:focus-within::after, .glow-wrap:hover::after, .email-glow-wrap:focus-within::after, .email-glow-wrap:hover::after{
             content: "";
             position: absolute;
             inset: -5px;
@@ -173,10 +183,10 @@
         /* Neumorphic radio group */
         .radio-group {
             width: 100%;
-            max-width: 80%;
+            max-width: 100%;
             display: flex;
             flex-direction: row;
-            gap: 12px;
+            gap: 20px;
             flex-wrap: wrap;
             justify-content: center;
         }
@@ -185,7 +195,8 @@
             display: flex;
             align-items: center;
             padding: 14px 18px;
-            border-radius: 24px;
+            border-radius: 5px;
+            border: 2px solid #00000017;
             background: #f6f6f6;
             box-shadow: var(--shadow-soft);
             cursor: pointer;
@@ -193,6 +204,13 @@
             text-align: left;
             min-width: 100px;
             justify-content: center;
+            height: 200px;
+            width: 200px;
+            flex-direction: column;
+        }
+
+        .radio-option:hover{
+            border: 0;
         }
 
         .radio-option input[type="radio"] {
@@ -219,6 +237,9 @@
         .radio-label-text {
             font-size: 0.98rem;
             color: #222;
+            margin-top: 1rem;
+            font-weight: 600;
+            text-align: center;
         }
 
         .radio-option.selected {
@@ -237,7 +258,7 @@
         #closeModal{
             height: 50px;
         }
-        
+
         .button {
         cursor: pointer;
         font-weight: 700;
@@ -253,8 +274,27 @@
         width: 150px;
         }
 
+        .email-button{
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.2s;
+            border-radius: 100px;
+            background: #333;
+            color: white;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            font-size: 15px;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            position: absolute;
+            top: 8px;
+            right: 8px;
+        }
+
         .button:hover {
-        background: #c4e201;
+        background: #d73f09;
         }
 
         .button > svg {
@@ -271,9 +311,15 @@
         transform: scale(0.95);
         }
 
-        #noThanksBtn{
+        #noThanksBtn, #emailBackBtn{
         background-color: #d3d3d3 !important;
         color: #333 !important;
+        }
+
+        #emailBackBtn{
+            margin: auto;
+            text-align: center;
+            margin-top: 20px;
         }
 
         /* YOU WIN state */
@@ -338,6 +384,7 @@
             justify-content: center;
             align-items: center;
             border-radius: 50%;
+            overflow: hidden;
         }
 
         .spin-button {
@@ -345,8 +392,8 @@
             width: 100px;
             height: 100px;
             background: #fff;
-            border-radius: 50%;
-            z-index: 10;
+            border-radius: 50% 0 50% 50%;
+            rotate: 315deg;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -359,6 +406,11 @@
             user-select: none;
             transition: all 0.3s;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+        }
+
+        .spin-button p{
+            rotate: 45deg;
         }
 
         .spin-button:hover:not(.spinning) {
@@ -375,7 +427,7 @@
             cursor: not-allowed;
         }
 
-        .spin-button::before {
+   /*     .spin-button::before {
             content: '';
             position: absolute;
             top: -35px;
@@ -383,7 +435,7 @@
             height: 35px;
             background: #333;
             clip-path: polygon(50% 0%, 15% 100%, 85% 100%);
-        }
+        }*/
 
 .wheel {
     position: absolute;
@@ -410,8 +462,10 @@
     top: 50%;
     left: 50%;
     transform-origin: 0% 0%;
-    transform: rotate(calc(72deg * var(--i))) skewY(-18deg);
-    overflow: hidden;
+    transform: rotate(calc(72deg * var(--i)));
+    font-size: 2rem;
+    font-weight: 600;
+    color: white;
 }
 
 .wheel-segment::before {
@@ -434,37 +488,6 @@
     font-weight: 700;
     color: white;
 }
-.wheel-labels {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-}
-
-.wheel-labels span {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform-origin: center center;
-
-    /* Rotate into segment → move outward → counter-rotate → rotate vertical */
-    transform:
-        rotate(calc(72deg * var(--i) + 36deg))
-        translate(175px)
-        rotate(1800deg)   /* ← makes the text vertical */
-        translate(-50%, -50%);
-
-    font-size: 1.35rem;
-    font-weight: 700;
-    color: rgba(255, 255, 255, 0);
-    white-space: nowrap;
-    pointer-events: none;
-  /*  text-shadow: 2px 2px 4px rgba(0,0,0,0.35);*/
-}
-
-
 
         /* Modal */
         .modal-backdrop {
@@ -546,7 +569,7 @@
                 width: 94%;
                 height: auto;
                 padding: 30px 20px;
-                margin-top: 200px;
+                margin-top:50px;
             }
 
             .form-inner {
@@ -558,21 +581,27 @@
                 max-width: 100%;
             }
 
-         /*   h2.main-title {
-                font-size: 2.2rem;
-                left: 40px;
+            .wheel-wrapper{
+                top:300px;
             }
-
-            .win-title {
-                font-size: 2.4rem;
-            }*/
         }
 
         /* Radio Glow */
         .radio-glow {
-            border-radius: 50px;
             padding: 2px;
             transition: all 0.3s ease;
+        }
+
+        .radio-glow:hover{
+                        position: relative;
+            background: linear-gradient(120deg,
+                #ff8a00,
+                var(--orange),
+                var(--orange-soft),
+                #ff8a00
+            );
+            background-size: 300% 300%;
+            animation: moveGradient 4s ease infinite;
         }
 
         /* Apply glowing animated border when selected */
@@ -603,11 +632,12 @@
         #backButton {
             border: 0;
             background-color: #ffffff00;
-            font-size: 1.5rem;
+            font-size: 1rem;
             color: #33333359;
-            margin-top: 2rem;
             cursor: pointer;
             font-family: "TikTok Sans", sans-serif;
+            font-weight: 100;
+            margin-right: auto;
         }
 
         .arrow-btn {
@@ -651,25 +681,12 @@
         }
 
         #emailField{
-            position: absolute;
-            top: 240px;
+            position: relative;
         }
 
-        @media (max-width: 740px) {
-            #emailField{
-                top:300px;
-            }
-        }
-
-        @media (max-width: 561px) {
-            #emailField{
-                top:360px;
-            }
-        }
-
-        @media (max-width: 402px) {
-            #emailField{
-                top:430px;
+        @media (max-width: 625px) {
+            .email-glow-wrap{
+                width: 400px;
             }
         }
 
@@ -678,33 +695,83 @@
             justify-content: space-between;
             gap: 20px;
         }
+
+        .radio-icon{
+            width: 100px;
+            flex-basis: 100%;
+            max-height: 100px;
+            object-fit: contain;
+        }
+
+        .top-nav{
+            width: 100%;
+            height:100px;
+            background-color: #d73f09;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .top-nav img{    
+            height: 70px;
+            max-height: 70px;
+            padding-left: 20px;
+        }
+
+        .sr-only {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
     </style>
 </head>
 <body>
-
-    <h1>AGU 2025</h1>
-    <h2 class="main-title">Oregon State<br>University</h2>
-
+    <div class="top-nav"><img src="../Assets/logo.png" id="homeLogo" style="cursor:pointer;"></div>
+    <button type="button"id="backButton">&#8617; Back to previous question</button>
     <!-- Confetti -->
     <canvas id="confettiCanvas"></canvas>
 
     <!-- Main container -->
     <div class="form-container">
         <div class="form-inner">
-            <button type="button"id="backButton">&#8617; Back to previous question</button>
             <!-- Question form (Round 1 + Round 2) -->
             <div id="transitionWrapper" class="transition-wrapper">
                 <form id="questionForm">
                     <div class="question-label" id="questionLabel"></div>
                     <div id="radioContainer" class="radio-group hide"></div>
                     <div id="emailField" class="hide">
-                        <div class="glow-wrap">
-                            <input type="email" id="emailInput" placeholder="Enter your email">
+                        <div class="email-glow-wrap">
+                            <input type="email" id="emailInput" placeholder="Please enter your email">
                         </div>
 
-                        <button id="emailSubmitBtn" type="button" class="arrow-btn">
-                            ➜
+                        <button id="emailSubmitBtn" type="button" class="email-button">
+                            <p style="display: flex; align-items: center; gap: 10px; padding: 0;
+                                margin: 0;"><svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 74 74"
+                                height="35"
+                                width="35"
+                            >
+                                <circle stroke-width="3" stroke="white" r="35.5" cy="37" cx="37"></circle>
+                                <path
+                                fill="white"
+                                d="M25 35.5C24.1716 35.5 23.5 36.1716 23.5 37C23.5 37.8284 24.1716 38.5 25 38.5V35.5ZM49.0607 38.0607C49.6464 37.4749 49.6464 36.5251 49.0607 35.9393L39.5147 26.3934C38.9289 25.8076 37.9792 25.8076 37.3934 26.3934C36.8076 26.9792 36.8076 27.9289 37.3934 28.5147L45.8787 37L37.3934 45.4853C36.8076 46.0711 36.8076 47.0208 37.3934 47.6066C37.9792 48.1924 38.9289 48.1924 39.5147 47.6066L49.0607 38.0607ZM25 38.5L48 38.5V35.5L25 35.5V38.5Z"
+                                ></path>
+                            </svg></p>
                         </button>
+                        <button id="emailBackBtn" type="button" class="button">
+                            <div class="wrap"><p>Back</p></div>
+                        </button>
+                        <div id="emailError"
+                            style="color:#d73f09; font-size:0.9rem; margin-top:8px; display:none;">
+                            Please enter a valid email address.
+                        </div>
                     </div>
 
                     <fieldset class="text-box">
@@ -756,15 +823,15 @@
             <!-- Spinner Wheel for Round 2 -->
             <div id="spinnerWheel2">
                 <div class="wheel-wrapper">
-                    <div class="spin-button" id="spinBtn2">SPIN</div>
+                    <div class="spin-button" id="spinBtn2"><p>SPIN</p></div>
                     <div class="wheel" id="wheelElement2">    
-                        <div class="wheel-labels">
-                            <span style="--i:0">Beach Ball</span>
-                            <span style="--i:1">Giant Highlighter</span>
-                            <span style="--i:2">Calendar</span>
-                            <span style="--i:3">Sticker</span>
-                            <span style="--i:4">Magnet</span>
-                        </div>
+
+                            <span style="--i:0;"class="wheel-segment"><p style="rotate: 110deg; top: 20px; left: 118px; position: absolute;">Beach Ball</p></span>
+                            <span style="--i:1"class="wheel-segment"><p style="rotate: 110deg; position: absolute; left: 120px; top: -10px;">Giant<br>Highlighter</p></span>
+                            <span style="--i:2"class="wheel-segment"><p style="rotate: 108deg; left: 135px; position: absolute; top: 5px;">Calendar</p></span>
+                            <span style="--i:3"class="wheel-segment"><p style="rotate: 105deg; position: absolute; left: 140px;">Sticker</p></span>
+                            <span style="--i:4"class="wheel-segment"><p style="position: absolute; rotate: 110deg; left: 130px; top: 10px;">Magnet</p></span>
+
                     </div>
                 </div>
             </div>
@@ -783,8 +850,53 @@
             </div>
         </div>
     </div>
+    <div class="image-attributions sr-only">
+        X by Skena Grafis from <a href="https://thenounproject.com/browse/icons/term/x/" target="_blank" title="X Icons">Noun Project</a> (CC BY 3.0)
+
+        Check Mark by saidatun from <a href="https://thenounproject.com/browse/icons/term/check-mark/" target="_blank" title="Check Mark Icons">Noun Project</a> (CC BY 3.0)
+
+        Happy by Barracuda from <a href="https://thenounproject.com/browse/icons/term/happy/" target="_blank" title="Happy Icons">Noun Project</a> (CC BY 3.0)
+
+        Smile by Barracuda from <a href="https://thenounproject.com/browse/icons/term/smile/" target="_blank" title="Smile Icons">Noun Project</a> (CC BY 3.0)
+
+        Neutral Face by Barracuda from <a href="https://thenounproject.com/browse/icons/term/neutral-face/" target="_blank" title="Neutral Face Icons">Noun Project</a> (CC BY 3.0)
+
+        book and lightbulb by Rahmad romadoni from <a href="https://thenounproject.com/browse/icons/term/book-and-lightbulb/" target="_blank" title="book and lightbulb Icons">Noun Project</a> (CC BY 3.0)
+
+        Books stack by insdesign86 from <a href="https://thenounproject.com/browse/icons/term/books-stack/" target="_blank" title="Books stack Icons">Noun Project</a> (CC BY 3.0)
+
+        Government Office by Faizal Aji Mualana from <a href="https://thenounproject.com/browse/icons/term/government-office/" target="_blank" title="Government Office Icons">Noun Project</a> (CC BY 3.0)
+
+        Puzzle Piece by ilCactusBlu from <a href="https://thenounproject.com/browse/icons/term/puzzle-piece/" target="_blank" title="Puzzle Piece Icons">Noun Project</a> (CC BY 3.0)
+
+        faculty by WEBTECHOPS LLP from <a href="https://thenounproject.com/browse/icons/term/faculty/" target="_blank" title="faculty Icons">Noun Project</a> (CC BY 3.0)
+
+        Research by Radhika Studio from <a href="https://thenounproject.com/browse/icons/term/research/" target="_blank" title="Research Icons">Noun Project</a> (CC BY 3.0)
+        Prize by agus raharjo from <a href="https://thenounproject.com/browse/icons/term/prize/" target="_blank" title="Prize Icons">Noun Project</a> (CC BY 3.0)
+        sticker by LUTFI GANI AL ACHMAD from <a href="https://thenounproject.com/browse/icons/term/sticker/" target="_blank" title="sticker Icons">Noun Project</a> (CC BY 3.0)
+    </div>
 
     <script>
+
+        document.getElementById("homeLogo").addEventListener("click", () => {
+        // Close modal if open
+        document.getElementById("prizeModal").classList.remove("active");
+
+        // Stop any confetti
+        stopConfetti();
+
+        // Reset everything
+        resetAll();
+
+        // Make absolutely sure UI is showing the form
+        questionForm.classList.remove("hide");
+        youWinBlock.classList.remove("show");
+        spinnerWheel2.classList.remove("show");
+
+        // Optional: scroll to the top if needed
+        window.scrollTo(0, 0);
+    });
+
         /* -------------------------------
            QUESTION / ROUND LOGIC
         --------------------------------*/
@@ -794,7 +906,7 @@
         const round1Questions = [
             { label: "Which of the following best describes your role?", options:[
                 "Faculty",
-                "Undergraduate",
+                "Undergraduate Student",
                 "Graduate",
                 "Government Office",
                 "Other"
@@ -876,6 +988,9 @@
             const q = questions[qIndex];
             questionLabel.textContent = q.label;
 
+            document.getElementById("emailField").classList.add("hide");
+            document.getElementById("emailInput").value = "";
+
             if (q.options) {
                 // Radio (neumorphic cards)
                 document.getElementById("glowWrap").classList.add("hide");
@@ -889,10 +1004,10 @@
                     const id = `opt-${idx}`;
                     const label = document.createElement("label");
                 label.innerHTML = `
-                    <div class="glow-wrap radio-glow">
+                    <div>
                         <div class="radio-option">
                             <span class="radio-bullet"></span>
-                            <span class="radio-label-text">${opt}</span>
+                            <img class="radio-icon" src="../Assets/${opt.toLowerCase().replace(/,/g, "").replace(/ /g,'-')}.png" alt="${opt} icon">
                             <input type="radio" name="round2" value="${opt}" id="${id}">
                         </div>
                     </div>
@@ -916,13 +1031,20 @@
                     // CONDITIONAL EMAIL LOGIC
                     if (q.isEmailConditional) {
                         if (input.value === "Yes") {
-                            // Show email field
+                            // Hide Yes/No buttons
+                            radioContainer.classList.add("hide");
+
+                            // Show the email field
                             document.getElementById("emailField").classList.remove("hide");
                             document.getElementById("emailInput").focus();
-                            return; // ❗Stop auto-submit
+                            return; // STOP auto-submit
                         } else {
-                            // Hide email field & save "No"
+                            // Bring back Yes/No buttons if coming from back navigation
+                            radioContainer.classList.remove("hide");
+
+                            // Hide email field
                             document.getElementById("emailField").classList.add("hide");
+
                             answers.email = "No";
 
                             setTimeout(() => {
@@ -959,6 +1081,22 @@
             else backButton.classList.add("hide");
 
         }
+        document.getElementById("emailBackBtn").addEventListener("click", () => {
+            // Hide email field
+            document.getElementById("emailField").classList.add("hide");
+
+            // Show Yes/No options again
+            radioContainer.classList.remove("hide");
+
+            // Clear email
+            document.getElementById("emailInput").value = "";
+
+            // Re-select NOTHING (force user to choose again)
+            radioContainer.querySelectorAll(".radio-option").forEach(opt => {
+                opt.classList.remove("selected");
+                opt.parentElement.classList.remove("glow-active");
+            });
+        });
 
         questionForm.addEventListener("submit", (e) => {
             e.preventDefault();
@@ -999,15 +1137,34 @@
 
         });
 
-        document.getElementById("emailSubmitBtn").addEventListener("click", () => {
-            const email = document.getElementById("emailInput").value.trim();
-            if (email.length < 3) return;
+document.getElementById("emailSubmitBtn").addEventListener("click", () => {
+    const emailField = document.getElementById("emailInput");
+    const email = emailField.value.trim();
+    const errorBox = document.getElementById("emailError");
 
-            answers.email = email;
+    // Simple but real validation
+    const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-            // Continue survey
-            questionForm.dispatchEvent(new Event("submit", { cancelable: true }));
-        });
+    if (!isValid) {
+        errorBox.style.display = "block";
+        emailField.style.boxShadow = "0 0 0 3px rgba(215,63,9,0.4)";
+        return; // ⛔ Stop — don’t submit
+    }
+
+    // Clear error
+    errorBox.style.display = "none";
+    emailField.style.boxShadow = "";
+
+    answers.email = email;
+
+    // Continue survey
+    questionForm.dispatchEvent(new Event("submit", { cancelable: true }));
+});
+document.getElementById("emailInput").addEventListener("input", () => {
+    document.getElementById("emailError").style.display = "none";
+    document.getElementById("emailInput").style.boxShadow = "";
+});
+
             
         document.getElementById("backButton").addEventListener("click", () => {
             if (history.length === 0) return; // can't go back
@@ -1025,23 +1182,33 @@
             const q = questions[qIndex];
 
             if (q.options) {
-                // restore radio selection
                 const radios = radioContainer.querySelectorAll("input[type='radio']");
+
                 radios.forEach(r => {
                     if (r.value === last.value) {
                         r.checked = true;
 
-                        // add styling back
                         const option = r.closest(".radio-option");
                         const wrap = r.closest(".glow-wrap");
                         if (option) option.classList.add("selected");
                         if (wrap) wrap.classList.add("glow-active");
+
+                        // SPECIAL CASE: Email conditional question
+                        if (q.isEmailConditional) {
+                            if (last.value === "Yes") {
+                                radioContainer.classList.remove("hide");
+                                document.getElementById("emailField").classList.add("hide");
+                            } else {
+                                radioContainer.classList.remove("hide");
+                                document.getElementById("emailField").classList.add("hide");
+                            }
+                        }
+                                    else {
+                            // restore text input
+                            questionInput.value = last.value;
+                        }
                     }
                 });
-
-            } else {
-                // restore text input
-                questionInput.value = last.value;
             }
         });
 
@@ -1130,14 +1297,16 @@
             }
 
             const colors = ["#d73f09", "#ff8a00", "#f7a162", "#4A773C", "#003B5C"];
-            const total = 120;
+            const total = 550;
 
             for (let i = 0; i < total; i++) {
                 // VERY wide cone for chaotic look
-                const angle = (-90 + (Math.random() * 140 - 70)) * Math.PI / 180;
+                // 360° confetti spread — full explosion
+                const angle = Math.random() * Math.PI * 2;
+
 
                 // More variation in speed
-                const speed = 2 + Math.random() * 4;
+                const speed = 2 + Math.random() * 60;
 
                 // New randomness properties
                 const wobble = Math.random() * Math.PI * 2;
@@ -1150,7 +1319,7 @@
                     y: originY,
                     vx: Math.cos(angle) * speed,
                     vy: Math.sin(angle) * speed,
-                    size: 4 + Math.random() * 5,
+                    size: 4 + Math.random() * 10,
                     color: colors[Math.floor(Math.random() * colors.length)],
                     rotation: Math.random() * Math.PI * 2,
                     rotationSpeed: (Math.random() - 0.5) * 0.25,
@@ -1162,7 +1331,7 @@
                     drag,
 
                     life: 0,
-                    maxLife: 100 + Math.random() * 60
+                    maxLife: 200 + Math.random() * 60
                 });
             }
         }
@@ -1216,7 +1385,7 @@
             });
 
             confettiPieces = confettiPieces.filter(p =>
-                p.y < confettiCanvas.height + 200 && p.life < p.maxLife
+                p.y < confettiCanvas.height + 200
             );
 
             confettiPieces.forEach(p => {
@@ -1246,6 +1415,13 @@
             document.getElementById("prizeValue").textContent = prize;
             document.getElementById("prizeLabel").textContent = `${prize}`;
             document.getElementById("prizeModal").classList.add("active");
+
+            // burst from wheel center
+            const wheelRect = wheel2.getBoundingClientRect();
+            startConfetti(
+                wheelRect.left + wheelRect.width / 2,
+                wheelRect.top + wheelRect.height / 2
+            );
         }
 
         spinBtn2.addEventListener("click", () => {
@@ -1292,6 +1468,9 @@
             answers.experience = "";
             answers.brought = "";
             answers.email = "";
+            document.getElementById("emailInput").value = "";
+            document.getElementById("emailField").classList.add("hide");
+            radioContainer.classList.remove("hide");
 
             // Reset wheel
             rotation2 = 0;

@@ -905,9 +905,9 @@
 
         const round1Questions = [
             { label: "Which of the following best describes your role?", options:[
-                "Faculty",
-                "Undergraduate",
-                "Graduate",
+                "OSU Faculty",
+                "Undergraduate Student",
+                "Graduate Student",
                 "Government Office",
                 "Other"
             ] },
@@ -925,10 +925,39 @@
             {
                 label: "What brought you to the booth?",
                 options: [
-                    "Interesting research",
-                    "Swag"
+                    "Cool Swag",
+                    "Interest in Researchers",
+                    "Interest in Research Institutes and Centers",
+                    "R/V Taani Simulator"
                 ]
             },
+
+            {
+                label: "Which OSU research centers and institutes did you know about prior to visiting AGU? Please select all that apply.",
+                options: [
+                    "Advanced Technology and Manufacturing Institute",
+                    "Center for Oldest Ice Exploration",
+                    "Center for Quantitative Life Sciences",
+                    "Collaborative Robotics and Intelligent Systems Institute",
+                    "Cooperative Institute for Marine Ecosystem and Resources Studies",                
+                    "Food Innovation Center",
+                    "Hatfield Marine Science Center",
+                    "Ice Core and Quaternary Geochemistry Lab",
+                    "Institute for Water and Watersheds",
+                    "Linus Pauling Institute",
+                    "OH Hinsdale Wave Research Laboratory",
+                    "Oregon Agricultural Experiment Station",
+                    "Oregon Sea Grant",
+                    "PacWave",
+                    "Pacific Marine Energy Center",
+                    "Radiation Center",
+                    "Regional Class Research Vessels",
+                    "STEM Research Center",
+                    "Superfund Research Center"
+                ],
+                isCheckbox: true
+            },
+
             {
                 label: "Would you be willing to share your experience in more detail?",
                 options: ["Yes", "No"],
@@ -973,7 +1002,6 @@
             }, 300);
         }
 
-
         function animateIn() {
             transitionWrapper.classList.add("pre-grow");
 
@@ -982,106 +1010,155 @@
             });
         }
 
+        // ------------------------------
+        // BACK BUTTON LOGIC
+        // ------------------------------
+        function updateBackButton() {
+
+            // Email screen NEVER shows back button
+            if (!document.getElementById("emailField").classList.contains("hide")) {
+                backButton.classList.add("hide");
+                return;
+            }
+
+            // Round 1 logic
+            if (round === 1) {
+                if (qIndex > 0) backButton.classList.remove("hide");
+                else backButton.classList.add("hide");
+                return;
+            }
+
+            // Round 2 logic
+            if (round === 2) {
+                if (qIndex === 0) backButton.classList.add("hide");  // First question of round 2
+                else backButton.classList.remove("hide");
+                return;
+            }
+        }
+
         function loadQuestion() {
             animateIn();
-
+            updateBackButton();
             const q = questions[qIndex];
             questionLabel.textContent = q.label;
 
+            // Reset UI
+            radioContainer.innerHTML = "";
+            radioContainer.classList.remove("hide");
+            radioContainer.classList.remove("checkbox-grid");
             document.getElementById("emailField").classList.add("hide");
             document.getElementById("emailInput").value = "";
+            // Always hide elements by default
+            submitButton.classList.add("hide");
+            document.getElementById("glowWrap").classList.add("hide");
+            document.getElementById("emailField").classList.add("hide");
+            radioContainer.classList.remove("hide");
 
-            if (q.options) {
-                // Radio (neumorphic cards)
-                document.getElementById("glowWrap").classList.add("hide");
-                questionInput.value = "";
-                questionInput.blur();
-                radioContainer.classList.remove("hide");
-                submitButton.classList.add("hide");
-                radioContainer.innerHTML = "";
+            questionInput.value = "";
+            questionInput.placeholder = "";
 
+            /* -----------------------------------
+            CHECKBOX QUESTION (grid tiles)
+            ----------------------------------- */
+            if (q.isCheckbox) {
+                radioContainer.classList.add("checkbox-grid");
+                submitButton.classList.remove("hide"); // checkboxes NEED a submit button
                 q.options.forEach((opt, idx) => {
-                    const id = `opt-${idx}`;
-                    const label = document.createElement("label");
-                label.innerHTML = `
-                    <div class="glow-wrap radio-glow">
-                        <div class="radio-option">
-                            <span class="radio-bullet"></span>
-                            <img class="radio-icon" src="SurveyApp/Assets/${opt.toLowerCase().replace(/,/g, "").replace(/ /g,'-')}.png" alt="${opt} icon">
-                            <span class="radio-label-text">${opt}</span>
-                            <input type="radio" name="round2" value="${opt}" id="${id}">
-                        </div>
-                    </div>
-                `;
+                    const clean = opt.toLowerCase().replace(/,/g, "").replace(/ /g, "-");
+                    const id = `chk-${idx}`;
 
-                label.addEventListener("click", () => {
-                    if (isTransitioning) return;
-                    radioContainer.querySelectorAll(".radio-option").forEach(l => {
-                        l.classList.remove("selected");
-                        l.parentElement.classList.remove("glow-active");
+                    const tile = document.createElement("div");
+                    tile.className = "checkbox-tile";
+                    tile.setAttribute("data-label", opt);
+
+                    tile.innerHTML = `
+                        <img src="SurveyApp/Assets/${clean}.png" alt="${opt}">
+                        <input type="checkbox" id="${id}" value="${opt}">
+                    `;
+
+                    tile.addEventListener("click", () => {
+                        const input = tile.querySelector("input");
+                        input.checked = !input.checked;
+                        tile.classList.toggle("selected", input.checked);
                     });
 
-                    const wrap = label.querySelector(".glow-wrap");
-                    const option = label.querySelector(".radio-option");
-                    
-                    option.classList.add("selected");
-                    wrap.classList.add("glow-active");
-
-                    const input = label.querySelector("input[type='radio']");
-                    input.checked = true;
-                    // CONDITIONAL EMAIL LOGIC
-                    if (q.isEmailConditional) {
-                        if (input.value === "Yes") {
-                            // Hide Yes/No buttons
-                            radioContainer.classList.add("hide");
-
-                            // Show the email field
-                            document.getElementById("emailField").classList.remove("hide");
-                            document.getElementById("emailInput").focus();
-                            return; // STOP auto-submit
-                        } else {
-                            // Bring back Yes/No buttons if coming from back navigation
-                            radioContainer.classList.remove("hide");
-
-                            // Hide email field
-                            document.getElementById("emailField").classList.add("hide");
-
-                            answers.email = "No";
-
-                            setTimeout(() => {
-                                questionForm.dispatchEvent(new Event("submit", { cancelable: true }));
-                            }, 150);
-                            return;
-                        }
-                    }
-
-                    // NORMAL AUTO-SUBMIT for all other radio questions
-                    setTimeout(() => {
-                        if (!isTransitioning) {
-                            questionForm.dispatchEvent(new Event("submit", { cancelable: true }));
-                        }
-                    }, 150);
-
+                    radioContainer.appendChild(tile);
                 });
 
-
-                    radioContainer.appendChild(label);
-                });
-            } else {
-                // Text field (Round 1)
-                radioContainer.classList.add("hide");
-                submitButton.classList.remove("hide");
-                document.getElementById("glowWrap").classList.remove("hide");
-                questionInput.value = "";
-                questionInput.placeholder = q.placeholder || "";
-                questionInput.focus();
+                return; // ⬅ We're done for checkbox questions
             }
 
-            // Back button only shows on question #2 of any round
-            if (qIndex === 1) backButton.classList.remove("hide");
-            else backButton.classList.add("hide");
+            /* -----------------------------------
+            RADIO QUESTION (Round 1 + Round 2)
+            ----------------------------------- */
+            if (q.options) {
+                q.options.forEach((opt, idx) => {
+                    const clean = opt.toLowerCase().replace(/,/g, "").replace(/ /g, "-");
+                    const id = `rad-${idx}`;
+                    submitButton.classList.add("hide"); // radios never show the submit button
 
+                    const wrapper = document.createElement("label");
+                    wrapper.innerHTML = `
+                        <div class="glow-wrap radio-glow">
+                            <div class="radio-option">
+                                <span class="radio-bullet"></span>
+                                <img class="radio-icon" src="SurveyApp/Assets/${clean}.png" alt="${opt}">
+                                <span class="radio-label-text">${opt}</span>
+                                <input type="radio" name="roundOpt" value="${opt}" id="${id}">
+                            </div>
+                        </div>
+                    `;
+
+                    wrapper.addEventListener("click", () => {
+                        if (isTransitioning) return;
+
+                        radioContainer.querySelectorAll(".radio-option").forEach(el => {
+                            el.classList.remove("selected");
+                            el.parentElement.classList.remove("glow-active");
+                        });
+
+                        const option = wrapper.querySelector(".radio-option");
+                        const wrap = wrapper.querySelector(".glow-wrap");
+                        const input = wrapper.querySelector("input");
+
+                        option.classList.add("selected");
+                        wrap.classList.add("glow-active");
+                        input.checked = true;
+
+                        // Email conditional question logic
+                        if (q.isEmailConditional) {
+                            if (input.value === "Yes") {
+                                radioContainer.classList.add("hide");
+                                document.getElementById("emailField").classList.remove("hide");
+                                return;
+                            } else {
+                                document.getElementById("emailField").classList.add("hide");
+                            }
+                        }
+
+                        // Autosubmit after slight delay
+                        setTimeout(() => {
+                            if (!isTransitioning) {
+                                questionForm.dispatchEvent(new Event("submit", { cancelable: true }));
+                            }
+                        }, 150);
+                    });
+
+                    radioContainer.appendChild(wrapper);
+                });
+
+                return; // ⬅ Done for radio-type questions
+            }
+
+            /* -----------------------------------
+            TEXT INPUT QUESTION
+            ----------------------------------- */
+            radioContainer.classList.add("hide");
+            document.getElementById("glowWrap").classList.remove("hide");
+            questionInput.placeholder = q.placeholder || "";
+            questionInput.focus();
         }
+
         document.getElementById("emailBackBtn").addEventListener("click", () => {
             // Hide email field
             document.getElementById("emailField").classList.add("hide");
@@ -1101,19 +1178,42 @@
 
         questionForm.addEventListener("submit", (e) => {
             e.preventDefault();
+
+            const q = questions[qIndex];
             let value;
 
-            // If this question uses radios:
-            if (questions[qIndex].options) {
-                const checked = radioContainer.querySelector("input[type='radio']:checked");
-                if (!checked) return;
-                value = checked.value;
-            } else {
-                // Text input question
+            // --------------------------
+            // CHECKBOX QUESTION
+            // --------------------------
+            if (q.isCheckbox) {
+                const checkedBoxes = Array.from(
+                    radioContainer.querySelectorAll("input[type='checkbox']:checked")
+                ).map(cb => cb.value);
+
+                if (checkedBoxes.length === 0) return; // require at least one choice
+
+                value = checkedBoxes; // store array of answers
+            }
+
+            // --------------------------
+            // RADIO QUESTION
+            // --------------------------
+            else if (q.options) {
+                const selected = radioContainer.querySelector("input[type='radio']:checked");
+                if (!selected) return;
+
+                value = selected.value;
+            }
+
+            // --------------------------
+            // TEXT QUESTION
+            // --------------------------
+            else {
                 value = questionInput.value.trim();
                 if (!value) return;
             }
 
+            // Store answers
             if (round === 1) {
                 if (qIndex === 0) answers.role = value;
                 else answers.experience = value;
@@ -1128,43 +1228,38 @@
             if (qIndex < questions.length) {
                 animateOut(() => loadQuestion());
             } else {
-                if (round === 1) {
-                    animateOut(showWinScreen);
-                } else {
-                    animateOut(finishedRound2);
-
-                }
+                if (round === 1) animateOut(showWinScreen);
+                else animateOut(finishedRound2);
             }
-
         });
 
-document.getElementById("emailSubmitBtn").addEventListener("click", () => {
-    const emailField = document.getElementById("emailInput");
-    const email = emailField.value.trim();
-    const errorBox = document.getElementById("emailError");
+        document.getElementById("emailSubmitBtn").addEventListener("click", () => {
+            const emailField = document.getElementById("emailInput");
+            const email = emailField.value.trim();
+            const errorBox = document.getElementById("emailError");
 
-    // Simple but real validation
-    const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            // Simple but real validation
+            const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-    if (!isValid) {
-        errorBox.style.display = "block";
-        emailField.style.boxShadow = "0 0 0 3px rgba(215,63,9,0.4)";
-        return; // ⛔ Stop — don’t submit
-    }
+            if (!isValid) {
+                errorBox.style.display = "block";
+                emailField.style.boxShadow = "0 0 0 3px rgba(215,63,9,0.4)";
+                return; 
+            }
 
-    // Clear error
-    errorBox.style.display = "none";
-    emailField.style.boxShadow = "";
+            // Clear error
+            errorBox.style.display = "none";
+            emailField.style.boxShadow = "";
 
-    answers.email = email;
+            answers.email = email;
 
-    // Continue survey
-    questionForm.dispatchEvent(new Event("submit", { cancelable: true }));
-});
-document.getElementById("emailInput").addEventListener("input", () => {
-    document.getElementById("emailError").style.display = "none";
-    document.getElementById("emailInput").style.boxShadow = "";
-});
+            // Continue survey
+            questionForm.dispatchEvent(new Event("submit", { cancelable: true }));
+        });
+        document.getElementById("emailInput").addEventListener("input", () => {
+            document.getElementById("emailError").style.display = "none";
+            document.getElementById("emailInput").style.boxShadow = "";
+        });
 
             
         document.getElementById("backButton").addEventListener("click", () => {
@@ -1268,6 +1363,7 @@ document.getElementById("emailInput").addEventListener("input", () => {
 
         function finishedRound2() {
             // Hide form UI, show spinner wheel 2
+            backButton.classList.add("hide");
             questionForm.classList.add("hide");
             youWinBlock.classList.remove("show");
             spinnerWheel2.classList.add("show");
